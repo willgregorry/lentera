@@ -39,17 +39,16 @@ export function Navbar() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-7 md:flex">
           {navLinks.map((item) => {
             const active = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200 ${
-                  active
-                    ? "bg-primary/[0.06] text-ink"
-                    : "text-ink-muted hover:bg-primary/[0.04] hover:text-ink"
+                data-active={active ? "true" : "false"}
+                className={`nav-link-underline py-1 text-sm font-medium transition-colors duration-200 ${
+                  active ? "text-ink" : "text-ink-muted hover:text-ink"
                 }`}
               >
                 {item.label}
@@ -83,13 +82,13 @@ export function Navbar() {
             <>
               <Link
                 href="/login"
-                className="rounded-full px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-black/[0.04]"
+                className="nav-link-underline py-1 text-sm font-medium text-ink transition-colors"
               >
                 Masuk
               </Link>
               <Link
                 href="/register"
-                className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-primary"
+                className="btn-diagonal-secondary rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow-sm"
               >
                 Daftar
               </Link>

@@ -35,7 +35,7 @@ export function HeroSection() {
         <div className="gsap-hero-item mt-9 flex flex-wrap items-center justify-center gap-3.5">
           <Link
             href="/login?role=family"
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+            className="btn-diagonal-secondary inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-white"
           >
             <span>Mulai Pantau</span>
             <ArrowRight className="h-4 w-4" />
