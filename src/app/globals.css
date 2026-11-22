@@ -1,26 +1,49 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-cream: #F5F5F5;
+  --bg-surface: #FFFFFF;
+  --border-sand: #E5E5E5;
+  --accent-amber: #E8912E;
+  --accent-amber-hover: #D47E1F;
+  --health-sage: #4A7C59;
+  --text-charcoal: #1F2937;
+  --text-slate: #6B7280;
+  --status-waspada: #F59E0B;
+  --status-emergency: #DC4A3D;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-cream: var(--bg-cream);
+  --color-surface: var(--bg-surface);
+  --color-sand: var(--border-sand);
+  --color-amber-lentera: var(--accent-amber);
+  --color-sage: var(--health-sage);
+  --color-charcoal: var(--text-charcoal);
+  --color-slate-warm: var(--text-slate);
+  --color-waspada: var(--status-waspada);
+  --color-coral: var(--status-emergency);
+
+  --font-display: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
+  --font-sans: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
+  --font-mono: var(--font-jetbrains), "JetBrains Mono", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #F5F5F5;
+  color: #1F2937;
+  font-family: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+.font-mono-vital {
+  font-family: var(--font-jetbrains), "JetBrains Mono", monospace;
+  font-variant-numeric: tabular-nums;
 }
