@@ -89,7 +89,7 @@ export function CareLoopSection() {
     <section
       id="cara-kerja"
       ref={sectionRef}
-      className="flex min-h-[85svh] items-center border-b border-[#E5E5E5] bg-[#FDFDFD]"
+      className="flex min-h-[85svh] items-center border-b border-[#E5E5E5] bg-[#FFFFFF]"
     >
       <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
         <div className="gsap-reveal max-w-3xl">

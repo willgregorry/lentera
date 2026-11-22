@@ -5,7 +5,7 @@ import { LenteraMascot } from "@/components/shared/LenteraMascot";
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-[#E5E5E5] bg-[#FDFDFD]">
+    <footer className="mt-auto border-t border-[#E5E5E5] bg-[#FFFFFF]">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="grid gap-8 md:grid-cols-3">
           <div>

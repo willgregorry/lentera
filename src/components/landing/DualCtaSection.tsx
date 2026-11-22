@@ -12,7 +12,7 @@ export function DualCtaSection() {
   return (
     <section
       ref={sectionRef}
-      className="flex min-h-[80svh] items-center border-b border-[#E5E5E5] bg-[#FDFDFD]"
+      className="flex min-h-[80svh] items-center border-b border-[#E5E5E5] bg-[#FFFFFF]"
     >
       <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
         <div className="grid gap-12 md:grid-cols-2 md:divide-x md:divide-[#E5E5E5]">
@@ -52,7 +52,7 @@ export function DualCtaSection() {
             <div className="mt-8 flex flex-wrap items-center gap-6">
               <Link
                 href="/login?role=caregiver"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-6 py-3.5 text-sm font-semibold text-[#1F2937] hover:bg-[#F3E9DD] transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-6 py-3.5 text-sm font-semibold text-[#1F2937] hover:bg-[#F3E9DD] transition-colors"
               >
                 <span>Masuk Sebagai Caregiver</span>
                 <ArrowRight className="h-4 w-4" />

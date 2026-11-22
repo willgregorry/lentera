@@ -16,7 +16,7 @@ export function PreviewSection() {
   return (
     <section
       ref={sectionRef}
-      className="flex min-h-[90svh] items-center border-b border-[#E5E5E5] bg-[#FDFDFD]"
+      className="flex min-h-[90svh] items-center border-b border-[#E5E5E5] bg-[#FFFFFF]"
     >
       <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
         <div className="grid items-center gap-12 lg:grid-cols-12">

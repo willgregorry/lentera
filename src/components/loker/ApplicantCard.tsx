@@ -24,7 +24,7 @@ export function ApplicantCard({
   onDecide,
 }: ApplicantCardProps) {
   return (
-    <div className="flex flex-col justify-between rounded-2xl border border-[#E5E5E5] bg-[#FDFDFD] p-5">
+    <div className="flex flex-col justify-between rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] p-5">
       <div>
         <div className="flex items-start justify-between gap-3">
           <div>

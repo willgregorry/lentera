@@ -22,7 +22,7 @@ export default function LokerPage() {
   const [showPostForm, setShowPostForm] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FDFDFD] text-[#1F2937]">
+    <div className="flex min-h-screen flex-col bg-[#FFFFFF] text-[#1F2937]">
       <Navbar />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
