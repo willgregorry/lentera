@@ -89,7 +89,7 @@ export function Navbar() {
               </Link>
               <Link
                 href="/register"
-                className="rounded-full bg-[#1F2937] px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#E8912E]"
+                className="rounded-full bg-[#1F2937] px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#C26D10]"
               >
                 Daftar
               </Link>
@@ -166,7 +166,7 @@ export function Navbar() {
                 <Link
                   href="/register"
                   onClick={() => setMenuOpen(false)}
-                  className="rounded-full bg-[#1F2937] py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-[#E8912E]"
+                  className="rounded-full bg-[#1F2937] py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-[#C26D10]"
                 >
                   Daftar
                 </Link>

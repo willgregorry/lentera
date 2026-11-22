@@ -25,7 +25,7 @@ export function HeroSection() {
       <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center text-center">
         <h1 className="gsap-hero-item font-display text-4xl font-bold leading-[1.12] tracking-tight text-[#1F2937] sm:text-6xl">
           Jaga orang tua di rumah,{" "}
-          <span className="block text-[#E8912E]">
+          <span className="block text-[#B8640B]">
             tanpa cemas dari kejauhan.
           </span>
         </h1>
@@ -38,7 +38,7 @@ export function HeroSection() {
         <div className="gsap-hero-item mt-9 flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/login?role=family"
-            className="inline-flex items-center gap-2.5 rounded-full bg-[#1F2937] px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#E8912E]"
+            className="inline-flex items-center gap-2.5 rounded-full bg-[#1F2937] px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#C26D10]"
           >
             <span>Mulai Pantau</span>
             <ArrowRight className="h-4 w-4" />
@@ -46,7 +46,7 @@ export function HeroSection() {
 
           <Link
             href="/register?role=caregiver"
-            className="inline-flex items-center gap-1.5 rounded-full border border-[#D4D4D4] bg-[#FFFFFF]/90 px-6 py-3.5 text-sm font-semibold text-[#1F2937] backdrop-blur-sm transition-colors hover:border-[#E8912E] hover:text-[#E8912E]"
+            className="inline-flex items-center gap-1.5 rounded-full border border-[#D4D4D4] bg-[#FFFFFF]/90 px-6 py-3.5 text-sm font-semibold text-[#1F2937] backdrop-blur-sm transition-colors hover:border-[#E8912E] hover:text-[#B8640B]"
           >
             <span>Daftar Caregiver</span>
           </Link>

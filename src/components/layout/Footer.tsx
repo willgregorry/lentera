@@ -28,7 +28,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/#cara-kerja"
-                  className="transition-colors hover:text-[#E8912E]"
+                  className="transition-colors hover:text-[#B8640B]"
                 >
                   Cara Kerja
                 </Link>
@@ -36,7 +36,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/login?role=family"
-                  className="transition-colors hover:text-[#E8912E]"
+                  className="transition-colors hover:text-[#B8640B]"
                 >
                   Masuk Keluarga
                 </Link>
@@ -44,7 +44,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/login?role=caregiver"
-                  className="transition-colors hover:text-[#E8912E]"
+                  className="transition-colors hover:text-[#B8640B]"
                 >
                   Masuk Caregiver
                 </Link>

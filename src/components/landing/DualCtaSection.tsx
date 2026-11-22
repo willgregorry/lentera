@@ -17,7 +17,7 @@ export function DualCtaSection() {
       <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
         <div className="grid gap-12 md:grid-cols-2 md:divide-x md:divide-[#E5E5E5]">
           <div className="gsap-reveal md:pr-10">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#E8912E]">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#B8640B]">
               Untuk Keluarga
             </p>
             <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-[#1F2937] sm:text-4xl">
@@ -30,7 +30,7 @@ export function DualCtaSection() {
             <div className="mt-8">
               <Link
                 href="/login?role=family"
-                className="inline-flex items-center gap-2 rounded-xl bg-[#E8912E] px-6 py-3.5 text-sm font-semibold text-white hover:bg-[#D47E1F] transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#C26D10] px-6 py-3.5 text-sm font-semibold text-white hover:bg-[#A65B0B] transition-colors"
               >
                 <span>Masuk Sebagai Keluarga</span>
                 <ArrowRight className="h-4 w-4" />

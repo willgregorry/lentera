@@ -33,7 +33,7 @@ export function PreviewSection() {
             </p>
             <Link
               href="/login?role=family"
-              className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#E8912E] transition-colors hover:text-[#D47E1F]"
+              className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#B8640B] transition-colors hover:text-[#D47E1F]"
             >
               <span>Masuk ke Dashboard Keluarga</span>
               <ArrowRight className="h-4 w-4" />
@@ -130,14 +130,14 @@ export function PreviewSection() {
                     <p className="text-xs font-medium text-[#6B7280]">
                       Kesesuaian
                     </p>
-                    <p className="mt-1 text-2xl font-bold tabular-nums text-[#E8912E] sm:text-3xl">
+                    <p className="mt-1 text-2xl font-bold tabular-nums text-[#B8640B] sm:text-3xl">
                       96%
                     </p>
                   </div>
                 </div>
 
                 <div className="mt-6">
-                  <p className="text-xs font-semibold text-[#E8912E]">
+                  <p className="text-xs font-semibold text-[#B8640B]">
                     Ringkasan Hari Ini
                   </p>
                   <p className="mt-2 text-sm leading-relaxed text-[#4B5563] sm:text-base">

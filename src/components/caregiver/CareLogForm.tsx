@@ -205,7 +205,7 @@ export function CareLogForm({
             Unggah Foto Kondisi / Makanan (Opsional)
           </label>
           <label className="mt-1.5 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-[#D6C8B8] bg-[#FFFFFF] px-4 py-4 text-xs font-medium text-[#6B7280] hover:border-[#E8912E]">
-            <Camera className="h-4 w-4 text-[#E8912E]" />
+            <Camera className="h-4 w-4 text-[#B8640B]" />
             <span>
               {photoFile
                 ? `Terpilih: ${photoFile.name}`
@@ -230,7 +230,7 @@ export function CareLogForm({
         <button
           type="submit"
           disabled={submitting}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#E8912E] px-5 py-3 text-sm font-semibold text-white hover:bg-[#D47E1F] disabled:opacity-60 transition-colors cursor-pointer"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#C26D10] px-5 py-3 text-sm font-semibold text-white hover:bg-[#A65B0B] disabled:opacity-60 transition-colors cursor-pointer"
         >
           <Send className="h-4 w-4" />
           <span>{submitting ? "Mengirim..." : "Kirim Laporan Harian"}</span>

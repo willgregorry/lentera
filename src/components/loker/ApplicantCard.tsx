@@ -66,7 +66,7 @@ export function ApplicantCard({
 
         {app.ai_match_reason && (
           <div className="mt-3 border-l-2 border-[#E8912E] pl-3 text-xs leading-relaxed text-[#1F2937]">
-            <span className="inline-flex items-center gap-1 font-semibold text-[#E8912E]">
+            <span className="inline-flex items-center gap-1 font-semibold text-[#B8640B]">
               <Sparkles className="h-3.5 w-3.5" />
               Analisis AI:
             </span>{" "}
@@ -80,9 +80,9 @@ export function ApplicantCard({
           type="button"
           onClick={() => onRunAiMatch(job, app)}
           disabled={matching}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1F2937] hover:text-[#E8912E] cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1F2937] hover:text-[#B8640B] cursor-pointer"
         >
-          <Sparkles className="h-3.5 w-3.5 text-[#E8912E]" />
+          <Sparkles className="h-3.5 w-3.5 text-[#B8640B]" />
           <span>{matching ? "Menilai..." : "Hitung Ulang AI Match"}</span>
         </button>
 

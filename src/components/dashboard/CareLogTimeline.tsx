@@ -55,7 +55,7 @@ export function CareLogTimeline({ logs }: CareLogTimelineProps) {
                 {log.systolic}/{log.diastolic} mmHg
               </span>
               <span className="text-[#E5E5E5]">•</span>
-              <span className="font-mono-vital font-semibold text-[#E8912E]">
+              <span className="font-mono-vital font-semibold text-[#B8640B]">
                 {log.heart_rate} bpm
               </span>
               <span className="text-[#E5E5E5]">•</span>

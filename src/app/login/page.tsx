@@ -75,7 +75,7 @@ function LoginFormContent() {
             onClick={() => setRole("family")}
             className={`flex flex-col items-center justify-center gap-1 rounded-xl border px-3 py-3 text-center transition-colors cursor-pointer ${
               role === "family"
-                ? "border-[#E8912E] bg-[#FFFFFF] text-[#E8912E]"
+                ? "border-[#E8912E] bg-[#FFFFFF] text-[#B8640B]"
                 : "border-[#E5E5E5] bg-[#FFFFFF] text-[#6B7280] hover:bg-[#FFFFFF]"
             }`}
           >
@@ -136,7 +136,7 @@ function LoginFormContent() {
 
         <div className="mt-5 border-y border-[#E5E5E5] py-4">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1F2937]">
-            <KeyRound className="h-3.5 w-3.5 text-[#E8912E]" />
+            <KeyRound className="h-3.5 w-3.5 text-[#B8640B]" />
             <span>Isi Cepat Akun Demo:</span>
           </div>
           <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -145,7 +145,7 @@ function LoginFormContent() {
               onClick={() => fillDemo("family")}
               className="rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3 py-2 text-left text-xs font-medium text-[#1F2937] hover:border-[#E8912E] transition-colors cursor-pointer"
             >
-              <span className="block font-semibold text-[#E8912E]">
+              <span className="block font-semibold text-[#B8640B]">
                 Demo Keluarga: Budi
               </span>
               <span className="text-[#6B7280]">budi@lentera.id</span>
@@ -211,7 +211,7 @@ function LoginFormContent() {
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#E8912E] px-5 py-3 text-sm font-semibold text-white hover:bg-[#D47E1F] disabled:opacity-60 transition-colors cursor-pointer"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#C26D10] px-5 py-3 text-sm font-semibold text-white hover:bg-[#A65B0B] disabled:opacity-60 transition-colors cursor-pointer"
           >
             <span>
               {loading
@@ -228,7 +228,7 @@ function LoginFormContent() {
           Belum punya akun?{" "}
           <Link
             href="/register"
-            className="font-semibold text-[#E8912E] hover:underline"
+            className="font-semibold text-[#B8640B] hover:underline"
           >
             Daftar sekarang
           </Link>

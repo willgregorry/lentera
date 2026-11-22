@@ -73,7 +73,7 @@ export default function RegisterPage() {
                 onClick={() => setRole("family")}
                 className={`flex flex-col items-center justify-center gap-1 rounded-xl border px-3 py-3 text-center transition-colors cursor-pointer ${
                   role === "family"
-                    ? "border-[#E8912E] bg-[#FFFFFF] text-[#E8912E]"
+                    ? "border-[#E8912E] bg-[#FFFFFF] text-[#B8640B]"
                     : "border-[#E5E5E5] bg-[#FFFFFF] text-[#6B7280] hover:bg-[#FFFFFF]"
                 }`}
               >
@@ -225,7 +225,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#E8912E] px-5 py-3 text-sm font-semibold text-white hover:bg-[#D47E1F] disabled:opacity-60 transition-colors cursor-pointer"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#C26D10] px-5 py-3 text-sm font-semibold text-white hover:bg-[#A65B0B] disabled:opacity-60 transition-colors cursor-pointer"
               >
                 <span>{loading ? "Mendaftarkan..." : "Daftar Sekarang"}</span>
                 <ArrowRight className="h-4 w-4" />
@@ -236,7 +236,7 @@ export default function RegisterPage() {
               Sudah punya akun?{" "}
               <Link
                 href="/login"
-                className="font-semibold text-[#E8912E] hover:underline"
+                className="font-semibold text-[#B8640B] hover:underline"
               >
                 Masuk di sini
               </Link>

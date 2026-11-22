@@ -39,7 +39,7 @@ export function AiShowcaseSection() {
     >
       <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
         <div className="gsap-reveal max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#E8912E]">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#B8640B]">
             Didukung Google Gemini AI
           </p>
           <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-[#1F2937] sm:text-5xl">

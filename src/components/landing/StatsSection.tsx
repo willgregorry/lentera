@@ -63,7 +63,7 @@ export function StatsSection() {
     >
       <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
         <div className="gsap-reveal max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#E8912E]">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#B8640B]">
             Realitas Indonesia
           </p>
           <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-[#1F2937] sm:text-5xl">
@@ -90,7 +90,7 @@ export function StatsSection() {
                 href={stat.sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2.5 inline-flex items-center gap-1 text-xs font-medium text-[#6B7280] transition-colors hover:text-[#E8912E]"
+                className="mt-2.5 inline-flex items-center gap-1 text-xs font-medium text-[#6B7280] transition-colors hover:text-[#B8640B]"
               >
                 <span>{stat.source}</span>
                 <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

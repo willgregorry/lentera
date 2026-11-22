@@ -19,7 +19,7 @@ export function AiDigestCard({
     <section className="mt-6 rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] p-6">
       <div className="flex flex-col justify-between gap-3 border-b border-[#E5E5E5] pb-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2.5">
-          <Sparkles className="h-5 w-5 text-[#E8912E]" />
+          <Sparkles className="h-5 w-5 text-[#B8640B]" />
           <div>
             <h2 className="font-display text-lg font-bold text-[#1F2937]">
               AI Daily Digest & Saran Perawatan
@@ -51,7 +51,7 @@ export function AiDigestCard({
 
       <div className="mt-5 grid gap-6 md:grid-cols-3 md:divide-x md:divide-[#E5E5E5]">
         <div className="md:pr-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[#E8912E]">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#B8640B]">
             Ringkasan Kondisi
           </p>
           <p className="mt-2 text-sm leading-relaxed text-[#1F2937]">

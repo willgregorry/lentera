@@ -19,12 +19,12 @@ export function FaqAccordion() {
               className="group flex w-full items-center justify-between gap-6 text-left cursor-pointer"
               aria-expanded={isOpen}
             >
-              <span className="font-display text-lg font-semibold text-[#1F2937] transition-colors group-hover:text-[#E8912E] sm:text-xl">
+              <span className="font-display text-lg font-semibold text-[#1F2937] transition-colors group-hover:text-[#B8640B] sm:text-xl">
                 {item.q}
               </span>
               <ChevronDown
                 className={`h-5 w-5 shrink-0 text-[#6B7280] transition-transform duration-300 ease-out ${
-                  isOpen ? "rotate-180 text-[#E8912E]" : "group-hover:text-[#1F2937]"
+                  isOpen ? "rotate-180 text-[#B8640B]" : "group-hover:text-[#1F2937]"
                 }`}
               />
             </button>

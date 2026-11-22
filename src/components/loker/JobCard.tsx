@@ -41,7 +41,7 @@ export function JobCard({
       <div className="flex flex-col justify-between gap-4 border-b border-[#E5E5E5] pb-5 md:flex-row md:items-start">
         <div>
           <div className="flex flex-wrap items-center gap-3 text-xs">
-            <span className="font-semibold text-[#E8912E]">
+            <span className="font-semibold text-[#B8640B]">
               {job.family_name}
             </span>
             <span className="text-[#E5E5E5]">•</span>
@@ -60,7 +60,7 @@ export function JobCard({
 
           <div className="mt-2.5 flex flex-wrap gap-5 text-xs text-[#6B7280]">
             <span className="inline-flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 text-[#E8912E]" />
+              <MapPin className="h-3.5 w-3.5 text-[#B8640B]" />
               {job.location}
             </span>
             <span className="inline-flex items-center gap-1.5">
@@ -68,7 +68,7 @@ export function JobCard({
               {job.schedule}
             </span>
             <span className="inline-flex items-center gap-1.5 font-semibold text-[#1F2937]">
-              <Wallet className="h-3.5 w-3.5 text-[#E8912E]" />
+              <Wallet className="h-3.5 w-3.5 text-[#B8640B]" />
               {job.salary_display}
             </span>
           </div>

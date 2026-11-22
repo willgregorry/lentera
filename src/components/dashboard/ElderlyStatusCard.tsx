@@ -29,7 +29,7 @@ export function ElderlyStatusCard({
       <div className="rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] p-6 lg:col-span-8">
         <div className="flex flex-col justify-between gap-5 border-b border-[#E5E5E5] pb-5 sm:flex-row sm:items-center">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#E8912E]">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#B8640B]">
               Dashboard Pemantauan Keluarga
             </p>
             <h1 className="mt-1 font-display text-2xl font-bold text-[#1F2937] sm:text-3xl">
@@ -44,7 +44,7 @@ export function ElderlyStatusCard({
         <div className="mt-5 grid grid-cols-2 gap-6 sm:grid-cols-4">
           <div>
             <div className="flex items-center gap-1.5 text-xs text-[#6B7280]">
-              <Activity className="h-4 w-4 text-[#E8912E]" />
+              <Activity className="h-4 w-4 text-[#B8640B]" />
               <span>Tekanan Darah</span>
             </div>
             <p className="font-mono-vital mt-1.5 text-2xl font-bold text-[#1F2937]">
@@ -79,7 +79,7 @@ export function ElderlyStatusCard({
 
           <div>
             <div className="flex items-center gap-1.5 text-xs text-[#6B7280]">
-              <Utensils className="h-4 w-4 text-[#E8912E]" />
+              <Utensils className="h-4 w-4 text-[#B8640B]" />
               <span>Porsi Makan</span>
             </div>
             <p className="mt-1.5 text-lg font-bold text-[#1F2937]">
@@ -123,7 +123,7 @@ export function ElderlyStatusCard({
           </Link>
           <Link
             href="/loker"
-            className="rounded-xl bg-[#E8912E] px-4 py-2.5 text-center text-xs font-semibold text-white hover:bg-[#D47E1F]"
+            className="rounded-xl bg-[#C26D10] px-4 py-2.5 text-center text-xs font-semibold text-white hover:bg-[#A65B0B]"
           >
             Kelola Loker Caregiver
           </Link>

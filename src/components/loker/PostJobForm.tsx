@@ -175,7 +175,7 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
         </button>
         <button
           type="submit"
-          className="rounded-xl bg-[#E8912E] px-5 py-2 text-xs font-semibold text-white hover:bg-[#D47E1F] cursor-pointer"
+          className="rounded-xl bg-[#C26D10] px-5 py-2 text-xs font-semibold text-white hover:bg-[#A65B0B] cursor-pointer"
         >
           Terbitkan Lowongan
         </button>

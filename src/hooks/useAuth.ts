@@ -9,9 +9,11 @@ export function useAuth() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     setUser(getStoredUser());
+    setHydrated(true);
   }, [pathname]);
 
   function logout() {
@@ -20,5 +22,5 @@ export function useAuth() {
     router.push("/login");
   }
 
-  return { user, logout };
+  return { user, hydrated, logout };
 }
