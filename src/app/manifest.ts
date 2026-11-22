@@ -13,9 +13,9 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: "portrait-primary",
     icons: [
       {
-        src: "/icon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
+        src: "/images/icons/lentera-icon.png",
+        sizes: "256x256",
+        type: "image/png",
       },
       {
         src: "/images/lentera_mascot.jpg",
