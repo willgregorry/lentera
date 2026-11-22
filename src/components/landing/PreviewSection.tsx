@@ -109,28 +109,28 @@ export function PreviewSection() {
                   </div>
                 </div>
 
-                <div className="mt-6 grid grid-cols-3 gap-6 border-b border-[#EFEFEF] pb-6">
-                  <div>
-                    <p className="text-xs font-medium text-[#6B7280]">
+                <div className="mt-6 grid grid-cols-3 gap-3 border-b border-[#EFEFEF] pb-6 sm:gap-6">
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-medium text-[#6B7280]">
                       Tekanan Darah
                     </p>
-                    <p className="mt-1 text-2xl font-bold tabular-nums text-[#1F2937] sm:text-3xl">
+                    <p className="mt-1 text-xl font-bold tabular-nums text-[#1F2937] sm:text-3xl">
                       124/80
                     </p>
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-[#6B7280]">
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-medium text-[#6B7280]">
                       Detak Nadi
                     </p>
-                    <p className="mt-1 text-2xl font-bold tabular-nums text-[#4A7C59] sm:text-3xl">
+                    <p className="mt-1 text-xl font-bold tabular-nums text-[#4A7C59] sm:text-3xl">
                       78 bpm
                     </p>
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-[#6B7280]">
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-medium text-[#6B7280]">
                       Kesesuaian
                     </p>
-                    <p className="mt-1 text-2xl font-bold tabular-nums text-[#B8640B] sm:text-3xl">
+                    <p className="mt-1 text-xl font-bold tabular-nums text-[#B8640B] sm:text-3xl">
                       96%
                     </p>
                   </div>
