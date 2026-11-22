@@ -24,8 +24,7 @@ import {
 import { ILenteraApiService, StreamEvent } from "./api.interface";
 import { getStoredToken, getStoredUser, setAuthSession } from "./authStorage";
 
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function normalizeUser(raw: any, fallbackRole: UserRole = "family"): UserProfile {

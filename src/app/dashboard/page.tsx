@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { VitalChart } from "@/components/shared/VitalChart";
 import { NotificationBanner } from "@/components/dashboard/NotificationBanner";
 import { SosAlertBanner } from "@/components/dashboard/SosAlertBanner";
@@ -53,7 +54,7 @@ export default function FamilyDashboardPage() {
     <div className="flex min-h-screen flex-col bg-[#F7F8F9] text-[#1F2937]">
       <Navbar />
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-8 pb-24 sm:px-6 md:pb-8">
         {notifications.length > 0 && (
           <NotificationBanner notification={notifications[0]} />
         )}
@@ -96,6 +97,7 @@ export default function FamilyDashboardPage() {
       </main>
 
       <Footer />
+      <MobileBottomNav />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle, Stethoscope } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { LenteraMascot } from "@/components/shared/LenteraMascot";
 import { CareLogForm } from "@/components/caregiver/CareLogForm";
 import { SosEmergencyPanel } from "@/components/caregiver/SosEmergencyPanel";
@@ -49,7 +50,7 @@ export default function CaregiverPortalPage() {
     <div className="flex min-h-screen flex-col bg-[#F7F8F9] text-[#1F2937]">
       <Navbar />
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-8 pb-24 sm:px-6 md:pb-8">
         <div className="flex flex-col justify-between gap-4 border-b border-[#E5E5E5] pb-6 sm:flex-row sm:items-center">
           <div>
             <div className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#355E42]">
@@ -99,6 +100,7 @@ export default function CaregiverPortalPage() {
       </main>
 
       <Footer />
+      <MobileBottomNav />
     </div>
   );
 }

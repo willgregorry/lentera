@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { PostJobForm } from "@/components/loker/PostJobForm";
 import { JobCard } from "@/components/loker/JobCard";
 import { useLokerData } from "@/hooks/useLokerData";
@@ -27,7 +28,7 @@ export default function LokerPage() {
     <div className="flex min-h-screen flex-col bg-[#F7F8F9] text-[#1F2937]">
       <Navbar />
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-8 pb-24 sm:px-6 md:pb-8">
         <div className="flex flex-col justify-between gap-4 border-b border-[#E5E5E5] pb-6 sm:flex-row sm:items-end">
           <div>
             <p className="text-sm font-semibold text-[#355E42]">
@@ -83,6 +84,7 @@ export default function LokerPage() {
       </main>
 
       <Footer />
+      <MobileBottomNav />
     </div>
   );
 }
