@@ -12,7 +12,7 @@ export function DualCtaSection() {
   return (
     <section
       ref={sectionRef}
-      className="flex min-h-[100svh] items-center border-b border-[#E5E5E5] bg-[#FFFFFF]"
+      className="flex min-h-[80svh] items-center border-b border-[#E5E5E5] bg-[#F5F5F5]"
     >
       <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
         <div className="grid gap-12 md:grid-cols-2 md:divide-x md:divide-[#E5E5E5]">

@@ -10,8 +10,9 @@ export function FaqSection() {
 
   return (
     <section
+      id="faq"
       ref={sectionRef}
-      className="flex min-h-[100svh] items-center bg-[#F5F5F5]"
+      className="flex min-h-[80svh] items-center bg-[#F5F5F5]"
     >
       <div className="mx-auto w-full max-w-4xl px-4 py-16 sm:px-6">
         <div className="gsap-reveal mb-10">

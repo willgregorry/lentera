@@ -1,20 +1,21 @@
 import React from "react";
 import Link from "next/link";
-import { HeartHandshake, PhoneCall } from "lucide-react";
+import { PhoneCall } from "lucide-react";
+import { LenteraMascot } from "@/components/shared/LenteraMascot";
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-[#E5E5E5] bg-[#FFFFFF]">
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    <footer className="mt-auto border-t border-[#E5E5E5] bg-[#F5F5F5]">
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="grid gap-8 md:grid-cols-3">
           <div>
-            <div className="flex items-center gap-2">
-              <HeartHandshake className="h-5 w-5 text-[#E8912E]" />
+            <Link href="/" className="inline-flex items-center gap-2.5">
+              <LenteraMascot status="aman" size="sm" />
               <span className="font-display text-lg font-bold text-[#1F2937]">
                 Lentera
               </span>
-            </div>
-            <p className="mt-2.5 text-sm leading-relaxed text-[#6B7280]">
+            </Link>
+            <p className="mt-3 text-sm leading-relaxed text-[#6B7280]">
               Menjaga orang tua di rumah, menenangkan hati keluarga di kantor.
             </p>
           </div>
@@ -25,23 +26,27 @@ export function Footer() {
             </h4>
             <ul className="mt-3 space-y-2 text-sm text-[#6B7280]">
               <li>
-                <Link href="/dashboard" className="hover:text-[#E8912E]">
-                  Dashboard Keluarga
+                <Link
+                  href="/#cara-kerja"
+                  className="transition-colors hover:text-[#E8912E]"
+                >
+                  Cara Kerja
                 </Link>
               </li>
               <li>
-                <Link href="/loker" className="hover:text-[#E8912E]">
-                  Loker & AI Matcher
+                <Link
+                  href="/login?role=family"
+                  className="transition-colors hover:text-[#E8912E]"
+                >
+                  Masuk Keluarga
                 </Link>
               </li>
               <li>
-                <Link href="/caregiver" className="hover:text-[#E8912E]">
-                  Portal Caregiver & SOS
-                </Link>
-              </li>
-              <li>
-                <Link href="/login" className="hover:text-[#E8912E]">
-                  Akun Demo (Budi & Rini)
+                <Link
+                  href="/login?role=caregiver"
+                  className="transition-colors hover:text-[#E8912E]"
+                >
+                  Masuk Caregiver
                 </Link>
               </li>
             </ul>
@@ -64,9 +69,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col items-start justify-between gap-2 border-t border-[#E5E5E5] pt-6 text-xs text-[#6B7280] sm:flex-row sm:items-center">
-          <p>© 2026 Lentera • IT RUSH 2026 Web Development.</p>
-          <p>Next.js, Supabase, Google Gemini AI & GSAP.</p>
+        <div className="mt-10 border-t border-[#E5E5E5] pt-6 text-xs text-[#6B7280]">
+          <p>© 2026 Lentera. Seluruh hak cipta dilindungi.</p>
         </div>
       </div>
     </footer>

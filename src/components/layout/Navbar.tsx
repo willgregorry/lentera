@@ -9,7 +9,6 @@ import { LenteraMascot } from "@/components/shared/LenteraMascot";
 
 const PUBLIC_NAV_LINKS = [
   { href: "/#cara-kerja", label: "Cara Kerja" },
-  { href: "/#fitur-ai", label: "Fitur AI" },
   { href: "/#faq", label: "FAQ" },
 ];
 

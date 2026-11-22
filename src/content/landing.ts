@@ -1,33 +1,53 @@
 export interface EditorialStat {
   value: string;
+  target: number;
+  decimals: number;
+  suffix: string;
   label: string;
   source: string;
+  sourceUrl: string;
   accent: string;
 }
 
 export const LANDING_STATS: EditorialStat[] = [
   {
     value: "80,8%",
+    target: 80.8,
+    decimals: 1,
+    suffix: "%",
     label: "Lansia dirawat keluarga tanpa pelatihan medis",
     source: "SKI 2023 • Kemenkes RI",
+    sourceUrl: "https://www.badankebijakan.kemkes.go.id/hasil-ski-2023/",
     accent: "#E8912E",
   },
   {
     value: "1,3%",
+    target: 1.3,
+    decimals: 1,
+    suffix: "%",
     label: "Yang didampingi caregiver terlatih di rumah",
     source: "SKI 2023 • Databoks",
+    sourceUrl: "https://databoks.katadata.co.id/",
     accent: "#4A7C59",
   },
   {
     value: "76,2%",
+    target: 76.2,
+    decimals: 1,
+    suffix: "%",
     label: "Risiko kejadian jatuh pada usia 75+ tahun",
     source: "Riskesdas • Kemenkes RI",
+    sourceUrl: "https://layanandata.kemkes.go.id/",
     accent: "#DC4A3D",
   },
   {
-    value: "48–50%",
-    label: "Pekerja produktif adalah generasi sandwich",
-    source: "BPS 2024 • Tirto & Jakpat",
+    value: "49%",
+    target: 49,
+    decimals: 0,
+    suffix: "%",
+    label: "Pekerja produktif termasuk generasi sandwich",
+    source: "BPS 2024 • Jakpat",
+    sourceUrl: "https://www.bps.go.id/",
     accent: "#1F2937",
   },
 ];

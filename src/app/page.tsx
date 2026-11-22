@@ -4,7 +4,6 @@ import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { StatsSection } from "@/components/landing/StatsSection";
 import { CareLoopSection } from "@/components/landing/CareLoopSection";
-import { AiShowcaseSection } from "@/components/landing/AiShowcaseSection";
 import { PreviewSection } from "@/components/landing/PreviewSection";
 import { DualCtaSection } from "@/components/landing/DualCtaSection";
 import { FaqSection } from "@/components/landing/FaqSection";
@@ -17,7 +16,6 @@ export default function LandingPage() {
         <HeroSection />
         <StatsSection />
         <CareLoopSection />
-        <AiShowcaseSection />
         <PreviewSection />
         <DualCtaSection />
         <FaqSection />
