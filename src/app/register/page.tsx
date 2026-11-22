@@ -50,17 +50,17 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FFFFFF]">
+    <div className="flex min-h-screen flex-col bg-surface">
       <Navbar />
       <main className="flex-1">
         <div className="mx-auto max-w-lg px-4 py-12 sm:px-6">
-          <div className="rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] p-7">
-            <div className="flex items-center justify-between border-b border-[#E5E5E5] pb-5">
+          <div className="rounded-2xl border border-border bg-surface p-7">
+            <div className="flex items-center justify-between border-b border-border pb-5">
               <div>
-                <h1 className="font-display text-2xl font-bold text-[#1F2937]">
+                <h1 className="font-display text-2xl font-bold text-ink">
                   Buat Akun Lentera
                 </h1>
-                <p className="mt-1 text-sm text-[#6B7280]">
+                <p className="mt-1 text-sm text-ink-muted">
                   Mulai pendampingan orang tua dengan lebih tenang.
                 </p>
               </div>
@@ -73,15 +73,15 @@ export default function RegisterPage() {
                 onClick={() => setRole("family")}
                 className={`flex flex-col items-center justify-center gap-1 rounded-xl border px-3 py-3 text-center transition-colors cursor-pointer ${
                   role === "family"
-                    ? "border-[#E8912E] bg-[#FFFFFF] text-[#B8640B]"
-                    : "border-[#E5E5E5] bg-[#FFFFFF] text-[#6B7280] hover:bg-[#FFFFFF]"
+                    ? "border-primary bg-surface text-primary"
+                    : "border-border bg-surface text-ink-muted hover:bg-surface"
                 }`}
               >
                 <div className="flex items-center gap-1.5 text-sm font-semibold">
                   <Users className="h-4 w-4" />
                   <span>Keluarga</span>
                 </div>
-                <span className="text-[11px] font-normal text-[#6B7280]">
+                <span className="text-[11px] font-normal text-ink-muted">
                   Butuh Caregiver
                 </span>
               </button>
@@ -91,15 +91,15 @@ export default function RegisterPage() {
                 onClick={() => setRole("caregiver")}
                 className={`flex flex-col items-center justify-center gap-1 rounded-xl border px-3 py-3 text-center transition-colors cursor-pointer ${
                   role === "caregiver"
-                    ? "border-[#4A7C59] bg-[#EDF4EF] text-[#355E42]"
-                    : "border-[#E5E5E5] bg-[#FFFFFF] text-[#6B7280] hover:bg-[#FFFFFF]"
+                    ? "border-secondary bg-secondary-soft text-secondary"
+                    : "border-border bg-surface text-ink-muted hover:bg-surface"
                 }`}
               >
                 <div className="flex items-center gap-1.5 text-sm font-semibold">
                   <Stethoscope className="h-4 w-4" />
                   <span>Caregiver</span>
                 </div>
-                <span className="text-[11px] font-normal text-[#6B7280]">
+                <span className="text-[11px] font-normal text-ink-muted">
                   Perawat Lansia
                 </span>
               </button>
@@ -121,7 +121,7 @@ export default function RegisterPage() {
                 }
               }}
               disabled={loading}
-              className="mt-4 flex w-full items-center justify-center gap-2.5 rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-4 py-2.5 text-sm font-semibold text-[#1F2937] hover:bg-[#FFFFFF] transition-colors cursor-pointer disabled:opacity-60"
+              className="mt-4 flex w-full items-center justify-center gap-2.5 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-ink hover:bg-surface transition-colors cursor-pointer disabled:opacity-60"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
                 <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.87c2.26-2.08 3.56-5.15 3.56-8.65z"/>
@@ -134,7 +134,7 @@ export default function RegisterPage() {
 
             <form onSubmit={handleSubmit} className="mt-5 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#1F2937]">
+                <label className="block text-xs font-semibold text-ink">
                   Nama Lengkap
                 </label>
                 <input
@@ -147,13 +147,13 @@ export default function RegisterPage() {
                       ? "Contoh: Budi Santoso"
                       : "Contoh: Rini Wulandari, A.Md.Kep"
                   }
-                  className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+                  className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-primary focus:bg-surface focus:outline-none"
                 />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-xs font-semibold text-[#1F2937]">
+                  <label className="block text-xs font-semibold text-ink">
                     Email
                   </label>
                   <input
@@ -162,11 +162,11 @@ export default function RegisterPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="nama@email.com"
-                    className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+                    className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-primary focus:bg-surface focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#1F2937]">
+                  <label className="block text-xs font-semibold text-ink">
                     No. WhatsApp / Telepon
                   </label>
                   <input
@@ -175,13 +175,13 @@ export default function RegisterPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="0812-xxxx-xxxx"
-                    className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+                    className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-primary focus:bg-surface focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#1F2937]">
+                <label className="block text-xs font-semibold text-ink">
                   Kota / Wilayah Domisili
                 </label>
                 <input
@@ -189,26 +189,26 @@ export default function RegisterPage() {
                   required
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+                  className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-primary focus:bg-surface focus:outline-none"
                 />
               </div>
 
               {role === "caregiver" && (
                 <div>
-                  <label className="block text-xs font-semibold text-[#1F2937]">
+                  <label className="block text-xs font-semibold text-ink">
                     Keahlian Utama (pisahkan koma)
                   </label>
                   <input
                     type="text"
                     value={skillsText}
                     onChange={(e) => setSkillsText(e.target.value)}
-                    className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#4A7C59] focus:bg-[#FFFFFF] focus:outline-none"
+                    className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-secondary focus:bg-surface focus:outline-none"
                   />
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-semibold text-[#1F2937]">
+                <label className="block text-xs font-semibold text-ink">
                   Kata Sandi
                 </label>
                 <input
@@ -218,25 +218,25 @@ export default function RegisterPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Minimal 6 karakter"
-                  className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+                  className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-primary focus:bg-surface focus:outline-none"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#C26D10] px-5 py-3 text-sm font-semibold text-white hover:bg-[#A65B0B] disabled:opacity-60 transition-colors cursor-pointer"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors cursor-pointer"
               >
                 <span>{loading ? "Mendaftarkan..." : "Daftar Sekarang"}</span>
                 <ArrowRight className="h-4 w-4" />
               </button>
             </form>
 
-            <p className="mt-6 text-center text-xs text-[#6B7280]">
+            <p className="mt-6 text-center text-xs text-ink-muted">
               Sudah punya akun?{" "}
               <Link
                 href="/login"
-                className="font-semibold text-[#B8640B] hover:underline"
+                className="font-semibold text-primary hover:underline"
               >
                 Masuk di sini
               </Link>

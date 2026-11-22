@@ -10,7 +10,7 @@ import { FaqSection } from "@/components/landing/FaqSection";
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#FFFFFF] text-[#1F2937]">
+    <div className="flex min-h-screen flex-col bg-surface text-ink">
       <Navbar />
       <main className="flex-1">
         <HeroSection />

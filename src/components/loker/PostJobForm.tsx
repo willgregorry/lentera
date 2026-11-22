@@ -49,14 +49,14 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-6 rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] p-6"
+      className="mt-6 rounded-2xl border border-border bg-surface p-6"
     >
-      <h2 className="font-display text-lg font-bold text-[#1F2937]">
+      <h2 className="font-display text-lg font-bold text-ink">
         Pasang Lowongan Caregiver Baru
       </h2>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
-          <label className="block text-xs font-semibold text-[#1F2937]">
+          <label className="block text-xs font-semibold text-ink">
             Judul Lowongan
           </label>
           <input
@@ -65,12 +65,12 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Contoh: Pendamping Lansia Harian (Pasca Stroke Ringan)"
-            className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+            className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm focus:border-primary focus:bg-surface focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#1F2937]">
+          <label className="block text-xs font-semibold text-ink">
             Nama Lansia
           </label>
           <input
@@ -79,12 +79,12 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
             value={elderlyName}
             onChange={(e) => setElderlyName(e.target.value)}
             placeholder="Contoh: Ibu Hartini"
-            className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+            className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm focus:border-primary focus:bg-surface focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#1F2937]">
+          <label className="block text-xs font-semibold text-ink">
             Usia Lansia (tahun)
           </label>
           <input
@@ -94,12 +94,12 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
             max={110}
             value={elderlyAge}
             onChange={(e) => setElderlyAge(Number(e.target.value))}
-            className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+            className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm focus:border-primary focus:bg-surface focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#1F2937]">
+          <label className="block text-xs font-semibold text-ink">
             Lokasi Rumah
           </label>
           <input
@@ -108,12 +108,12 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="Contoh: Tebet, Jakarta Selatan"
-            className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+            className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm focus:border-primary focus:bg-surface focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#1F2937]">
+          <label className="block text-xs font-semibold text-ink">
             Jadwal Kerja
           </label>
           <input
@@ -121,12 +121,12 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
             required
             value={schedule}
             onChange={(e) => setSchedule(e.target.value)}
-            className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+            className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm focus:border-primary focus:bg-surface focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#1F2937]">
+          <label className="block text-xs font-semibold text-ink">
             Estimasi Kompensasi
           </label>
           <input
@@ -134,24 +134,24 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
             required
             value={salaryDisplay}
             onChange={(e) => setSalaryDisplay(e.target.value)}
-            className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+            className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm focus:border-primary focus:bg-surface focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#1F2937]">
+          <label className="block text-xs font-semibold text-ink">
             Keahlian Dibutuhkan (pisahkan koma)
           </label>
           <input
             type="text"
             value={skillsInput}
             onChange={(e) => setSkillsInput(e.target.value)}
-            className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+            className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm focus:border-primary focus:bg-surface focus:outline-none"
           />
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-xs font-semibold text-[#1F2937]">
+          <label className="block text-xs font-semibold text-ink">
             Profil Medis & Kebutuhan Perawatan
           </label>
           <textarea
@@ -160,7 +160,7 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
             value={medicalNotes}
             onChange={(e) => setMedicalNotes(e.target.value)}
             placeholder="Jelaskan riwayat penyakit, jadwal obat, atau perhatian khusus..."
-            className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+            className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm focus:border-primary focus:bg-surface focus:outline-none"
           />
         </div>
       </div>
@@ -169,13 +169,13 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-xs font-semibold text-[#6B7280] cursor-pointer"
+          className="px-4 py-2 text-xs font-semibold text-ink-muted cursor-pointer"
         >
           Batal
         </button>
         <button
           type="submit"
-          className="rounded-xl bg-[#C26D10] px-5 py-2 text-xs font-semibold text-white hover:bg-[#A65B0B] cursor-pointer"
+          className="rounded-xl bg-primary px-5 py-2 text-xs font-semibold text-white hover:bg-primary-hover cursor-pointer"
         >
           Terbitkan Lowongan
         </button>

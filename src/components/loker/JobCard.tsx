@@ -37,50 +37,50 @@ export function JobCard({
   }
 
   return (
-    <article className="rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] p-6">
-      <div className="flex flex-col justify-between gap-4 border-b border-[#E5E5E5] pb-5 md:flex-row md:items-start">
+    <article className="rounded-2xl border border-border bg-surface p-6">
+      <div className="flex flex-col justify-between gap-4 border-b border-border pb-5 md:flex-row md:items-start">
         <div>
           <div className="flex flex-wrap items-center gap-3 text-xs">
-            <span className="font-semibold text-[#B8640B]">
+            <span className="font-semibold text-primary">
               {job.family_name}
             </span>
             <span className="text-[#E5E5E5]">•</span>
             <span
               className={`font-semibold ${
-                job.status === "open" ? "text-[#4A7C59]" : "text-[#6B7280]"
+                job.status === "open" ? "text-secondary" : "text-ink-muted"
               }`}
             >
               {job.status === "open" ? "Lowongan Dibuka" : "Sudah Terisi"}
             </span>
           </div>
 
-          <h2 className="mt-2 font-display text-xl font-bold text-[#1F2937]">
+          <h2 className="mt-2 font-display text-xl font-bold text-ink">
             {job.title}
           </h2>
 
-          <div className="mt-2.5 flex flex-wrap gap-5 text-xs text-[#6B7280]">
+          <div className="mt-2.5 flex flex-wrap gap-5 text-xs text-ink-muted">
             <span className="inline-flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 text-[#B8640B]" />
+              <MapPin className="h-3.5 w-3.5 text-primary" />
               {job.location}
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <Calendar className="h-3.5 w-3.5 text-[#4A7C59]" />
+              <Calendar className="h-3.5 w-3.5 text-secondary" />
               {job.schedule}
             </span>
-            <span className="inline-flex items-center gap-1.5 font-semibold text-[#1F2937]">
-              <Wallet className="h-3.5 w-3.5 text-[#B8640B]" />
+            <span className="inline-flex items-center gap-1.5 font-semibold text-ink">
+              <Wallet className="h-3.5 w-3.5 text-primary" />
               {job.salary_display}
             </span>
           </div>
 
-          <p className="mt-3 text-sm leading-relaxed text-[#6B7280]">
-            <span className="font-semibold text-[#1F2937]">
+          <p className="mt-3 text-sm leading-relaxed text-ink-muted">
+            <span className="font-semibold text-ink">
               Kondisi {job.elderly_name}:
             </span>{" "}
             {job.medical_notes}
           </p>
 
-          <p className="mt-2.5 text-xs font-medium text-[#1F2937]">
+          <p className="mt-2.5 text-xs font-medium text-ink">
             Keahlian: {job.required_skills.join(" · ")}
           </p>
         </div>
@@ -89,7 +89,7 @@ export function JobCard({
           <button
             type="button"
             onClick={() => setApplying((p) => !p)}
-            className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-4 py-2.5 text-xs font-semibold text-[#1F2937] hover:border-[#4A7C59] hover:text-[#4A7C59] transition-colors cursor-pointer"
+            className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-xs font-semibold text-ink hover:border-secondary hover:text-secondary transition-colors cursor-pointer"
           >
             <Briefcase className="h-4 w-4" />
             <span>Lamar Sebagai Caregiver</span>
@@ -98,21 +98,21 @@ export function JobCard({
       </div>
 
       {applying && (
-        <div className="mt-4 rounded-xl border border-[#CFE0D4] bg-[#EDF4EF] p-4">
-          <p className="text-xs font-semibold text-[#355E42]">
+        <div className="mt-4 rounded-xl border border-[#CFE0D4] bg-secondary-soft p-4">
+          <p className="text-xs font-semibold text-secondary">
             Kirim Lamaran sebagai {user?.name || "Rini Wulandari, A.Md.Kep"}
           </p>
           <textarea
             rows={2}
             value={coverNote}
             onChange={(e) => setCoverNote(e.target.value)}
-            className="mt-2 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3 py-2 text-xs text-[#1F2937] focus:outline-none"
+            className="mt-2 w-full rounded-xl border border-border bg-surface px-3 py-2 text-xs text-ink focus:outline-none"
           />
           <div className="mt-2.5 flex justify-end gap-2">
             <button
               type="button"
               onClick={() => setApplying(false)}
-              className="px-3 py-1.5 text-xs font-medium text-[#6B7280] cursor-pointer"
+              className="px-3 py-1.5 text-xs font-medium text-ink-muted cursor-pointer"
             >
               Batal
             </button>
@@ -128,13 +128,13 @@ export function JobCard({
       )}
 
       <div className="mt-5">
-        <h3 className="font-display text-sm font-bold text-[#1F2937]">
+        <h3 className="font-display text-sm font-bold text-ink">
           Daftar Pelamar & Skor AI Caregiver Matcher (
           {job.applications?.length || 0})
         </h3>
 
         {!job.applications || job.applications.length === 0 ? (
-          <p className="mt-2 text-xs text-[#6B7280]">
+          <p className="mt-2 text-xs text-ink-muted">
             Belum ada pelamar untuk lowongan ini.
           </p>
         ) : (

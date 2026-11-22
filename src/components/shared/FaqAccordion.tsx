@@ -8,7 +8,7 @@ export function FaqAccordion() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <div className="divide-y divide-[#E5E5E5] border-y border-[#E5E5E5]">
+    <div className="divide-y divide-border border-y border-border">
       {FAQ_ITEMS.map((item, idx) => {
         const isOpen = openIndex === idx;
         return (
@@ -19,12 +19,12 @@ export function FaqAccordion() {
               className="group flex w-full items-center justify-between gap-6 text-left cursor-pointer"
               aria-expanded={isOpen}
             >
-              <span className="font-display text-lg font-semibold text-[#1F2937] transition-colors group-hover:text-[#B8640B] sm:text-xl">
+              <span className="font-display text-lg font-semibold text-ink transition-colors group-hover:text-primary sm:text-xl">
                 {item.q}
               </span>
               <ChevronDown
-                className={`h-5 w-5 shrink-0 text-[#6B7280] transition-transform duration-300 ease-out ${
-                  isOpen ? "rotate-180 text-[#B8640B]" : "group-hover:text-[#1F2937]"
+                className={`h-5 w-5 shrink-0 text-ink-muted transition-transform duration-300 ease-out ${
+                  isOpen ? "rotate-180 text-primary" : "group-hover:text-ink"
                 }`}
               />
             </button>
@@ -36,7 +36,7 @@ export function FaqAccordion() {
               }`}
             >
               <div className="overflow-hidden">
-                <p className="pt-3 max-w-2xl text-sm leading-relaxed text-[#6B7280] sm:text-base">
+                <p className="pt-3 max-w-2xl text-sm leading-relaxed text-ink-muted sm:text-base">
                   {item.a}
                 </p>
               </div>

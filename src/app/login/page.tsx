@@ -53,23 +53,23 @@ function LoginFormContent() {
   return (
     <div className="mx-auto flex w-full max-w-sm flex-col justify-center px-4 py-16">
       <div className="text-center">
-        <h1 className="font-display text-2xl font-bold tracking-tight text-[#111827]">
+        <h1 className="font-display text-2xl font-bold tracking-tight text-ink">
           Masuk ke Lentera
         </h1>
-        <p className="mt-1.5 text-sm text-[#6B7280]">
+        <p className="mt-1.5 text-sm text-ink-muted">
           Masuk sebagai keluarga atau caregiver.
         </p>
       </div>
 
       {/* Clean segmented role switch */}
-      <div className="mt-6 grid grid-cols-2 rounded-lg bg-[#F3F4F6] p-1">
+      <div className="mt-6 grid grid-cols-2 rounded-lg bg-border-subtle p-1">
         <button
           type="button"
           onClick={() => setRole("family")}
           className={`rounded-md py-2 text-sm font-medium transition-all cursor-pointer ${
             role === "family"
-              ? "bg-[#FFFFFF] text-[#111827] shadow-xs"
-              : "text-[#6B7280] hover:text-[#111827]"
+              ? "bg-surface text-ink shadow-xs"
+              : "text-ink-muted hover:text-ink"
           }`}
         >
           Keluarga
@@ -79,8 +79,8 @@ function LoginFormContent() {
           onClick={() => setRole("caregiver")}
           className={`rounded-md py-2 text-sm font-medium transition-all cursor-pointer ${
             role === "caregiver"
-              ? "bg-[#FFFFFF] text-[#111827] shadow-xs"
-              : "text-[#6B7280] hover:text-[#111827]"
+              ? "bg-surface text-ink shadow-xs"
+              : "text-ink-muted hover:text-ink"
           }`}
         >
           Caregiver
@@ -91,7 +91,7 @@ function LoginFormContent() {
         <div>
           <label
             htmlFor="login-email"
-            className="block text-sm font-medium text-[#374151]"
+            className="block text-sm font-medium text-ink"
           >
             Email
           </label>
@@ -102,14 +102,14 @@ function LoginFormContent() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="nama@email.com"
-            className="mt-1.5 w-full rounded-lg border border-[#D1D5DB] bg-[#FFFFFF] px-3.5 py-2.5 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#111827] focus:outline-none"
+            className="mt-1.5 w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
           />
         </div>
 
         <div>
           <label
             htmlFor="login-password"
-            className="block text-sm font-medium text-[#374151]"
+            className="block text-sm font-medium text-ink"
           >
             Kata Sandi
           </label>
@@ -120,14 +120,14 @@ function LoginFormContent() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            className="mt-1.5 w-full rounded-lg border border-[#D1D5DB] bg-[#FFFFFF] px-3.5 py-2.5 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#111827] focus:outline-none"
+            className="mt-1.5 w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-[#111827] py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#374151] disabled:opacity-60 cursor-pointer"
+          className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 cursor-pointer"
         >
           {loading ? "Memproses..." : "Masuk"}
         </button>
@@ -135,7 +135,7 @@ function LoginFormContent() {
 
       <div className="my-5 flex items-center gap-3">
         <div className="h-px flex-1 bg-[#E5E7EB]" />
-        <span className="text-xs text-[#9CA3AF]">atau</span>
+        <span className="text-xs text-ink-muted">atau</span>
         <div className="h-px flex-1 bg-[#E5E7EB]" />
       </div>
 
@@ -143,7 +143,7 @@ function LoginFormContent() {
         type="button"
         onClick={handleGoogleLogin}
         disabled={loading}
-        className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-[#D1D5DB] bg-[#FFFFFF] py-2.5 text-sm font-medium text-[#111827] transition-colors hover:bg-[#F9FAFB] disabled:opacity-60 cursor-pointer"
+        className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-border bg-surface py-2.5 text-sm font-medium text-ink transition-colors hover:bg-canvas-subtle disabled:opacity-60 cursor-pointer"
       >
         <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
           <path
@@ -166,12 +166,12 @@ function LoginFormContent() {
         <span>Lanjutkan dengan Google</span>
       </button>
 
-      <div className="mt-6 flex items-center justify-center gap-3 text-xs text-[#6B7280]">
+      <div className="mt-6 flex items-center justify-center gap-3 text-xs text-ink-muted">
         <span>Isi cepat demo:</span>
         <button
           type="button"
           onClick={() => fillDemo("family")}
-          className="font-medium text-[#111827] underline underline-offset-4 hover:text-[#E8912E] cursor-pointer"
+          className="font-medium text-ink underline underline-offset-4 hover:text-primary cursor-pointer"
         >
           Keluarga
         </button>
@@ -179,17 +179,17 @@ function LoginFormContent() {
         <button
           type="button"
           onClick={() => fillDemo("caregiver")}
-          className="font-medium text-[#111827] underline underline-offset-4 hover:text-[#4A7C59] cursor-pointer"
+          className="font-medium text-ink underline underline-offset-4 hover:text-secondary cursor-pointer"
         >
           Caregiver
         </button>
       </div>
 
-      <p className="mt-6 text-center text-sm text-[#6B7280]">
+      <p className="mt-6 text-center text-sm text-ink-muted">
         Belum punya akun?{" "}
         <Link
           href="/register"
-          className="font-semibold text-[#111827] underline underline-offset-4 hover:text-[#E8912E]"
+          className="font-semibold text-ink underline underline-offset-4 hover:text-primary"
         >
           Daftar
         </Link>
@@ -200,12 +200,12 @@ function LoginFormContent() {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#FFFFFF]">
+    <div className="flex min-h-screen flex-col bg-surface">
       <Navbar />
       <main className="flex flex-1 items-center justify-center">
         <Suspense
           fallback={
-            <div className="py-16 text-center text-sm text-[#6B7280]">
+            <div className="py-16 text-center text-sm text-ink-muted">
               Memuat...
             </div>
           }

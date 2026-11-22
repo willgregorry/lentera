@@ -34,7 +34,7 @@ export function Navbar() {
       <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-white/70 bg-white/70 px-4 py-2.5 shadow-[0_12px_36px_-14px_rgba(15,23,42,0.12)] ring-1 ring-black/[0.05] backdrop-blur-xl transition-all duration-300 sm:rounded-full sm:px-6">
         <Link href="/" className="flex items-center gap-2.5">
           <LenteraMascot status="aman" size="sm" />
-          <span className="font-display text-base font-bold tracking-tight text-[#1F2937] sm:text-lg">
+          <span className="font-display text-base font-bold tracking-tight text-ink sm:text-lg">
             Lentera
           </span>
         </Link>
@@ -48,8 +48,8 @@ export function Navbar() {
                 href={item.href}
                 className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200 ${
                   active
-                    ? "bg-[#1F2937]/[0.06] text-[#1F2937]"
-                    : "text-[#6B7280] hover:bg-[#1F2937]/[0.04] hover:text-[#1F2937]"
+                    ? "bg-primary/[0.06] text-ink"
+                    : "text-ink-muted hover:bg-primary/[0.04] hover:text-ink"
                 }`}
               >
                 {item.label}
@@ -62,18 +62,18 @@ export function Navbar() {
           {user ? (
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 rounded-full bg-black/[0.03] px-3.5 py-1.5 text-sm">
-                <UserCircle className="h-4 w-4 text-[#4A7C59]" />
-                <span className="font-semibold text-[#1F2937]">
+                <UserCircle className="h-4 w-4 text-secondary" />
+                <span className="font-semibold text-ink">
                   {user.name.split(",")[0]}
                 </span>
-                <span className="text-xs text-[#6B7280]">
+                <span className="text-xs text-ink-muted">
                   ({user.role === "family" ? "Keluarga" : "Caregiver"})
                 </span>
               </div>
               <button
                 onClick={logout}
                 title="Keluar"
-                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-[#6B7280] transition-colors hover:bg-red-50 hover:text-[#DC4A3D] cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-ink-muted transition-colors hover:bg-red-50 hover:text-danger cursor-pointer"
               >
                 <LogOut className="h-3.5 w-3.5" />
                 <span>Keluar</span>
@@ -83,13 +83,13 @@ export function Navbar() {
             <>
               <Link
                 href="/login"
-                className="rounded-full px-4 py-2 text-sm font-medium text-[#1F2937] transition-colors hover:bg-black/[0.04]"
+                className="rounded-full px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-black/[0.04]"
               >
                 Masuk
               </Link>
               <Link
                 href="/register"
-                className="rounded-full bg-[#1F2937] px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#C26D10]"
+                className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-primary"
               >
                 Daftar
               </Link>
@@ -99,7 +99,7 @@ export function Navbar() {
 
         <button
           onClick={() => setMenuOpen((prev) => !prev)}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/[0.06] bg-white/80 text-[#1F2937] transition-colors hover:bg-white md:hidden cursor-pointer"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/[0.06] bg-white/80 text-ink transition-colors hover:bg-white md:hidden cursor-pointer"
           aria-label="Buka menu navigasi"
           aria-expanded={menuOpen}
         >
@@ -126,8 +126,8 @@ export function Navbar() {
                   onClick={() => setMenuOpen(false)}
                   className={`rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
                     active
-                      ? "bg-[#1F2937]/[0.06] text-[#1F2937]"
-                      : "text-[#4B5563] hover:bg-black/[0.03] hover:text-[#1F2937]"
+                      ? "bg-primary/[0.06] text-ink"
+                      : "text-ink-muted hover:bg-black/[0.03] hover:text-ink"
                   }`}
                 >
                   {item.label}
@@ -139,8 +139,8 @@ export function Navbar() {
             {user ? (
               <div className="flex items-center justify-between px-1">
                 <div className="flex items-center gap-2 text-sm">
-                  <UserCircle className="h-4 w-4 text-[#4A7C59]" />
-                  <span className="font-semibold text-[#1F2937]">
+                  <UserCircle className="h-4 w-4 text-secondary" />
+                  <span className="font-semibold text-ink">
                     {user.name.split(",")[0]}
                   </span>
                 </div>
@@ -149,7 +149,7 @@ export function Navbar() {
                     setMenuOpen(false);
                     logout();
                   }}
-                  className="rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-[#DC4A3D]"
+                  className="rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-danger"
                 >
                   Keluar
                 </button>
@@ -159,14 +159,14 @@ export function Navbar() {
                 <Link
                   href="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="rounded-full border border-black/[0.08] bg-white/80 py-2.5 text-center text-sm font-semibold text-[#1F2937] transition-colors hover:bg-white"
+                  className="rounded-full border border-black/[0.08] bg-white/80 py-2.5 text-center text-sm font-semibold text-ink transition-colors hover:bg-white"
                 >
                   Masuk
                 </Link>
                 <Link
                   href="/register"
                   onClick={() => setMenuOpen(false)}
-                  className="rounded-full bg-[#1F2937] py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-[#C26D10]"
+                  className="rounded-full bg-primary py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-primary"
                 >
                   Daftar
                 </Link>

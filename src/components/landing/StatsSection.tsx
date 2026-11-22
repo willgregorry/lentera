@@ -60,19 +60,19 @@ export function StatsSection() {
   return (
     <section
       ref={sectionRef}
-      className="flex min-h-[85svh] items-center border-b border-[#E5E5E5] bg-[#FFFFFF]"
+      className="flex min-h-[85svh] items-center border-b border-border bg-surface"
     >
       <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
         <div className="gsap-reveal max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#B8640B]">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             Realitas Indonesia
           </p>
-          <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-[#1F2937] sm:text-5xl">
+          <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-ink sm:text-5xl">
             <SplitText text="Jutaan keluarga bekerja menanggung beban rawat lansia sendirian." />
           </h2>
         </div>
 
-        <div className="mt-14 grid gap-10 border-t border-[#E5E5E5] pt-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-14 grid gap-10 border-t border-border pt-10 sm:grid-cols-2 lg:grid-cols-4">
           {LANDING_STATS.map((stat) => (
             <div
               key={stat.label}
@@ -84,14 +84,14 @@ export function StatsSection() {
               >
                 <AnimatedNumber stat={stat} active={inView} />
               </p>
-              <p className="mt-4 text-base font-semibold leading-snug text-[#1F2937]">
+              <p className="mt-4 text-base font-semibold leading-snug text-ink">
                 {stat.label}
               </p>
               <a
                 href={stat.sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2.5 inline-flex items-center gap-1 text-xs font-medium text-[#6B7280] transition-colors hover:text-[#B8640B]"
+                className="mt-2.5 inline-flex items-center gap-1 text-xs font-medium text-ink-muted transition-colors hover:text-primary"
               >
                 <span>{stat.source}</span>
                 <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

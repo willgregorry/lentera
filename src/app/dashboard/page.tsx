@@ -38,7 +38,7 @@ export default function FamilyDashboardPage() {
     return (
       <AppShell>
         <div className="flex min-h-[50vh] items-center justify-center">
-          <p className="text-sm font-medium text-[#4B5563]">
+          <p className="text-sm font-medium text-ink-muted">
             Memeriksa sesi masuk...
           </p>
         </div>
@@ -75,10 +75,10 @@ export default function FamilyDashboardPage() {
       <section className="mt-6 grid gap-6 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <div className="mb-4">
-            <h2 className="font-display text-base font-bold text-[#1F2937] sm:text-lg">
+            <h2 className="font-display text-base font-bold text-ink sm:text-lg">
               Grafik Tren Vital (3 Hari Terakhir)
             </h2>
-            <p className="mt-0.5 text-xs text-[#4B5563] sm:text-sm">
+            <p className="mt-0.5 text-xs text-ink-muted sm:text-sm">
               Memantau kestabilan tekanan darah dan detak jantung orang tua.
             </p>
           </div>

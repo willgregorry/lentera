@@ -66,16 +66,16 @@ export function CareLogForm({
   }
 
   return (
-    <section className="rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] p-6 lg:col-span-7">
-      <h2 className="font-display text-lg font-bold text-[#1F2937]">
+    <section className="rounded-2xl border border-border bg-surface p-6 lg:col-span-7">
+      <h2 className="font-display text-lg font-bold text-ink">
         Formulir Laporan Harian
       </h2>
-      <p className="mt-1 text-xs text-[#6B7280]">
+      <p className="mt-1 text-xs text-ink-muted">
         Isi tanda vital dan aktivitas terbaru Pak Joko.
       </p>
 
       {successMsg && (
-        <div className="mt-4 flex items-center justify-between gap-3 border-l-4 border-[#4A7C59] bg-[#EDF4EF] px-4 py-3 text-xs font-semibold text-[#355E42]">
+        <div className="mt-4 flex items-center justify-between gap-3 border-l-4 border-secondary bg-secondary-soft px-4 py-3 text-xs font-semibold text-secondary">
           <span className="inline-flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 shrink-0" />
             {successMsg}
@@ -89,7 +89,7 @@ export function CareLogForm({
       <form onSubmit={handleSubmit} className="mt-5 space-y-4">
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
-            <label className="block text-xs font-semibold text-[#1F2937]">
+            <label className="block text-xs font-semibold text-ink">
               Detak Jantung (bpm)
             </label>
             <input
@@ -99,12 +99,12 @@ export function CareLogForm({
               max={200}
               value={heartRate}
               onChange={(e) => setHeartRate(Number(e.target.value))}
-              className="font-mono-vital mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm font-semibold text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+              className="font-mono-vital mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm font-semibold text-ink focus:border-primary focus:bg-surface focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#1F2937]">
+            <label className="block text-xs font-semibold text-ink">
               Tensi Sistolik (mmHg)
             </label>
             <input
@@ -114,12 +114,12 @@ export function CareLogForm({
               max={240}
               value={systolic}
               onChange={(e) => setSystolic(Number(e.target.value))}
-              className="font-mono-vital mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm font-semibold text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+              className="font-mono-vital mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm font-semibold text-ink focus:border-primary focus:bg-surface focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#1F2937]">
+            <label className="block text-xs font-semibold text-ink">
               Tensi Diastolik (mmHg)
             </label>
             <input
@@ -129,14 +129,14 @@ export function CareLogForm({
               max={150}
               value={diastolic}
               onChange={(e) => setDiastolic(Number(e.target.value))}
-              className="font-mono-vital mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm font-semibold text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+              className="font-mono-vital mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm font-semibold text-ink focus:border-primary focus:bg-surface focus:outline-none"
             />
           </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="block text-xs font-semibold text-[#1F2937]">
+            <label className="block text-xs font-semibold text-ink">
               Porsi Makan
             </label>
             <select
@@ -144,7 +144,7 @@ export function CareLogForm({
               onChange={(e) =>
                 setMealPortion(e.target.value as CareLog["meal_portion"])
               }
-              className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+              className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-primary focus:bg-surface focus:outline-none"
             >
               <option value="habis">Habis (1 porsi penuh)</option>
               <option value="setengah">Setengah Porsi</option>
@@ -154,13 +154,13 @@ export function CareLogForm({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#1F2937]">
+            <label className="block text-xs font-semibold text-ink">
               Suasana Hati / Mood
             </label>
             <select
               value={mood}
               onChange={(e) => setMood(e.target.value as CareLog["mood"])}
-              className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+              className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-primary focus:bg-surface focus:outline-none"
             >
               <option value="cerah">Cerah & Bersemangat</option>
               <option value="tenang">Tenang & Nyaman</option>
@@ -170,7 +170,7 @@ export function CareLogForm({
           </div>
         </div>
 
-        <div className="flex items-center gap-3 border-y border-[#E5E5E5] py-3">
+        <div className="flex items-center gap-3 border-y border-border py-3">
           <input
             id="med-taken"
             type="checkbox"
@@ -180,14 +180,14 @@ export function CareLogForm({
           />
           <label
             htmlFor="med-taken"
-            className="text-sm font-medium text-[#1F2937]"
+            className="text-sm font-medium text-ink"
           >
             Obat rutin (Amlodipine & Metformin) sudah diminum sesuai jadwal
           </label>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#1F2937]">
+          <label className="block text-xs font-semibold text-ink">
             Catatan Aktivitas & Keluhan
           </label>
           <textarea
@@ -196,16 +196,16 @@ export function CareLogForm({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Contoh: Pak Joko sudah jalan santai 10 menit di teras, tidak ada keluhan pusing..."
-            className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+            className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-primary focus:bg-surface focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#1F2937]">
+          <label className="block text-xs font-semibold text-ink">
             Unggah Foto Kondisi / Makanan (Opsional)
           </label>
-          <label className="mt-1.5 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-[#D6C8B8] bg-[#FFFFFF] px-4 py-4 text-xs font-medium text-[#6B7280] hover:border-[#E8912E]">
-            <Camera className="h-4 w-4 text-[#B8640B]" />
+          <label className="mt-1.5 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-[#D6C8B8] bg-surface px-4 py-4 text-xs font-medium text-ink-muted hover:border-primary">
+            <Camera className="h-4 w-4 text-primary" />
             <span>
               {photoFile
                 ? `Terpilih: ${photoFile.name}`
@@ -222,7 +222,7 @@ export function CareLogForm({
             <img
               src={photoPreview}
               alt="Pratinjau foto laporan"
-              className="mt-2.5 h-36 w-full rounded-xl border border-[#E5E5E5] object-cover"
+              className="mt-2.5 h-36 w-full rounded-xl border border-border object-cover"
             />
           )}
         </div>
@@ -230,7 +230,7 @@ export function CareLogForm({
         <button
           type="submit"
           disabled={submitting}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#C26D10] px-5 py-3 text-sm font-semibold text-white hover:bg-[#A65B0B] disabled:opacity-60 transition-colors cursor-pointer"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors cursor-pointer"
         >
           <Send className="h-4 w-4" />
           <span>{submitting ? "Mengirim..." : "Kirim Laporan Harian"}</span>

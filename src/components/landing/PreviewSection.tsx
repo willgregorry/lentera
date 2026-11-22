@@ -17,24 +17,24 @@ export function PreviewSection() {
   return (
     <section
       ref={sectionRef}
-      className="flex min-h-[90svh] items-center border-b border-[#E5E5E5] bg-[#FFFFFF]"
+      className="flex min-h-[90svh] items-center border-b border-border bg-surface"
     >
       <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
         <div className="grid items-center gap-12 lg:grid-cols-12">
           <div className="gsap-reveal lg:col-span-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#4A7C59]">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
               Pratinjau Dashboard
             </p>
-            <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-[#1F2937] sm:text-5xl">
+            <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-ink sm:text-5xl">
               <SplitText text="Data vital jelas, tanpa menebak-nebak." />
             </h2>
-            <p className="mt-5 text-base leading-relaxed text-[#6B7280] sm:text-lg">
+            <p className="mt-5 text-base leading-relaxed text-ink-muted sm:text-lg">
               Angka tekanan darah, detak jantung, dan ringkasan harian tersaji
               rapi dalam satu tampilan yang mudah dibaca.
             </p>
             <Link
               href="/login?role=family"
-              className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#B8640B] transition-colors hover:text-[#D47E1F]"
+              className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-primary-hover"
             >
               <span>Masuk ke Dashboard Keluarga</span>
               <ArrowRight className="h-4 w-4" />
@@ -42,26 +42,26 @@ export function PreviewSection() {
           </div>
 
           <div className="gsap-reveal lg:col-span-7">
-            <div className="overflow-hidden rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] shadow-[0_24px_54px_-16px_rgba(31,41,55,0.12)]">
-              <div className="flex items-center justify-between border-b border-[#EFEFEF] bg-[#FAFAFA] px-4 py-3">
+            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_24px_54px_-16px_rgba(31,41,55,0.12)]">
+              <div className="flex items-center justify-between border-b border-border-subtle bg-canvas-subtle px-4 py-3">
                 <div className="flex items-center gap-2">
                   <span className="h-3 w-3 rounded-full bg-[#FF5F56]" />
                   <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
                   <span className="h-3 w-3 rounded-full bg-[#27C93F]" />
                 </div>
-                <span className="text-xs font-medium text-[#6B7280]">
+                <span className="text-xs font-medium text-ink-muted">
                   lentera.id/dashboard
                 </span>
                 <span className="w-10" />
               </div>
 
               <div className="p-6 sm:p-8">
-                <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#EFEFEF] pb-5">
+                <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border-subtle pb-5">
                   <div>
-                    <p className="text-xs font-medium text-[#6B7280]">
+                    <p className="text-xs font-medium text-ink-muted">
                       Profil Lansia
                     </p>
-                    <p className="mt-0.5 text-2xl font-bold text-[#1F2937]">
+                    <p className="mt-0.5 text-2xl font-bold text-ink">
                       Orang Tua (72 th)
                     </p>
                   </div>
@@ -69,10 +69,10 @@ export function PreviewSection() {
                 </div>
 
                 {/* Clean Light-Mode Apple Health style ECG Strip */}
-                <div className="mt-5 overflow-hidden rounded-xl border border-[#EFEFEF] bg-[#FAFAFA] px-4 py-3.5">
-                  <div className="flex items-center justify-between text-xs font-medium text-[#6B7280]">
+                <div className="mt-5 overflow-hidden rounded-xl border border-border-subtle bg-canvas-subtle px-4 py-3.5">
+                  <div className="flex items-center justify-between text-xs font-medium text-ink-muted">
                     <span>Irama Jantung</span>
-                    <span className="font-semibold text-[#4A7C59]">
+                    <span className="font-semibold text-secondary">
                       78 bpm · Stabil
                     </span>
                   </div>
@@ -110,38 +110,38 @@ export function PreviewSection() {
                   </div>
                 </div>
 
-                <div className="mt-6 grid grid-cols-3 gap-3 border-b border-[#EFEFEF] pb-6 sm:gap-6">
+                <div className="mt-6 grid grid-cols-3 gap-3 border-b border-border-subtle pb-6 sm:gap-6">
                   <div className="min-w-0">
-                    <p className="truncate text-xs font-medium text-[#6B7280]">
+                    <p className="truncate text-xs font-medium text-ink-muted">
                       Tekanan Darah
                     </p>
-                    <p className="mt-1 text-xl font-bold tabular-nums text-[#1F2937] sm:text-3xl">
+                    <p className="mt-1 text-xl font-bold tabular-nums text-ink sm:text-3xl">
                       124/80
                     </p>
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-xs font-medium text-[#6B7280]">
+                    <p className="truncate text-xs font-medium text-ink-muted">
                       Detak Nadi
                     </p>
-                    <p className="mt-1 text-xl font-bold tabular-nums text-[#4A7C59] sm:text-3xl">
+                    <p className="mt-1 text-xl font-bold tabular-nums text-secondary sm:text-3xl">
                       78 bpm
                     </p>
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-xs font-medium text-[#6B7280]">
+                    <p className="truncate text-xs font-medium text-ink-muted">
                       Kesesuaian
                     </p>
-                    <p className="mt-1 text-xl font-bold tabular-nums text-[#B8640B] sm:text-3xl">
+                    <p className="mt-1 text-xl font-bold tabular-nums text-primary sm:text-3xl">
                       96%
                     </p>
                   </div>
                 </div>
 
                 <div className="mt-6">
-                  <p className="text-xs font-semibold text-[#B8640B]">
+                  <p className="text-xs font-semibold text-primary">
                     Ringkasan Hari Ini
                   </p>
-                  <p className="mt-2 text-sm leading-relaxed text-[#4B5563] sm:text-base">
+                  <p className="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
                     Tensi stabil di 124/80 mmHg dan obat pagi sudah diminum.
                     Disarankan sup tahu bayam rendah garam untuk makan malam.
                   </p>

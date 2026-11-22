@@ -65,7 +65,7 @@ export function LenteraMascot({
           >
             {meta.label}
           </span>
-          <span className="text-xs text-[#6B7280]">{meta.subtitle}</span>
+          <span className="text-xs text-ink-muted">{meta.subtitle}</span>
         </div>
       )}
     </div>

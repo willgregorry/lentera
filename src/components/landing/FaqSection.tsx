@@ -12,14 +12,14 @@ export function FaqSection() {
     <section
       id="faq"
       ref={sectionRef}
-      className="flex min-h-[80svh] items-center bg-[#FFFFFF]"
+      className="flex min-h-[80svh] items-center bg-surface"
     >
       <div className="mx-auto w-full max-w-4xl px-4 py-16 sm:px-6">
         <div className="gsap-reveal mb-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#4A7C59]">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
             Tanya Jawab
           </p>
-          <h2 className="mt-3 font-display text-3xl font-bold text-[#1F2937] sm:text-5xl">
+          <h2 className="mt-3 font-display text-3xl font-bold text-ink sm:text-5xl">
             Pertanyaan yang sering diajukan.
           </h2>
         </div>

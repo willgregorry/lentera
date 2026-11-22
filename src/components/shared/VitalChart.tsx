@@ -40,7 +40,7 @@ export function VitalChart({ logs }: VitalChartProps) {
 
   if (chartData.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center border-t border-[#E5E5E5] text-sm text-[#6B7280]">
+      <div className="flex h-64 items-center justify-center border-t border-border text-sm text-ink-muted">
         Belum ada catatan tanda vital untuk ditampilkan.
       </div>
     );

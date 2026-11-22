@@ -32,8 +32,8 @@ export function MobileBottomNav() {
               href="/caregiver"
               className={`flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold transition-colors ${
                 pathname === "/caregiver"
-                  ? "text-[#111827]"
-                  : "text-[#6B7280]"
+                  ? "text-ink"
+                  : "text-ink-muted"
               }`}
             >
               <ClipboardPlus className="h-5 w-5" />
@@ -42,7 +42,7 @@ export function MobileBottomNav() {
             <Link
               href="/loker"
               className={`flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold transition-colors ${
-                pathname === "/loker" ? "text-[#111827]" : "text-[#6B7280]"
+                pathname === "/loker" ? "text-ink" : "text-ink-muted"
               }`}
             >
               <Briefcase className="h-5 w-5" />
@@ -50,7 +50,7 @@ export function MobileBottomNav() {
             </Link>
             <Link
               href="/caregiver#sos-panel"
-              className="flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold text-[#DC4A3D]"
+              className="flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold text-danger"
             >
               <AlertTriangle className="h-5 w-5" />
               <span>SOS</span>
@@ -62,8 +62,8 @@ export function MobileBottomNav() {
               href="/dashboard"
               className={`flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-4 text-[11px] font-semibold transition-colors ${
                 pathname === "/dashboard"
-                  ? "text-[#111827]"
-                  : "text-[#6B7280]"
+                  ? "text-ink"
+                  : "text-ink-muted"
               }`}
             >
               <Activity className="h-5 w-5" />
@@ -72,7 +72,7 @@ export function MobileBottomNav() {
             <Link
               href="/loker"
               className={`flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-4 text-[11px] font-semibold transition-colors ${
-                pathname === "/loker" ? "text-[#111827]" : "text-[#6B7280]"
+                pathname === "/loker" ? "text-ink" : "text-ink-muted"
               }`}
             >
               <Briefcase className="h-5 w-5" />
@@ -84,7 +84,7 @@ export function MobileBottomNav() {
         <button
           type="button"
           onClick={logout}
-          className="flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold text-[#6B7280] hover:text-[#DC4A3D] cursor-pointer"
+          className="flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold text-ink-muted hover:text-danger cursor-pointer"
         >
           <LogOut className="h-5 w-5" />
           <span>Keluar</span>
