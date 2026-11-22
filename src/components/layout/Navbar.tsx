@@ -30,16 +30,15 @@ export function Navbar() {
     : PUBLIC_NAV_LINKS;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#E5E5E5] bg-[#FFFFFF]/95 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5 sm:px-6">
+    <header className="sticky top-4 z-40 px-4 sm:px-6">
+      <div className="mx-auto flex max-w-5xl items-center justify-between rounded-full border border-[#E5E5E5] bg-[#FFFFFF]/85 px-5 py-2.5 shadow-[0_8px_28px_-12px_rgba(31,41,55,0.10)] backdrop-blur-md">
         <Link href="/" className="flex items-center gap-2.5">
           <LenteraMascot status="aman" size="sm" />
-          <span className="font-display text-lg font-bold tracking-tight text-[#1F2937]">
+          <span className="font-display text-base font-bold tracking-tight text-[#1F2937] sm:text-lg">
             Lentera
           </span>
         </Link>
 
-        {/* Desktop Nav */}
         <nav className="hidden items-center gap-6 md:flex">
           {navLinks.map((item) => {
             const active = pathname === item.href;
@@ -59,7 +58,6 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Auth / User Actions */}
         <div className="hidden items-center gap-4 md:flex">
           {user ? (
             <div className="flex items-center gap-4">
@@ -99,7 +97,6 @@ export function Navbar() {
           )}
         </div>
 
-        {/* Mobile menu toggle */}
         <button
           onClick={() => setMenuOpen((prev) => !prev)}
           className="inline-flex items-center justify-center p-1.5 text-[#1F2937] md:hidden cursor-pointer"
@@ -109,9 +106,8 @@ export function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Drawer */}
       {menuOpen && (
-        <div className="border-t border-[#E5E5E5] bg-[#FFFFFF] px-4 py-4 md:hidden">
+        <div className="mx-auto mt-2 max-w-5xl rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] p-4 shadow-lg md:hidden">
           <div className="flex flex-col gap-2">
             {navLinks.map((item) => {
               const active = pathname === item.href;
