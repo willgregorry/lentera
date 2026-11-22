@@ -12,6 +12,11 @@ export const metadata: Metadata = {
   title: "Lentera — Pendampingan Lansia Hangat & Terintegrasi AI",
   description:
     "Platform pemantauan kesehatan lansia di rumah, rekrutmen caregiver terverifikasi, AI Daily Digest, dan respon darurat SOS untuk keluarga Indonesia.",
+  icons: {
+    icon: "/images/icons/lentera-icon.png",
+    shortcut: "/images/icons/lentera-icon.png",
+    apple: "/images/icons/lentera-icon.png",
+  },
 };
 
 export default function RootLayout({
