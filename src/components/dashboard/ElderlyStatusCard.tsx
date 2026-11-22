@@ -96,10 +96,10 @@ export function ElderlyStatusCard({
             Pendamping Bertugas
           </p>
           <p className="mt-1.5 font-display text-base font-bold text-[#1F2937] sm:text-lg">
-            Rini Wulandari, A.Md.Kep
+            {latestLog?.caregiver_name || "Belum ada caregiver bertugas"}
           </p>
           <p className="text-xs text-[#6B7280]">
-            Shift Harian • 07.30 – 16.30 WIB
+            {latestLog ? "Aktif memantau harian" : "Rekrut caregiver melalui halaman Loker"}
           </p>
 
           <div className="mt-3.5 border-t border-[#E5E5E5] pt-3.5 text-xs text-[#6B7280] space-y-1">
