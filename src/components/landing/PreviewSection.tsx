@@ -44,9 +44,9 @@ export function PreviewSection() {
             <div className="overflow-hidden rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] shadow-[0_24px_54px_-16px_rgba(31,41,55,0.12)]">
               <div className="flex items-center justify-between border-b border-[#EFEFEF] bg-[#FAFAFA] px-4 py-3">
                 <div className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#E5E5E5]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#E5E5E5]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#E5E5E5]" />
+                  <span className="h-3 w-3 rounded-full bg-[#FF5F56]" />
+                  <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
+                  <span className="h-3 w-3 rounded-full bg-[#27C93F]" />
                 </div>
                 <span className="text-xs font-medium text-[#6B7280]">
                   lentera.id/dashboard

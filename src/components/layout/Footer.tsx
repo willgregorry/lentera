@@ -70,7 +70,7 @@ export function Footer() {
         </div>
 
         <div className="mt-10 border-t border-[#E5E5E5] pt-6 text-xs text-[#6B7280]">
-          <p>© 2026 Lentera. Seluruh hak cipta dilindungi.</p>
+          <p>© 2026 Lentera • IT RUSH 2026.</p>
         </div>
       </div>
     </footer>
