@@ -31,13 +31,13 @@ export function SplitText({
     const ctx = gsap.context(() => {
       gsap.fromTo(
         words,
-        { yPercent: 115, opacity: 0 },
+        { yPercent: 125, opacity: 0 },
         {
           yPercent: 0,
           opacity: 1,
-          duration: 0.75,
-          ease: "power3.out",
-          stagger: 0.055,
+          duration: 0.65,
+          ease: "power4.out",
+          stagger: 0.12,
           delay,
           ...(immediate
             ? {}
