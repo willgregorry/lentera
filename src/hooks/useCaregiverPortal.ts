@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { MOCK_ELDERLY } from "@/content/mockData";
 import { apiService } from "@/services/api";
-import { getStoredUser } from "@/services/authStorage";
-import { CareLog, ElderlyProfile, SosAlert, UserProfile } from "@/types";
+import { useAuth } from "@/hooks/useAuth";
+import { CareLog, ElderlyProfile, SosAlert } from "@/types";
 
 export function useCaregiverPortal() {
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const { user } = useAuth();
   const [elderly, setElderly] = useState<ElderlyProfile>(MOCK_ELDERLY);
   const [submittingLog, setSubmittingLog] = useState(false);
   const [logSuccess, setLogSuccess] = useState<string | null>(null);
@@ -15,7 +15,6 @@ export function useCaregiverPortal() {
   const [activeSos, setActiveSos] = useState<SosAlert | null>(null);
 
   useEffect(() => {
-    setUser(getStoredUser());
     apiService.getElderlyProfile("demo").then(setElderly);
   }, []);
 

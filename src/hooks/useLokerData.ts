@@ -3,17 +3,16 @@
 import { useEffect, useState } from "react";
 import { MOCK_JOBS } from "@/content/mockData";
 import { apiService } from "@/services/api";
-import { getStoredUser } from "@/services/authStorage";
-import { CareJob, JobApplication, UserProfile } from "@/types";
+import { useAuth } from "@/hooks/useAuth";
+import { CareJob, JobApplication } from "@/types";
 
 export function useLokerData() {
+  const { user } = useAuth();
   const [jobs, setJobs] = useState<CareJob[]>(MOCK_JOBS);
-  const [user, setUser] = useState<UserProfile | null>(null);
   const [matchingId, setMatchingId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
 
   useEffect(() => {
-    setUser(getStoredUser());
     apiService.getJobs().then(setJobs);
   }, []);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
@@ -11,20 +11,13 @@ import { UserRole } from "@/types";
 function LoginFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialRole =
+  const initialRole: UserRole =
     searchParams.get("role") === "caregiver" ? "caregiver" : "family";
 
   const [role, setRole] = useState<UserRole>(initialRole);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const paramRole = searchParams.get("role");
-    if (paramRole === "caregiver" || paramRole === "family") {
-      setRole(paramRole);
-    }
-  }, [searchParams]);
 
   function fillDemo(targetRole: UserRole) {
     setRole(targetRole);
