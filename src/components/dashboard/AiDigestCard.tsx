@@ -34,7 +34,7 @@ export function AiDigestCard({
           type="button"
           onClick={onRefresh}
           disabled={loading}
-          className="inline-flex items-center gap-2 rounded-xl border border-[#E5E5E5] bg-[#F5F5F5] px-3.5 py-2 text-xs font-semibold text-[#1F2937] hover:bg-[#F3E9DD] disabled:opacity-60 cursor-pointer"
+          className="inline-flex items-center gap-2 rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-3.5 py-2 text-xs font-semibold text-[#1F2937] hover:bg-[#F3E9DD] disabled:opacity-60 cursor-pointer"
         >
           <RefreshCw
             className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`}

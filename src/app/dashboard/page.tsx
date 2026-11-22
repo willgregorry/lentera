@@ -26,7 +26,7 @@ export default function FamilyDashboardPage() {
   } = useDashboardData();
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#F5F5F5] text-[#1F2937]">
+    <div className="flex min-h-screen flex-col bg-[#FDFDFD] text-[#1F2937]">
       <Navbar />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">

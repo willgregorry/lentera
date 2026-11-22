@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --bg-cream: #F5F5F5;
+  --bg-cream: #FDFDFD;
   --bg-surface: #FFFFFF;
   --border-sand: #E5E5E5;
   --accent-amber: #E8912E;
@@ -34,7 +34,7 @@ html {
 }
 
 body {
-  background-color: #F5F5F5;
+  background-color: #FDFDFD;
   color: #1F2937;
   font-family: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
 }

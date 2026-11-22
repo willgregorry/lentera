@@ -117,7 +117,7 @@ export function ElderlyStatusCard({
         <div className="mt-5 flex flex-col gap-2">
           <Link
             href="/caregiver"
-            className="rounded-xl border border-[#E5E5E5] bg-[#F5F5F5] px-4 py-2.5 text-center text-xs font-semibold text-[#1F2937] hover:bg-[#F3E9DD]"
+            className="rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-4 py-2.5 text-center text-xs font-semibold text-[#1F2937] hover:bg-[#F3E9DD]"
           >
             Buka Portal Caregiver (Input / SOS)
           </Link>

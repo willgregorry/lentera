@@ -12,7 +12,7 @@ export function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-[calc(100svh-68px)] items-center justify-center overflow-hidden border-b border-[#E5E5E5] bg-[#F5F5F5] px-4 py-16 sm:px-6"
+      className="relative flex min-h-[calc(100svh-68px)] items-center justify-center overflow-hidden border-b border-[#E5E5E5] bg-[#FDFDFD] px-4 py-16 sm:px-6"
     >
       {/* Seamless transparent-blended ambient illustration behind hero text */}
       <img

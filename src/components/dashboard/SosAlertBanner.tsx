@@ -51,7 +51,7 @@ export function SosAlertBanner({
           <button
             type="button"
             onClick={() => onResolve(alert.id)}
-            className="inline-flex items-center gap-2 rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-4 py-2.5 text-sm font-semibold text-[#1F2937] hover:bg-[#F5F5F5] cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-4 py-2.5 text-sm font-semibold text-[#1F2937] hover:bg-[#FDFDFD] cursor-pointer"
           >
             <CheckCircle2 className="h-4 w-4 text-[#4A7C59]" />
             <span>Tandai Selesai</span>

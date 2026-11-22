@@ -59,7 +59,7 @@ export function StatsSection() {
   return (
     <section
       ref={sectionRef}
-      className="flex min-h-[85svh] items-center border-b border-[#E5E5E5] bg-[#F5F5F5]"
+      className="flex min-h-[85svh] items-center border-b border-[#E5E5E5] bg-[#FDFDFD]"
     >
       <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
         <div className="gsap-reveal max-w-3xl">

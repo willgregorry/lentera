@@ -75,8 +75,8 @@ function LoginFormContent() {
             onClick={() => setRole("family")}
             className={`flex flex-col items-center justify-center gap-1 rounded-xl border px-3 py-3 text-center transition-colors cursor-pointer ${
               role === "family"
-                ? "border-[#E8912E] bg-[#F5F5F5] text-[#E8912E]"
-                : "border-[#E5E5E5] bg-[#FFFFFF] text-[#6B7280] hover:bg-[#F5F5F5]"
+                ? "border-[#E8912E] bg-[#FDFDFD] text-[#E8912E]"
+                : "border-[#E5E5E5] bg-[#FFFFFF] text-[#6B7280] hover:bg-[#FDFDFD]"
             }`}
           >
             <div className="flex items-center gap-1.5 text-sm font-semibold">
@@ -94,7 +94,7 @@ function LoginFormContent() {
             className={`flex flex-col items-center justify-center gap-1 rounded-xl border px-3 py-3 text-center transition-colors cursor-pointer ${
               role === "caregiver"
                 ? "border-[#4A7C59] bg-[#EDF4EF] text-[#355E42]"
-                : "border-[#E5E5E5] bg-[#FFFFFF] text-[#6B7280] hover:bg-[#F5F5F5]"
+                : "border-[#E5E5E5] bg-[#FFFFFF] text-[#6B7280] hover:bg-[#FDFDFD]"
             }`}
           >
             <div className="flex items-center gap-1.5 text-sm font-semibold">
@@ -123,7 +123,7 @@ function LoginFormContent() {
             }
           }}
           disabled={loading}
-          className="mt-4 flex w-full items-center justify-center gap-2.5 rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-4 py-2.5 text-sm font-semibold text-[#1F2937] hover:bg-[#F5F5F5] transition-colors cursor-pointer disabled:opacity-60"
+          className="mt-4 flex w-full items-center justify-center gap-2.5 rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] px-4 py-2.5 text-sm font-semibold text-[#1F2937] hover:bg-[#FDFDFD] transition-colors cursor-pointer disabled:opacity-60"
         >
           <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
             <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.87c2.26-2.08 3.56-5.15 3.56-8.65z"/>
@@ -143,7 +143,7 @@ function LoginFormContent() {
             <button
               type="button"
               onClick={() => fillDemo("family")}
-              className="rounded-xl border border-[#E5E5E5] bg-[#F5F5F5] px-3 py-2 text-left text-xs font-medium text-[#1F2937] hover:border-[#E8912E] transition-colors cursor-pointer"
+              className="rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-3 py-2 text-left text-xs font-medium text-[#1F2937] hover:border-[#E8912E] transition-colors cursor-pointer"
             >
               <span className="block font-semibold text-[#E8912E]">
                 Demo Keluarga: Budi
@@ -153,7 +153,7 @@ function LoginFormContent() {
             <button
               type="button"
               onClick={() => fillDemo("caregiver")}
-              className="rounded-xl border border-[#E5E5E5] bg-[#F5F5F5] px-3 py-2 text-left text-xs font-medium text-[#1F2937] hover:border-[#4A7C59] transition-colors cursor-pointer"
+              className="rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-3 py-2 text-left text-xs font-medium text-[#1F2937] hover:border-[#4A7C59] transition-colors cursor-pointer"
             >
               <span className="block font-semibold text-[#4A7C59]">
                 Demo Caregiver: Rini
@@ -186,7 +186,7 @@ function LoginFormContent() {
               placeholder={
                 role === "family" ? "budi@lentera.id" : "rini@lentera.id"
               }
-              className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#F5F5F5] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+              className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
             />
           </div>
 
@@ -204,7 +204,7 @@ function LoginFormContent() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Masukkan kata sandi"
-              className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#F5F5F5] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+              className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
             />
           </div>
 
@@ -240,7 +240,7 @@ function LoginFormContent() {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#F5F5F5]">
+    <div className="flex min-h-screen flex-col bg-[#FDFDFD]">
       <Navbar />
       <main className="flex-1">
         <Suspense

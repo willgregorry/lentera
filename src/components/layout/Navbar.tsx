@@ -30,7 +30,7 @@ export function Navbar() {
     : PUBLIC_NAV_LINKS;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#E5E5E5] bg-[#F5F5F5]/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-40 border-b border-[#E5E5E5] bg-[#FDFDFD]/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5 sm:px-6">
         <Link href="/" className="flex items-center gap-2.5">
           <LenteraMascot status="aman" size="sm" />

@@ -44,7 +44,7 @@ export function SosEmergencyPanel({
           <select
             value={sosReason}
             onChange={(e) => setSosReason(e.target.value)}
-            className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#F5F5F5] px-3 py-2.5 text-xs font-medium text-[#1F2937] focus:border-[#DC4A3D] focus:outline-none"
+            className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-3 py-2.5 text-xs font-medium text-[#1F2937] focus:border-[#DC4A3D] focus:outline-none"
           >
             <option value="Tekanan darah melonjak dan Pak Joko mengeluh pusing berat">
               Tekanan darah melonjak / pusing berat

@@ -89,7 +89,7 @@ export function JobCard({
           <button
             type="button"
             onClick={() => setApplying((p) => !p)}
-            className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-[#E5E5E5] bg-[#F5F5F5] px-4 py-2.5 text-xs font-semibold text-[#1F2937] hover:border-[#4A7C59] hover:text-[#4A7C59] transition-colors cursor-pointer"
+            className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-4 py-2.5 text-xs font-semibold text-[#1F2937] hover:border-[#4A7C59] hover:text-[#4A7C59] transition-colors cursor-pointer"
           >
             <Briefcase className="h-4 w-4" />
             <span>Lamar Sebagai Caregiver</span>

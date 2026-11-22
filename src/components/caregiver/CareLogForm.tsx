@@ -99,7 +99,7 @@ export function CareLogForm({
               max={200}
               value={heartRate}
               onChange={(e) => setHeartRate(Number(e.target.value))}
-              className="font-mono-vital mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#F5F5F5] px-3.5 py-2.5 text-sm font-semibold text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+              className="font-mono-vital mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-3.5 py-2.5 text-sm font-semibold text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
             />
           </div>
 
@@ -114,7 +114,7 @@ export function CareLogForm({
               max={240}
               value={systolic}
               onChange={(e) => setSystolic(Number(e.target.value))}
-              className="font-mono-vital mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#F5F5F5] px-3.5 py-2.5 text-sm font-semibold text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+              className="font-mono-vital mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-3.5 py-2.5 text-sm font-semibold text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
             />
           </div>
 
@@ -129,7 +129,7 @@ export function CareLogForm({
               max={150}
               value={diastolic}
               onChange={(e) => setDiastolic(Number(e.target.value))}
-              className="font-mono-vital mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#F5F5F5] px-3.5 py-2.5 text-sm font-semibold text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+              className="font-mono-vital mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-3.5 py-2.5 text-sm font-semibold text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
             />
           </div>
         </div>
@@ -144,7 +144,7 @@ export function CareLogForm({
               onChange={(e) =>
                 setMealPortion(e.target.value as CareLog["meal_portion"])
               }
-              className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#F5F5F5] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+              className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
             >
               <option value="habis">Habis (1 porsi penuh)</option>
               <option value="setengah">Setengah Porsi</option>
@@ -160,7 +160,7 @@ export function CareLogForm({
             <select
               value={mood}
               onChange={(e) => setMood(e.target.value as CareLog["mood"])}
-              className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#F5F5F5] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+              className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
             >
               <option value="cerah">Cerah & Bersemangat</option>
               <option value="tenang">Tenang & Nyaman</option>
@@ -196,7 +196,7 @@ export function CareLogForm({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Contoh: Pak Joko sudah jalan santai 10 menit di teras, tidak ada keluhan pusing..."
-            className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#F5F5F5] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
+            className="mt-1.5 w-full rounded-xl border border-[#E5E5E5] bg-[#FDFDFD] px-3.5 py-2.5 text-sm text-[#1F2937] focus:border-[#E8912E] focus:bg-[#FFFFFF] focus:outline-none"
           />
         </div>
 
@@ -204,7 +204,7 @@ export function CareLogForm({
           <label className="block text-xs font-semibold text-[#1F2937]">
             Unggah Foto Kondisi / Makanan (Opsional)
           </label>
-          <label className="mt-1.5 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-[#D6C8B8] bg-[#F5F5F5] px-4 py-4 text-xs font-medium text-[#6B7280] hover:border-[#E8912E]">
+          <label className="mt-1.5 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-[#D6C8B8] bg-[#FDFDFD] px-4 py-4 text-xs font-medium text-[#6B7280] hover:border-[#E8912E]">
             <Camera className="h-4 w-4 text-[#E8912E]" />
             <span>
               {photoFile

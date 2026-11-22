@@ -30,7 +30,7 @@ export default function RootLayout({
       lang="id"
       className={`${jakarta.variable} ${jetbrains.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#F5F5F5] text-[#1F2937]">
+      <body className="min-h-full flex flex-col bg-[#FDFDFD] text-[#1F2937]">
         {children}
       </body>
     </html>
