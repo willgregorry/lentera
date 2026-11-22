@@ -31,13 +31,13 @@ export default function LokerPage() {
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-8 pb-24 sm:px-6 md:pb-8">
         <div className="flex flex-col justify-between gap-4 border-b border-[#E5E5E5] pb-6 sm:flex-row sm:items-end">
           <div>
-            <p className="text-sm font-semibold text-[#355E42]">
+            <p className="text-xs font-semibold text-[#355E42] sm:text-sm">
               Rekrutmen & Pencocokan Caregiver
             </p>
-            <h1 className="mt-1 font-display text-2xl font-bold text-[#1F2937] sm:text-3xl">
+            <h1 className="mt-1 font-display text-xl font-bold text-[#1F2937] sm:text-3xl">
               Loker Pendamping Lansia Terverifikasi
             </h1>
-            <p className="mt-2 max-w-2xl text-sm text-[#4B5563]">
+            <p className="mt-1.5 max-w-2xl text-xs text-[#4B5563] sm:text-sm">
               Pasang kebutuhan perawatan lansia dan lihat skor kecocokan pelamar
               dari AI Caregiver Matcher.
             </p>

@@ -80,12 +80,12 @@ export default function FamilyDashboardPage() {
         />
 
         <section className="mt-6 grid gap-6 lg:grid-cols-12">
-          <div className="rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] p-6 shadow-xs lg:col-span-7">
+          <div className="lg:col-span-7">
             <div className="mb-4">
-              <h2 className="font-display text-lg font-bold text-[#1F2937]">
+              <h2 className="font-display text-base font-bold text-[#1F2937] sm:text-lg">
                 Grafik Tren Vital (3 Hari Terakhir)
               </h2>
-              <p className="mt-1 text-sm text-[#4B5563]">
+              <p className="mt-0.5 text-xs text-[#4B5563] sm:text-sm">
                 Memantau kestabilan tekanan darah dan detak jantung orang tua.
               </p>
             </div>
