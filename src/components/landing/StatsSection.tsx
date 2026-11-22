@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { EditorialStat, LANDING_STATS } from "@/content/landing";
 import { useSectionReveal } from "@/hooks/useGsapReveal";
+import { SplitText } from "@/components/shared/SplitText";
 
 function AnimatedNumber({ stat, active }: { stat: EditorialStat; active: boolean }) {
   const [display, setDisplay] = useState("0" + stat.suffix);
@@ -67,7 +68,7 @@ export function StatsSection() {
             Realitas Indonesia
           </p>
           <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-[#1F2937] sm:text-5xl">
-            Jutaan keluarga bekerja menanggung beban rawat lansia sendirian.
+            <SplitText text="Jutaan keluarga bekerja menanggung beban rawat lansia sendirian." />
           </h2>
         </div>
 

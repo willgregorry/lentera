@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useSectionReveal } from "@/hooks/useGsapReveal";
 import { LenteraMascot } from "@/components/shared/LenteraMascot";
+import { SplitText } from "@/components/shared/SplitText";
 
 const ECG_PATH =
   "M0,28 L34,28 L42,28 L47,20 L52,36 L58,10 L65,44 L71,25 L77,28 L120,28 L154,28 L162,28 L167,20 L172,36 L178,10 L185,44 L191,25 L197,28 L240,28";
@@ -25,7 +26,7 @@ export function PreviewSection() {
               Pratinjau Dashboard
             </p>
             <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-[#1F2937] sm:text-5xl">
-              Data vital jelas, tanpa menebak-nebak.
+              <SplitText text="Data vital jelas, tanpa menebak-nebak." />
             </h2>
             <p className="mt-5 text-base leading-relaxed text-[#6B7280] sm:text-lg">
               Angka tekanan darah, detak jantung, dan ringkasan harian tersaji

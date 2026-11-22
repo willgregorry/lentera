@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react";
 import { useSectionReveal } from "@/hooks/useGsapReveal";
+import { SplitText } from "@/components/shared/SplitText";
 
 function FamilyIcon() {
   return (
@@ -97,7 +98,7 @@ export function CareLoopSection() {
             Cara Kerja
           </p>
           <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-[#1F2937] sm:text-5xl">
-            Satu lingkaran peduli untuk orang tua di rumah.
+            <SplitText text="Satu lingkaran peduli untuk orang tua di rumah." />
           </h2>
         </div>
 

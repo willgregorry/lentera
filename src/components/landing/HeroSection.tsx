@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useHeroReveal } from "@/hooks/useGsapReveal";
+import { SplitText } from "@/components/shared/SplitText";
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -15,10 +16,14 @@ export function HeroSection() {
       className="relative flex min-h-[calc(100svh-76px)] items-center justify-center border-b border-[#EFEFEF] bg-[#FFFFFF] px-4 py-16 sm:px-6"
     >
       <div className="mx-auto flex w-full max-w-3xl flex-col items-center text-center">
-        <h1 className="gsap-hero-item font-display text-4xl font-bold leading-[1.08] tracking-[-0.03em] text-[#111827] sm:text-6xl">
-          Jaga orang tua di rumah,{" "}
+        <h1 className="font-display text-4xl font-bold leading-[1.08] tracking-[-0.03em] text-[#111827] sm:text-6xl">
+          <SplitText text="Jaga orang tua di rumah," immediate />
           <span className="block text-[#E8912E]">
-            tanpa cemas dari kejauhan.
+            <SplitText
+              text="tanpa cemas dari kejauhan."
+              immediate
+              delay={0.22}
+            />
           </span>
         </h1>
 
