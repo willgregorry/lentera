@@ -47,3 +47,16 @@ h1, h2, h3, h4, .font-display {
   font-family: var(--font-jetbrains), "JetBrains Mono", monospace;
   font-variant-numeric: tabular-nums;
 }
+
+@keyframes ecg-flow {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ecg-flow {
+  animation: ecg-flow 4.5s linear infinite;
+}
