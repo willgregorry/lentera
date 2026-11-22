@@ -2,21 +2,30 @@
 
 import { useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import { clearAuthSession, getStoredUser } from "@/services/authStorage";
+import {
+  AUTH_CHANGE_EVENT,
+  USER_KEY,
+  clearAuthSession,
+  getStoredUser,
+} from "@/services/authStorage";
 import { UserProfile } from "@/types";
 
 let cachedRaw: string | null | undefined;
 let cachedUser: UserProfile | null = null;
 
 function subscribe(callback: () => void) {
+  window.addEventListener(AUTH_CHANGE_EVENT, callback);
   window.addEventListener("storage", callback);
-  return () => window.removeEventListener("storage", callback);
+  return () => {
+    window.removeEventListener(AUTH_CHANGE_EVENT, callback);
+    window.removeEventListener("storage", callback);
+  };
 }
 
 function getSnapshot(): UserProfile | null {
   const raw =
     typeof window !== "undefined"
-      ? window.localStorage.getItem("lenteraku_auth_user")
+      ? window.sessionStorage.getItem(USER_KEY)
       : null;
   if (raw !== cachedRaw) {
     cachedRaw = raw;
@@ -49,7 +58,6 @@ export function useAuth() {
   function logout() {
     clearAuthSession();
     cachedRaw = undefined;
-    window.dispatchEvent(new Event("storage"));
     router.push("/login");
   }
 
