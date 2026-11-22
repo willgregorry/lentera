@@ -6,25 +6,25 @@ import { SplitText } from "@/components/shared/SplitText";
 
 const ACTORS = [
   {
-    iconSrc: "/images/icons/family.png",
-    iconAlt: "Ikon Keluarga",
-    role: "01 · Keluarga",
+    num: "01",
+    role: "Keluarga",
     title: "Tenang saat bekerja",
-    desc: "Pantau tren tensi dan ringkasan harian orang tua tanpa harus terus menelepon.",
+    desc: "Pantau tren tekanan darah, detak jantung, dan ringkasan harian orang tua dari kantor tanpa harus terus menelepon.",
+    tag: "Pemantauan & Ringkasan Harian",
   },
   {
-    iconSrc: "/images/icons/caregiver.png",
-    iconAlt: "Ikon Caregiver",
-    role: "02 · Caregiver",
-    title: "Catat dalam detik",
-    desc: "Isi vital, makan, obat, dan foto aktivitas dengan akses tombol darurat SOS.",
+    num: "02",
+    role: "Caregiver",
+    title: "Catat kondisi dalam hitungan detik",
+    desc: "Input tanda vital, porsi makan, jadwal obat, dan foto aktivitas secara ringkas dengan akses darurat SOS 119.",
+    tag: "Log Cepat & Siaga Darurat",
   },
   {
-    iconSrc: "/images/icons/elderly.png",
-    iconAlt: "Ikon Lansia",
-    role: "03 · Lansia",
-    title: "Terjaga di rumah",
-    desc: "Mendapat pendampingan yang sesuai riwayat medisnya sepanjang hari.",
+    num: "03",
+    role: "Lansia",
+    title: "Terjaga nyaman di rumah sendiri",
+    desc: "Mendapat pendampingan yang konsisten dan sesuai dengan riwayat medis, alergi, serta rutinitas harian.",
+    tag: "Perawatan Personal",
   },
 ];
 
@@ -36,42 +36,53 @@ export function CareLoopSection() {
     <section
       id="cara-kerja"
       ref={sectionRef}
-      className="flex min-h-[85svh] items-center border-b border-[#E5E5E5] bg-[#FFFFFF]"
+      className="flex min-h-[85svh] items-center border-b border-[#EFEFEF] bg-[#FFFFFF]"
     >
       <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
-        <div className="gsap-reveal max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#4A7C59]">
-            Cara Kerja
-          </p>
-          <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-[#1F2937] sm:text-5xl">
-            <SplitText text="Satu lingkaran peduli untuk orang tua di rumah." />
-          </h2>
-        </div>
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+          <div className="gsap-reveal lg:col-span-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#4A7C59]">
+              Cara Kerja
+            </p>
+            <h2 className="mt-4 font-display text-3xl font-bold leading-[1.12] tracking-[-0.02em] text-[#111827] sm:text-5xl">
+              <SplitText text="Satu lingkaran peduli untuk orang tua di rumah." />
+            </h2>
+            <p className="mt-5 text-sm leading-relaxed text-[#6B7280] sm:text-base">
+              Menghubungkan keluarga yang bekerja, caregiver di rumah, dan
+              kebutuhan medis orang tua dalam satu alur yang sederhana.
+            </p>
+          </div>
 
-        <div className="mt-14 grid gap-10 border-t border-[#E5E5E5] pt-10 md:grid-cols-3">
-          {ACTORS.map((actor) => (
-            <div
-              key={actor.role}
-              className="gsap-reveal group transition-transform duration-300 hover:-translate-y-1"
-            >
-              <img
-                src={actor.iconSrc}
-                alt={actor.iconAlt}
-                width={36}
-                height={36}
-                className="h-9 w-9 rounded-xl transition-transform duration-300 group-hover:scale-105"
-              />
-              <p className="mt-5 font-mono-vital text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
-                {actor.role}
-              </p>
-              <h3 className="mt-2 font-display text-2xl font-bold text-[#1F2937]">
-                {actor.title}
-              </h3>
-              <p className="mt-3 text-base leading-relaxed text-[#6B7280]">
-                {actor.desc}
-              </p>
-            </div>
-          ))}
+          <div className="divide-y divide-[#EFEFEF] border-y border-[#EFEFEF] lg:col-span-7">
+            {ACTORS.map((actor) => (
+              <div
+                key={actor.num}
+                className="gsap-reveal group grid grid-cols-12 gap-4 py-7 transition-colors duration-300 hover:bg-[#FAFAFA]/80 sm:px-4"
+              >
+                <div className="col-span-2 sm:col-span-2">
+                  <span className="font-display text-2xl font-light tracking-tight text-[#D1D5DB] transition-colors duration-300 group-hover:text-[#E8912E] sm:text-3xl">
+                    {actor.num}
+                  </span>
+                </div>
+                <div className="col-span-10 transition-transform duration-300 group-hover:translate-x-1 sm:col-span-10">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-[#4A7C59]">
+                      {actor.role}
+                    </span>
+                    <span className="text-xs font-medium text-[#9CA3AF]">
+                      {actor.tag}
+                    </span>
+                  </div>
+                  <h3 className="mt-1.5 font-display text-xl font-bold text-[#111827] sm:text-2xl">
+                    {actor.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[#6B7280] sm:text-base">
+                    {actor.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
