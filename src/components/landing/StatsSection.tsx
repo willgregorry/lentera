@@ -71,11 +71,11 @@ export function StatsSection() {
           </h2>
         </div>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-14 grid gap-10 border-t border-[#E5E5E5] pt-10 sm:grid-cols-2 lg:grid-cols-4">
           {LANDING_STATS.map((stat) => (
             <div
               key={stat.label}
-              className="gsap-reveal group rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#D4D4D4] hover:shadow-md"
+              className="gsap-reveal group transition-transform duration-300 hover:-translate-y-1"
             >
               <p
                 className="font-mono-vital text-4xl font-bold sm:text-5xl"
@@ -83,14 +83,14 @@ export function StatsSection() {
               >
                 <AnimatedNumber stat={stat} active={inView} />
               </p>
-              <p className="mt-4 text-sm font-semibold leading-snug text-[#1F2937] sm:text-base">
+              <p className="mt-4 text-base font-semibold leading-snug text-[#1F2937]">
                 {stat.label}
               </p>
               <a
                 href={stat.sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-[#6B7280] transition-colors hover:text-[#E8912E]"
+                className="mt-2.5 inline-flex items-center gap-1 text-xs font-medium text-[#6B7280] transition-colors hover:text-[#E8912E]"
               >
                 <span>{stat.source}</span>
                 <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

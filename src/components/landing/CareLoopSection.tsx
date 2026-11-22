@@ -101,24 +101,24 @@ export function CareLoopSection() {
           </h2>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-14 grid gap-10 border-t border-[#E5E5E5] pt-10 md:grid-cols-3">
           {ACTORS.map((actor) => {
             const CustomIcon = actor.Icon;
             return (
               <div
                 key={actor.role}
-                className="gsap-reveal group rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] p-7 transition-all duration-300 hover:-translate-y-1.5 hover:border-[#D4D4D4] hover:shadow-md"
+                className="gsap-reveal group transition-transform duration-300 hover:-translate-y-1"
               >
-                <div className="transition-transform duration-300 group-hover:scale-105">
+                <div className="inline-block transition-transform duration-300 group-hover:scale-105">
                   <CustomIcon />
                 </div>
-                <p className="mt-6 font-mono-vital text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
+                <p className="mt-5 font-mono-vital text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
                   {actor.role}
                 </p>
-                <h3 className="mt-2 font-display text-xl font-bold text-[#1F2937] sm:text-2xl">
+                <h3 className="mt-2 font-display text-2xl font-bold text-[#1F2937]">
                   {actor.title}
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed text-[#6B7280] sm:text-base">
+                <p className="mt-3 text-base leading-relaxed text-[#6B7280]">
                   {actor.desc}
                 </p>
               </div>
