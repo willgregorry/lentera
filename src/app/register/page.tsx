@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import { LenteraMascot } from "@/components/shared/LenteraMascot";
 import { apiService } from "@/services/api";
 import { UserRole } from "@/types";
@@ -15,11 +16,14 @@ export default function RegisterPage() {
   const [phone, setPhone] = useState("");
   const [city, setCity] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    setErrorMsg(null);
     try {
       const res = await apiService.registerUser({
         name,
@@ -31,6 +35,12 @@ export default function RegisterPage() {
         skills: [],
       });
       router.push(res.user.role === "caregiver" ? "/loker" : "/caregivers");
+    } catch (err) {
+      setErrorMsg(
+        err instanceof Error
+          ? err.message
+          : "Gagal mendaftarkan akun. Coba lagi."
+      );
     } finally {
       setLoading(false);
     }
@@ -38,6 +48,7 @@ export default function RegisterPage() {
 
   async function handleGoogleRegister() {
     setLoading(true);
+    setErrorMsg(null);
     try {
       const res = await apiService.loginUser({
         email: role === "family" ? "budi@lentera.id" : "rini@lentera.id",
@@ -45,6 +56,10 @@ export default function RegisterPage() {
         role,
       });
       router.push(res.user.role === "caregiver" ? "/loker" : "/caregivers");
+    } catch (err) {
+      setErrorMsg(
+        err instanceof Error ? err.message : "Gagal masuk dengan Google."
+      );
     } finally {
       setLoading(false);
     }
@@ -128,6 +143,15 @@ export default function RegisterPage() {
             </button>
           </div>
 
+          {errorMsg && (
+            <div
+              role="alert"
+              className="mt-4 rounded-xl border border-danger/25 bg-red-50 px-3.5 py-2.5 text-xs font-medium text-danger"
+            >
+              {errorMsg}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="mt-5 space-y-3.5">
             <div>
               <label className="block text-sm font-medium text-ink">
@@ -188,15 +212,33 @@ export default function RegisterPage() {
               <label className="block text-sm font-medium text-ink">
                 Kata Sandi
               </label>
-              <input
-                type="password"
-                required
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Minimal 6 karakter"
-                className="mt-1 w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
-              />
+              <div className="relative mt-1">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Minimal 6 karakter"
+                  className="w-full rounded-lg border border-border bg-surface py-2.5 pr-10 pl-3.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={
+                    showPassword
+                      ? "Sembunyikan kata sandi"
+                      : "Tampilkan kata sandi"
+                  }
+                  className="absolute top-1/2 right-3 -translate-y-1/2 text-ink-muted transition-colors hover:text-ink cursor-pointer"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <button

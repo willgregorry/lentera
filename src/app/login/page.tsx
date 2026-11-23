@@ -3,9 +3,23 @@
 import React, { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import { LenteraMascot } from "@/components/shared/LenteraMascot";
 import { apiService } from "@/services/api";
 import { UserRole } from "@/types";
+
+function formatAuthError(err: unknown): string {
+  const msg = err instanceof Error ? err.message.toLowerCase() : "";
+  if (msg.includes("invalid login credentials")) {
+    return "Email atau kata sandi yang Anda masukkan salah.";
+  }
+  if (msg.includes("email not confirmed")) {
+    return "Email Anda belum terverifikasi. Silakan cek kotak masuk email Anda.";
+  }
+  return err instanceof Error && err.message
+    ? err.message
+    : "Gagal masuk. Periksa kembali email dan kata sandi Anda.";
+}
 
 function LoginFormContent() {
   const router = useRouter();
@@ -16,10 +30,13 @@ function LoginFormContent() {
   const [role, setRole] = useState<UserRole>(initialRole);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   function fillDemo(targetRole: UserRole) {
     setRole(targetRole);
+    setErrorMsg(null);
     setEmail(targetRole === "family" ? "budi@lentera.id" : "rini@lentera.id");
     setPassword("lenteraku2026");
   }
@@ -27,9 +44,12 @@ function LoginFormContent() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    setErrorMsg(null);
     try {
       const res = await apiService.loginUser({ email, password, role });
       router.push(res.user.role === "caregiver" ? "/loker" : "/caregivers");
+    } catch (err) {
+      setErrorMsg(formatAuthError(err));
     } finally {
       setLoading(false);
     }
@@ -37,6 +57,7 @@ function LoginFormContent() {
 
   async function handleGoogleLogin() {
     setLoading(true);
+    setErrorMsg(null);
     try {
       const res = await apiService.loginUser({
         email: role === "family" ? "budi@lentera.id" : "rini@lentera.id",
@@ -44,6 +65,8 @@ function LoginFormContent() {
         role,
       });
       router.push(res.user.role === "caregiver" ? "/loker" : "/caregivers");
+    } catch (err) {
+      setErrorMsg(formatAuthError(err));
     } finally {
       setLoading(false);
     }
@@ -90,7 +113,16 @@ function LoginFormContent() {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+      {errorMsg && (
+        <div
+          role="alert"
+          className="mt-5 rounded-xl border border-danger/25 bg-red-50 px-3.5 py-2.5 text-xs font-medium text-danger"
+        >
+          {errorMsg}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="mt-5 space-y-4">
         <div>
           <label
             htmlFor="login-email"
@@ -103,7 +135,10 @@ function LoginFormContent() {
             type="email"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (errorMsg) setErrorMsg(null);
+            }}
             placeholder="nama@email.com"
             className="mt-1.5 w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
           />
@@ -116,15 +151,34 @@ function LoginFormContent() {
           >
             Kata Sandi
           </label>
-          <input
-            id="login-password"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            className="mt-1.5 w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
-          />
+          <div className="relative mt-1.5">
+            <input
+              id="login-password"
+              type={showPassword ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (errorMsg) setErrorMsg(null);
+              }}
+              placeholder="••••••••"
+              className="w-full rounded-lg border border-border bg-surface py-2.5 pr-10 pl-3.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={
+                showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"
+              }
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-ink-muted transition-colors hover:text-ink cursor-pointer"
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
+          </div>
         </div>
 
         <button
