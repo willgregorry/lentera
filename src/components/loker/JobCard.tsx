@@ -30,9 +30,7 @@ export function JobCard({
   const [applying, setApplying] = useState(false);
   const [confirmApplyOpen, setConfirmApplyOpen] = useState(false);
   const [submittingApply, setSubmittingApply] = useState(false);
-  const [coverNote, setCoverNote] = useState(
-    "Saya berpengalaman mendampingi lansia dengan riwayat hipertensi dan rutin mencatat tanda vital harian."
-  );
+  const [coverNote, setCoverNote] = useState("");
 
   async function handleApplySubmit() {
     setSubmittingApply(true);
@@ -124,7 +122,8 @@ export function JobCard({
             rows={2}
             value={coverNote}
             onChange={(e) => setCoverNote(e.target.value)}
-            className="mt-2 w-full rounded-xl border border-border bg-surface px-3 py-2 text-xs text-ink focus:border-primary focus:outline-none"
+            placeholder="Ceritakan pengalaman Anda mendampingi lansia dan ketersediaan waktu..."
+            className="mt-2 w-full rounded-xl border border-border bg-surface px-3 py-2 text-xs text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
           />
           <div className="mt-2.5 flex justify-end gap-2">
             <button

@@ -40,9 +40,9 @@ export function CareLogForm({
   successMsg,
   onSubmit,
 }: CareLogFormProps) {
-  const [heartRate, setHeartRate] = useState(78);
-  const [systolic, setSystolic] = useState(124);
-  const [diastolic, setDiastolic] = useState(80);
+  const [heartRateInput, setHeartRateInput] = useState("");
+  const [systolicInput, setSystolicInput] = useState("");
+  const [diastolicInput, setDiastolicInput] = useState("");
   const [mealPortion, setMealPortion] =
     useState<CareLog["meal_portion"]>("habis");
   const [medicationTaken, setMedicationTaken] = useState(true);
@@ -50,6 +50,7 @@ export function CareLogForm({
   const [notes, setNotes] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -66,14 +67,30 @@ export function CareLogForm({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setValidationError(null);
+    const hr = Number(heartRateInput);
+    const sys = Number(systolicInput);
+    const dia = Number(diastolicInput);
+    if (!heartRateInput || hr < 35 || hr > 200) {
+      setValidationError("Mohon isi detak nadi antara 35 – 200 bpm.");
+      return;
+    }
+    if (!systolicInput || sys < 60 || sys > 240) {
+      setValidationError("Mohon isi tekanan sistolik antara 60 – 240 mmHg.");
+      return;
+    }
+    if (!diastolicInput || dia < 40 || dia > 150) {
+      setValidationError("Mohon isi tekanan diastolik antara 40 – 150 mmHg.");
+      return;
+    }
     setConfirmOpen(true);
   }
 
   async function handleConfirmSubmit() {
     await onSubmit({
-      heartRate,
-      systolic,
-      diastolic,
+      heartRate: Number(heartRateInput),
+      systolic: Number(systolicInput),
+      diastolic: Number(diastolicInput),
       mealPortion,
       medicationTaken,
       mood,
@@ -81,6 +98,9 @@ export function CareLogForm({
       photoFile,
     });
     setConfirmOpen(false);
+    setHeartRateInput("");
+    setSystolicInput("");
+    setDiastolicInput("");
     setNotes("");
     setPhotoFile(null);
     setPhotoPreview(null);
@@ -102,6 +122,15 @@ export function CareLogForm({
         </div>
       )}
 
+      {validationError && (
+        <div
+          role="alert"
+          className="mt-4 rounded-xl border border-danger/25 bg-red-50 px-3.5 py-2.5 text-xs font-medium text-danger"
+        >
+          {validationError}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="mt-5 space-y-4">
         <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
           <div>
@@ -109,46 +138,55 @@ export function CareLogForm({
               Nadi (bpm)
             </label>
             <input
-              type="number"
+              type="text"
               inputMode="numeric"
               required
-              min={35}
-              max={200}
-              value={heartRate}
-              onChange={(e) => setHeartRate(Number(e.target.value))}
-              className="mt-1.5 min-h-[44px] w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm font-semibold tabular-nums text-ink focus:border-primary focus:outline-none"
+              maxLength={3}
+              value={heartRateInput}
+              onChange={(e) => {
+                setHeartRateInput(e.target.value.replace(/[^\d]/g, ""));
+                if (validationError) setValidationError(null);
+              }}
+              placeholder="Contoh: 78"
+              className="mt-1.5 min-h-[44px] w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm font-semibold tabular-nums text-ink placeholder:font-normal placeholder:text-ink-muted focus:border-primary focus:outline-none"
             />
           </div>
 
           <div>
             <label className="block text-[11px] font-semibold text-ink sm:text-xs">
-              Sistolik
+              Sistolik (atas)
             </label>
             <input
-              type="number"
+              type="text"
               inputMode="numeric"
               required
-              min={60}
-              max={240}
-              value={systolic}
-              onChange={(e) => setSystolic(Number(e.target.value))}
-              className="mt-1.5 min-h-[44px] w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm font-semibold tabular-nums text-ink focus:border-primary focus:outline-none"
+              maxLength={3}
+              value={systolicInput}
+              onChange={(e) => {
+                setSystolicInput(e.target.value.replace(/[^\d]/g, ""));
+                if (validationError) setValidationError(null);
+              }}
+              placeholder="Contoh: 120"
+              className="mt-1.5 min-h-[44px] w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm font-semibold tabular-nums text-ink placeholder:font-normal placeholder:text-ink-muted focus:border-primary focus:outline-none"
             />
           </div>
 
           <div>
             <label className="block text-[11px] font-semibold text-ink sm:text-xs">
-              Diastolik
+              Diastolik (bawah)
             </label>
             <input
-              type="number"
+              type="text"
               inputMode="numeric"
               required
-              min={40}
-              max={150}
-              value={diastolic}
-              onChange={(e) => setDiastolic(Number(e.target.value))}
-              className="mt-1.5 min-h-[44px] w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm font-semibold tabular-nums text-ink focus:border-primary focus:outline-none"
+              maxLength={3}
+              value={diastolicInput}
+              onChange={(e) => {
+                setDiastolicInput(e.target.value.replace(/[^\d]/g, ""));
+                if (validationError) setValidationError(null);
+              }}
+              placeholder="Contoh: 80"
+              className="mt-1.5 min-h-[44px] w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm font-semibold tabular-nums text-ink placeholder:font-normal placeholder:text-ink-muted focus:border-primary focus:outline-none"
             />
           </div>
         </div>
@@ -247,7 +285,7 @@ export function CareLogForm({
       <ConfirmDialog
         open={confirmOpen}
         title="Kirim Laporan Harian?"
-        description={`Catatan vital (tensi ${systolic}/${diastolic} mmHg, nadi ${heartRate} bpm) beserta dokumentasi akan langsung dikirimkan ke keluarga.`}
+        description={`Catatan vital (tensi ${systolicInput}/${diastolicInput} mmHg, nadi ${heartRateInput} bpm) beserta dokumentasi akan langsung dikirimkan ke keluarga.`}
         confirmLabel="Ya, Kirim Laporan"
         loading={submitting}
         onConfirm={handleConfirmSubmit}
