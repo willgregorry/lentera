@@ -1,14 +1,18 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bell, Clock, Lock, Pill, Users, Utensils } from "lucide-react";
+import { Bell, BellRing, Clock, Lock, Pill, Users, Utensils } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { SosAlertBanner } from "@/components/dashboard/SosAlertBanner";
 import { useAuth } from "@/hooks/useAuth";
 import { useAssignmentStatus } from "@/hooks/useAssignmentStatus";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import {
+  notifyUserDevice,
+  requestBrowserNotificationPermission,
+} from "@/lib/notifications";
 import { CareLog } from "@/types";
 
 const MEAL_LABEL: Record<CareLog["meal_portion"], string> = {
@@ -24,6 +28,22 @@ export default function NotifikasiLaporanPage() {
   const { loading: checkingStatus, hasCaregiver } = useAssignmentStatus();
   const { elderly, logs, notifications, activeSos, resolveSos } =
     useDashboardData();
+  const [notifPerm, setNotifPerm] = useState<string>(() =>
+    typeof window !== "undefined" && "Notification" in window
+      ? Notification.permission
+      : "default"
+  );
+
+  async function handleEnablePush() {
+    const result = await requestBrowserNotificationPermission();
+    setNotifPerm(result);
+    if (result === "granted") {
+      await notifyUserDevice({
+        title: "Notifikasi Lentera Aktif",
+        body: "Anda akan langsung menerima pemberitahuan setiap ada laporan baru atau SOS dari perawat.",
+      });
+    }
+  }
 
   useEffect(() => {
     if (hydrated && !user) {
@@ -49,17 +69,36 @@ export default function NotifikasiLaporanPage() {
 
   return (
     <AppShell>
-      <div className="border-b border-border pb-5">
-        <p className="text-xs font-semibold text-secondary sm:text-sm">
-          Notifikasi & Laporan Perawat
-        </p>
-        <h1 className="mt-1 font-display text-xl font-bold text-ink sm:text-3xl">
-          Laporan Masuk dari Perawat
-        </h1>
-        <p className="mt-1 text-xs text-ink-muted sm:text-sm">
-          Semua catatan harian, foto aktivitas, dan pemberitahuan darurat yang
-          dikirimkan perawat untuk orang tua Anda.
-        </p>
+      <div className="flex flex-col justify-between gap-4 border-b border-border pb-5 sm:flex-row sm:items-end">
+        <div>
+          <p className="text-xs font-semibold text-secondary sm:text-sm">
+            Notifikasi & Laporan Perawat
+          </p>
+          <h1 className="mt-1 font-display text-xl font-bold text-ink sm:text-3xl">
+            Laporan Masuk dari Perawat
+          </h1>
+          <p className="mt-1 text-xs text-ink-muted sm:text-sm">
+            Semua catatan harian, foto aktivitas, dan pemberitahuan darurat yang
+            dikirimkan perawat untuk orang tua Anda.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleEnablePush}
+          className={`inline-flex min-h-[42px] shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-colors cursor-pointer ${
+            notifPerm === "granted"
+              ? "bg-secondary-soft text-secondary"
+              : "border border-border bg-surface text-ink hover:border-primary hover:text-primary"
+          }`}
+        >
+          <BellRing className="h-4 w-4" />
+          <span>
+            {notifPerm === "granted"
+              ? "Notifikasi Perangkat Aktif"
+              : "Aktifkan Notifikasi HP / Browser"}
+          </span>
+        </button>
       </div>
 
       {checkingStatus ? (

@@ -8,6 +8,7 @@ import {
   MOCK_SOS_LIST,
 } from "@/content/mockData";
 import { supabase } from "@/lib/supabase";
+import { notifyUserDevice } from "@/lib/notifications";
 import {
   AiDigest,
   AiMatchResult,
@@ -385,6 +386,11 @@ class LenteraApiService implements ILenteraApiService {
       ...prev,
       logs: [...prev.logs, newLog],
     }));
+    notifyUserDevice({
+      title: `Laporan Baru dari ${newLog.caregiver_name}`,
+      body: `TD ${newLog.systolic}/${newLog.diastolic} mmHg · Nadi ${newLog.heart_rate} bpm — ${newLog.notes}`,
+      url: "/notifikasi",
+    });
     return newLog;
   }
 
@@ -582,6 +588,12 @@ class LenteraApiService implements ILenteraApiService {
       ...prev,
       sosAlerts: [alert, ...prev.sosAlerts],
     }));
+    notifyUserDevice({
+      title: `DARURAT SOS — ${alert.elderly_name}`,
+      body: alert.reason,
+      url: "/notifikasi",
+      urgent: true,
+    });
     return alert;
   }
 

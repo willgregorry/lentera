@@ -1,9 +1,23 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { Camera, CheckCircle2, Send } from "lucide-react";
+import { CustomSelect, SelectOption } from "@/components/shared/CustomSelect";
 import { CareLog } from "@/types";
+
+const MEAL_OPTIONS: SelectOption<CareLog["meal_portion"]>[] = [
+  { value: "habis", label: "Habis (1 porsi penuh)" },
+  { value: "setengah", label: "Setengah Porsi" },
+  { value: "sedikit", label: "Hanya Sedikit" },
+  { value: "tidak_makan", label: "Belum Mau Makan" },
+];
+
+const MOOD_OPTIONS: SelectOption<CareLog["mood"]>[] = [
+  { value: "cerah", label: "Cerah & Bersemangat" },
+  { value: "tenang", label: "Tenang & Nyaman" },
+  { value: "lelah", label: "Agak Lelah" },
+  { value: "gelisah", label: "Gelisah / Kurang Nyaman" },
+];
 
 interface CareLogFormProps {
   submitting: boolean;
@@ -66,125 +80,111 @@ export function CareLogForm({
   }
 
   return (
-    <section className="rounded-2xl border border-border bg-surface p-6 lg:col-span-7">
-      <h2 className="font-display text-lg font-bold text-ink">
-        Formulir Laporan Harian
+    <section className="rounded-2xl border border-border bg-surface p-4 sm:p-6 lg:col-span-7">
+      <h2 className="font-display text-base font-bold text-ink sm:text-lg">
+        Catatan Perawatan Harian
       </h2>
-      <p className="mt-1 text-xs text-ink-muted">
-        Isi tanda vital dan aktivitas terbaru Pak Joko.
+      <p className="mt-0.5 text-xs text-ink-muted">
+        Isi tanda vital, makan, obat, dan aktivitas orang tua hari ini.
       </p>
 
       {successMsg && (
-        <div className="mt-4 flex items-center justify-between gap-3 border-l-4 border-secondary bg-secondary-soft px-4 py-3 text-xs font-semibold text-secondary">
-          <span className="inline-flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 shrink-0" />
-            {successMsg}
-          </span>
-          <Link href="/dashboard" className="shrink-0 underline">
-            Lihat Dashboard
-          </Link>
+        <div className="mt-4 flex items-center gap-2 rounded-xl border-l-4 border-secondary bg-secondary-soft px-3.5 py-3 text-xs font-semibold text-secondary">
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          <span>{successMsg}</span>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="mt-5 space-y-4">
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
           <div>
-            <label className="block text-xs font-semibold text-ink">
-              Detak Jantung (bpm)
+            <label className="block text-[11px] font-semibold text-ink sm:text-xs">
+              Nadi (bpm)
             </label>
             <input
               type="number"
+              inputMode="numeric"
               required
               min={35}
               max={200}
               value={heartRate}
               onChange={(e) => setHeartRate(Number(e.target.value))}
-              className="font-mono-vital mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm font-semibold text-ink focus:border-primary focus:bg-surface focus:outline-none"
+              className="mt-1.5 min-h-[44px] w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm font-semibold tabular-nums text-ink focus:border-primary focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-ink">
-              Tensi Sistolik (mmHg)
+            <label className="block text-[11px] font-semibold text-ink sm:text-xs">
+              Sistolik
             </label>
             <input
               type="number"
+              inputMode="numeric"
               required
               min={60}
               max={240}
               value={systolic}
               onChange={(e) => setSystolic(Number(e.target.value))}
-              className="font-mono-vital mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm font-semibold text-ink focus:border-primary focus:bg-surface focus:outline-none"
+              className="mt-1.5 min-h-[44px] w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm font-semibold tabular-nums text-ink focus:border-primary focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-ink">
-              Tensi Diastolik (mmHg)
+            <label className="block text-[11px] font-semibold text-ink sm:text-xs">
+              Diastolik
             </label>
             <input
               type="number"
+              inputMode="numeric"
               required
               min={40}
               max={150}
               value={diastolic}
               onChange={(e) => setDiastolic(Number(e.target.value))}
-              className="font-mono-vital mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm font-semibold text-ink focus:border-primary focus:bg-surface focus:outline-none"
+              className="mt-1.5 min-h-[44px] w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm font-semibold tabular-nums text-ink focus:border-primary focus:outline-none"
             />
           </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="block text-xs font-semibold text-ink">
-              Porsi Makan
-            </label>
-            <select
-              value={mealPortion}
-              onChange={(e) =>
-                setMealPortion(e.target.value as CareLog["meal_portion"])
-              }
-              className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-primary focus:bg-surface focus:outline-none"
-            >
-              <option value="habis">Habis (1 porsi penuh)</option>
-              <option value="setengah">Setengah Porsi</option>
-              <option value="sedikit">Hanya Sedikit</option>
-              <option value="tidak_makan">Belum Mau Makan</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-ink">
-              Suasana Hati / Mood
-            </label>
-            <select
-              value={mood}
-              onChange={(e) => setMood(e.target.value as CareLog["mood"])}
-              className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-primary focus:bg-surface focus:outline-none"
-            >
-              <option value="cerah">Cerah & Bersemangat</option>
-              <option value="tenang">Tenang & Nyaman</option>
-              <option value="lelah">Agak Lelah</option>
-              <option value="gelisah">Gelisah / Kurang Nyaman</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 border-y border-border py-3">
-          <input
-            id="med-taken"
-            type="checkbox"
-            checked={medicationTaken}
-            onChange={(e) => setMedicationTaken(e.target.checked)}
-            className="h-4 w-4 accent-[#4A7C59]"
+          <CustomSelect
+            label="Porsi Makan"
+            value={mealPortion}
+            options={MEAL_OPTIONS}
+            onChange={setMealPortion}
           />
-          <label
-            htmlFor="med-taken"
-            className="text-sm font-medium text-ink"
-          >
-            Obat rutin (Amlodipine & Metformin) sudah diminum sesuai jadwal
-          </label>
+          <CustomSelect
+            label="Suasana Hati"
+            value={mood}
+            options={MOOD_OPTIONS}
+            onChange={setMood}
+          />
         </div>
+
+        <button
+          type="button"
+          onClick={() => setMedicationTaken((prev) => !prev)}
+          className={`flex min-h-[48px] w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-left transition-colors cursor-pointer ${
+            medicationTaken
+              ? "border-secondary/40 bg-secondary-soft"
+              : "border-border bg-canvas-subtle"
+          }`}
+        >
+          <span className="text-xs font-semibold text-ink sm:text-sm">
+            Obat rutin sudah diminum sesuai jadwal
+          </span>
+          <span
+            className={`inline-flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 transition-colors ${
+              medicationTaken ? "bg-secondary" : "bg-border"
+            }`}
+          >
+            <span
+              className={`h-5 w-5 rounded-full bg-white shadow-xs transition-transform ${
+                medicationTaken ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </span>
+        </button>
 
         <div>
           <label className="block text-xs font-semibold text-ink">
@@ -195,25 +195,26 @@ export function CareLogForm({
             required
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Contoh: Pak Joko sudah jalan santai 10 menit di teras, tidak ada keluhan pusing..."
-            className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-primary focus:bg-surface focus:outline-none"
+            placeholder="Contoh: Jalan santai 10 menit di teras, makan siang lahap, tidak ada keluhan pusing..."
+            className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
           />
         </div>
 
         <div>
           <label className="block text-xs font-semibold text-ink">
-            Unggah Foto Kondisi / Makanan (Opsional)
+            Foto Aktivitas / Makanan (Opsional)
           </label>
-          <label className="mt-1.5 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-[#D6C8B8] bg-surface px-4 py-4 text-xs font-medium text-ink-muted hover:border-primary">
+          <label className="mt-1.5 flex min-h-[52px] cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-canvas-subtle px-4 py-3 text-xs font-medium text-ink-muted transition-colors hover:border-primary hover:text-ink">
             <Camera className="h-4 w-4 text-primary" />
-            <span>
+            <span className="truncate">
               {photoFile
                 ? `Terpilih: ${photoFile.name}`
-                : "Pilih foto dari perangkat (JPG/PNG)"}
+                : "Ambil atau pilih foto (JPG/PNG)"}
             </span>
             <input
               type="file"
               accept="image/*"
+              capture="environment"
               onChange={handlePhotoChange}
               className="hidden"
             />
@@ -230,7 +231,7 @@ export function CareLogForm({
         <button
           type="submit"
           disabled={submitting}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors cursor-pointer"
+          className="btn-diagonal-secondary flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white disabled:opacity-60 cursor-pointer"
         >
           <Send className="h-4 w-4" />
           <span>{submitting ? "Mengirim..." : "Kirim Laporan Harian"}</span>
