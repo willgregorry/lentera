@@ -35,7 +35,7 @@ export function CareLogTimeline({ logs }: CareLogTimelineProps) {
           <div key={log.id} className="py-4 first:pt-1">
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold text-ink">
-                {log.caregiver_name || "Rini Wulandari"}
+                {log.caregiver_name || "Perawat Bertugas"}
               </span>
               <span className="inline-flex items-center gap-1 font-mono-vital text-ink-muted">
                 <Clock className="h-3 w-3" />
