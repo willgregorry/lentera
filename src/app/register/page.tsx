@@ -57,25 +57,6 @@ export default function RegisterPage() {
     }
   }
 
-  async function handleGoogleRegister() {
-    setLoading(true);
-    setErrorMsg(null);
-    try {
-      const res = await apiService.loginUser({
-        email: role === "family" ? "budi@lentera.id" : "rini@lentera.id",
-        password: "google-oauth-session",
-        role,
-      });
-      router.push(res.user.role === "caregiver" ? "/loker" : "/caregivers");
-    } catch (err) {
-      setErrorMsg(
-        err instanceof Error ? err.message : "Gagal masuk dengan Google."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
     <div className="grid min-h-screen bg-surface lg:grid-cols-2">
       {/* Left Visual Panel */}
@@ -260,39 +241,6 @@ export default function RegisterPage() {
               {loading ? "Mendaftarkan..." : "Daftar"}
             </button>
           </form>
-
-          <div className="my-5 flex items-center gap-3">
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-xs text-ink-muted">atau</span>
-            <div className="h-px flex-1 bg-border" />
-          </div>
-
-          <button
-            type="button"
-            onClick={handleGoogleRegister}
-            disabled={loading}
-            className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-border bg-surface py-2.5 text-sm font-medium text-ink transition-colors hover:bg-canvas-subtle disabled:opacity-60 cursor-pointer"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                fill="#4285F4"
-                d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.87c2.26-2.08 3.56-5.15 3.56-8.65z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 24c3.24 0 5.95-1.07 7.93-2.91l-3.87-3c-1.07.72-2.45 1.15-4.06 1.15-3.12 0-5.77-2.11-6.72-4.95H1.28v3.09A12 12 0 0 0 12 24z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.28 14.29A7.2 7.2 0 0 1 4.9 12c0-.79.14-1.56.38-2.29V6.62H1.28A12 12 0 0 0 0 12c0 1.94.46 3.77 1.28 5.38l4-3.09z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 4.75c1.76 0 3.34.61 4.58 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.28 6.62l4 3.09c.95-2.84 3.6-4.96 6.72-4.96z"
-              />
-            </svg>
-            <span>Daftar dengan Google</span>
-          </button>
 
           <p className="mt-6 text-center text-sm text-ink-muted">
             Sudah punya akun?{" "}

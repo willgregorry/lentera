@@ -38,18 +38,6 @@ class LenteraSupabaseService implements ILenteraApiService {
   }): Promise<{ user: UserProfile; token: string }> {
     const db = requireSupabase();
 
-    if (payload.password === "google-oauth-session") {
-      await db.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo:
-            typeof window !== "undefined"
-              ? `${window.location.origin}/${payload.role === "caregiver" ? "loker" : "caregivers"}`
-              : undefined,
-        },
-      });
-    }
-
     const { data, error } = await db.auth.signInWithPassword({
       email: payload.email,
       password: payload.password,
