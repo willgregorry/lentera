@@ -138,6 +138,23 @@ class LenteraSupabaseService implements ILenteraApiService {
       throw new Error(error?.message || "Gagal mendaftarkan akun baru.");
     }
 
+    let activeSession = data.session;
+    if (!activeSession) {
+      const signInRes = await db.auth.signInWithPassword({
+        email: payload.email,
+        password: payload.password,
+      });
+      if (signInRes.error) {
+        if (signInRes.error.message.toLowerCase().includes("email not confirmed")) {
+          throw new Error(
+            "Verifikasi email masih aktif di Supabase. Matikan 'Confirm email' di Supabase Auth → Providers → Email agar akun baru bisa langsung dipakai."
+          );
+        }
+        throw new Error(signInRes.error.message);
+      }
+      activeSession = signInRes.data.session;
+    }
+
     await db.from("profiles").upsert({
       id: data.user.id,
       email: payload.email,
@@ -159,7 +176,7 @@ class LenteraSupabaseService implements ILenteraApiService {
       skills: payload.skills || [],
     };
 
-    const token = data.session?.access_token || `supabase-${data.user.id}`;
+    const token = activeSession?.access_token || `supabase-${data.user.id}`;
     setAuthSession(token, user);
     return { user, token };
   }

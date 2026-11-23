@@ -8,6 +8,21 @@ import { LenteraMascot } from "@/components/shared/LenteraMascot";
 import { apiService } from "@/services/api";
 import { UserRole } from "@/types";
 
+function formatRegisterError(err: unknown): string {
+  const raw = err instanceof Error ? err.message : "";
+  const msg = raw.toLowerCase();
+  if (msg.includes("user already registered") || msg.includes("already exists")) {
+    return "Email ini sudah terdaftar. Silakan masuk ke akun Anda.";
+  }
+  if (msg.includes("password should be at least")) {
+    return "Kata sandi minimal 6 karakter.";
+  }
+  if (msg.includes("rate limit")) {
+    return "Terlalu banyak percobaan daftar. Tunggu sebentar lalu coba lagi.";
+  }
+  return raw || "Gagal mendaftarkan akun. Coba lagi.";
+}
+
 export default function RegisterPage() {
   const router = useRouter();
   const [role, setRole] = useState<UserRole>("family");
@@ -36,11 +51,7 @@ export default function RegisterPage() {
       });
       router.push(res.user.role === "caregiver" ? "/loker" : "/caregivers");
     } catch (err) {
-      setErrorMsg(
-        err instanceof Error
-          ? err.message
-          : "Gagal mendaftarkan akun. Coba lagi."
-      );
+      setErrorMsg(formatRegisterError(err));
     } finally {
       setLoading(false);
     }
