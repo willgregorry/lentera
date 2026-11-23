@@ -33,25 +33,52 @@ export default function CaregiverDirectoryPage() {
       setLoading(true);
       try {
         if (supabase) {
-          const { data } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("role", "caregiver")
-            .order("created_at", { ascending: false });
-          if (active && data) {
+          const [profilesRes, filledJobsRes, acceptedAppsRes] =
+            await Promise.all([
+              supabase
+                .from("profiles")
+                .select("*")
+                .eq("role", "caregiver")
+                .order("created_at", { ascending: false }),
+              supabase
+                .from("care_jobs")
+                .select("assigned_caregiver_id")
+                .eq("status", "filled")
+                .not("assigned_caregiver_id", "is", null),
+              supabase
+                .from("job_applications")
+                .select("caregiver_id")
+                .eq("status", "accepted"),
+            ]);
+
+          const busyIds = new Set<string>();
+          for (const row of filledJobsRes.data || []) {
+            if (row.assigned_caregiver_id) {
+              busyIds.add(String(row.assigned_caregiver_id));
+            }
+          }
+          for (const row of acceptedAppsRes.data || []) {
+            if (row.caregiver_id) {
+              busyIds.add(String(row.caregiver_id));
+            }
+          }
+
+          if (active && profilesRes.data) {
             setCaregivers(
-              data.map((row) => ({
-                id: row.id,
-                name: row.full_name,
-                email: row.email,
-                role: "caregiver",
-                phone: row.phone || "",
-                city: row.location || "Indonesia",
-                verified: Boolean(row.is_verified ?? true),
-                skills: Array.isArray(row.skills) ? row.skills : [],
-                experience_years: Number(row.experience_years || 0),
-                bio: row.bio || "",
-              }))
+              profilesRes.data
+                .filter((row) => !busyIds.has(String(row.id)))
+                .map((row) => ({
+                  id: row.id,
+                  name: row.full_name,
+                  email: row.email,
+                  role: "caregiver",
+                  phone: row.phone || "",
+                  city: row.location || "Indonesia",
+                  verified: Boolean(row.is_verified ?? true),
+                  skills: Array.isArray(row.skills) ? row.skills : [],
+                  experience_years: Number(row.experience_years || 0),
+                  bio: row.bio || "",
+                }))
             );
           }
         }
