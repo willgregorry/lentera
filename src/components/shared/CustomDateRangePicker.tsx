@@ -121,7 +121,7 @@ export function CustomDateRangePicker({
     : "";
 
   return (
-    <div ref={rootRef} className="relative">
+    <div ref={rootRef} className="relative w-full min-w-0">
       <label className="block text-xs font-semibold text-ink">
         {label}
         {required && <span className="ml-0.5 text-primary">*</span>}
@@ -132,7 +132,7 @@ export function CustomDateRangePicker({
           type="button"
           onClick={() => setOpen((prev) => !prev)}
           aria-expanded={open}
-          className={`flex min-h-[44px] w-full items-center justify-between gap-2 rounded-xl border bg-surface px-3.5 py-2.5 text-left text-sm transition-colors cursor-pointer ${
+          className={`flex min-h-[44px] w-full min-w-0 items-center justify-between gap-2 rounded-xl border bg-surface px-3.5 py-2.5 text-left text-sm transition-colors cursor-pointer ${
             open
               ? "border-primary ring-2 ring-primary/15"
               : "border-border hover:border-ink-muted/40"
@@ -173,7 +173,7 @@ export function CustomDateRangePicker({
       </div>
 
       {open && (
-        <div className="animate-dropdown-in absolute left-0 z-50 mt-2 w-full min-w-[290px] max-w-sm rounded-2xl border border-border bg-surface p-4 shadow-[0_16px_40px_rgba(19,35,58,0.14)]">
+        <div className="animate-dropdown-in absolute left-0 z-50 mt-2 w-full max-w-sm rounded-2xl border border-border bg-surface p-3.5 shadow-[0_16px_40px_rgba(19,35,58,0.14)] sm:min-w-[290px] sm:p-4">
           <div className="flex items-center justify-between pb-3">
             <button
               type="button"

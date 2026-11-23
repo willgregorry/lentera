@@ -144,7 +144,7 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-5 rounded-2xl border border-border bg-surface p-5 sm:p-6"
+      className="mt-6 border-b border-border pb-7"
     >
       <div>
         <h2 className="font-display text-lg font-bold text-ink">
@@ -165,8 +165,8 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
         </div>
       )}
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        <div className="sm:col-span-2">
+      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="min-w-0 sm:col-span-2">
           <label className="block text-xs font-semibold text-ink">
             Judul Lowongan<span className="ml-0.5 text-primary">*</span>
           </label>
@@ -176,11 +176,11 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Contoh: Pendamping harian Ibu pasca stroke ringan"
-            className="mt-1.5 min-h-[44px] w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+            className="mt-1.5 min-h-[44px] w-full min-w-0 rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
           />
         </div>
 
-        <div>
+        <div className="min-w-0">
           <label className="block text-xs font-semibold text-ink">
             Nama Orang Tua / Lansia<span className="ml-0.5 text-primary">*</span>
           </label>
@@ -190,11 +190,11 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
             value={elderlyName}
             onChange={(e) => setElderlyName(e.target.value)}
             placeholder="Contoh: Ibu Hartini atau Bapak Suyono"
-            className="mt-1.5 min-h-[44px] w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+            className="mt-1.5 min-h-[44px] w-full min-w-0 rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
           />
         </div>
 
-        <div>
+        <div className="min-w-0">
           <label className="block text-xs font-semibold text-ink">
             Usia Lansia<span className="ml-0.5 text-primary">*</span>
           </label>
@@ -211,7 +211,7 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
                 if (validationError) setValidationError(null);
               }}
               placeholder="Contoh: 72"
-              className="min-h-[44px] w-full rounded-xl border border-border bg-surface py-2.5 pr-16 pl-3.5 text-sm tabular-nums text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+              className="min-h-[44px] w-full min-w-0 rounded-xl border border-border bg-surface py-2.5 pr-16 pl-3.5 text-sm tabular-nums text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
             />
             <span className="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-xs font-medium text-ink-muted">
               tahun
@@ -219,7 +219,7 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
           </div>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <label className="block text-xs font-semibold text-ink">
             Lokasi Rumah<span className="ml-0.5 text-primary">*</span>
           </label>
@@ -229,11 +229,11 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="Contoh: Kec. Tebet, Jakarta Selatan"
-            className="mt-1.5 min-h-[44px] w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+            className="mt-1.5 min-h-[44px] w-full min-w-0 rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
           />
         </div>
 
-        <div>
+        <div className="min-w-0">
           <label className="block text-xs font-semibold text-ink">
             Estimasi Kompensasi<span className="ml-0.5 text-primary">*</span>
           </label>
@@ -252,7 +252,7 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
                 if (validationError) setValidationError(null);
               }}
               placeholder="Contoh: 3.500.000"
-              className="min-h-[44px] w-full rounded-xl border border-border bg-surface py-2.5 pr-16 pl-10 text-sm tabular-nums text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+              className="min-h-[44px] w-full min-w-0 rounded-xl border border-border bg-surface py-2.5 pr-16 pl-10 text-sm tabular-nums text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
             />
             <span className="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-xs font-medium text-ink-muted">
               / bulan
@@ -260,26 +260,30 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
           </div>
         </div>
 
-        <CustomDateRangePicker
-          label="Periode Mulai & Selesai"
-          required
-          startDate={startDate}
-          endDate={endDate}
-          onChange={({ startDate: s, endDate: e }) => {
-            setStartDate(s);
-            setEndDate(e);
-            if (validationError) setValidationError(null);
-          }}
-        />
+        <div className="min-w-0">
+          <CustomDateRangePicker
+            label="Periode Mulai & Selesai"
+            required
+            startDate={startDate}
+            endDate={endDate}
+            onChange={({ startDate: s, endDate: e }) => {
+              setStartDate(s);
+              setEndDate(e);
+              if (validationError) setValidationError(null);
+            }}
+          />
+        </div>
 
-        <CustomSelect
-          label="Jam Pendampingan"
-          value={shift}
-          options={SHIFT_OPTIONS}
-          onChange={setShift}
-        />
+        <div className="min-w-0">
+          <CustomSelect
+            label="Jam Pendampingan"
+            value={shift}
+            options={SHIFT_OPTIONS}
+            onChange={setShift}
+          />
+        </div>
 
-        <div className="sm:col-span-2">
+        <div className="min-w-0 sm:col-span-2">
           <label className="block text-xs font-semibold text-ink">
             Keahlian yang Dibutuhkan
           </label>
@@ -307,23 +311,23 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
             type="text"
             value={customSkillInput}
             onChange={(e) => setCustomSkillInput(e.target.value)}
-            placeholder="Keahlian lain (opsional), pisahkan dengan koma — contoh: Perawatan luka, Masak diet rendah garam"
-            className="mt-2.5 min-h-[42px] w-full rounded-xl border border-border bg-surface px-3.5 py-2 text-xs text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none sm:text-sm"
+            placeholder="Keahlian lain (opsional), pisahkan koma — misal: Perawatan luka"
+            className="mt-2.5 min-h-[42px] w-full min-w-0 rounded-xl border border-border bg-surface px-3.5 py-2 text-xs text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none sm:text-sm"
           />
         </div>
 
-        <div className="sm:col-span-2">
+        <div className="min-w-0 sm:col-span-2">
           <label className="block text-xs font-semibold text-ink">
             Profil Medis & Kebutuhan Perawatan
             <span className="ml-0.5 text-primary">*</span>
           </label>
           <textarea
-            rows={3}
+            rows={4}
             required
             value={medicalNotes}
             onChange={(e) => setMedicalNotes(e.target.value)}
-            placeholder="Ceritakan riwayat penyakit, obat rutin yang diminum, pantangan makan, atau kebiasaan harian orang tua yang perlu diketahui perawat..."
-            className="mt-1.5 w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+            placeholder="Ceritakan riwayat penyakit, obat rutin, pantangan makan, atau kebiasaan harian orang tua..."
+            className="mt-1.5 w-full min-w-0 rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm leading-relaxed text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
           />
         </div>
       </div>

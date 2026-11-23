@@ -45,14 +45,14 @@ export function CustomSelect<T extends string>({
   }, []);
 
   return (
-    <div ref={rootRef} className="relative">
+    <div ref={rootRef} className="relative w-full min-w-0">
       <label className="block text-xs font-semibold text-ink">{label}</label>
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className={`mt-1.5 flex min-h-[44px] w-full items-center justify-between gap-2 rounded-xl border bg-surface px-3.5 py-2.5 text-left text-sm text-ink transition-colors cursor-pointer ${
+        className={`mt-1.5 flex min-h-[44px] w-full min-w-0 items-center justify-between gap-2 rounded-xl border bg-surface px-3.5 py-2.5 text-left text-sm text-ink transition-colors cursor-pointer ${
           open ? "border-primary ring-2 ring-primary/15" : "border-border hover:border-ink-muted/40"
         }`}
       >
