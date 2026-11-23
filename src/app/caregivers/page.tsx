@@ -17,7 +17,10 @@ import {
 import { AppShell } from "@/components/layout/AppShell";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useAuth } from "@/hooks/useAuth";
-import { useAssignmentStatus } from "@/hooks/useAssignmentStatus";
+import {
+  notifyAssignmentChange,
+  useAssignmentStatus,
+} from "@/hooks/useAssignmentStatus";
 import { supabase } from "@/lib/supabase";
 import { apiService } from "@/services/api";
 import { UserProfile } from "@/types";
@@ -339,6 +342,7 @@ export default function CaregiverDirectoryPage() {
         name: cg.name,
         skills: cg.skills,
       });
+      notifyAssignmentChange();
       router.push("/dashboard");
       router.refresh();
     } catch (err) {

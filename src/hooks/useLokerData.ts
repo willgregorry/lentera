@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { MOCK_JOBS } from "@/content/mockData";
 import { apiService } from "@/services/api";
 import { useAuth } from "@/hooks/useAuth";
+import { notifyAssignmentChange } from "@/hooks/useAssignmentStatus";
 import { CareJob, JobApplication } from "@/types";
 
 export function useLokerData() {
@@ -15,20 +16,30 @@ export function useLokerData() {
 
   useEffect(() => {
     let active = true;
-    apiService
-      .getJobs()
-      .then((list) => {
+
+    async function fetchJobs() {
+      try {
+        const list = await apiService.getJobs();
         if (active) setJobs(list);
-      })
-      .catch((err) => {
+      } catch (err) {
         if (active) {
           setErrorMsg(
             err instanceof Error ? err.message : "Gagal memuat daftar lowongan."
           );
         }
-      });
+      }
+    }
+
+    void fetchJobs();
+
+    const handleFocus = () => {
+      void fetchJobs();
+    };
+    window.addEventListener("focus", handleFocus);
+
     return () => {
       active = false;
+      window.removeEventListener("focus", handleFocus);
     };
   }, [user?.id, user?.role]);
 
@@ -145,9 +156,12 @@ export function useLokerData() {
             : j
         )
       );
+      if (status === "accepted") {
+        notifyAssignmentChange();
+      }
       setFeedback(
         status === "accepted"
-          ? "Caregiver berhasil direkrut! Pantau laporan harian di Kondisi Orang Tua."
+          ? "Caregiver berhasil direkrut! Menu Kondisi Orang Tua dan Laporan Masuk sudah terbuka."
           : "Status pelamar diperbarui."
       );
     } catch (err) {

@@ -780,14 +780,16 @@ class LenteraSupabaseService implements ILenteraApiService {
     }
 
     if (status === "accepted") {
-      const { error: fillErr } = await db
+      const { data: updatedJob, error: fillErr } = await db
         .from("care_jobs")
         .update({
           status: "filled",
           assigned_caregiver_id: appRow.caregiver_id,
         })
-        .eq("id", appRow.job_id);
-      if (fillErr) {
+        .eq("id", appRow.job_id)
+        .select("id")
+        .single();
+      if (fillErr || !updatedJob) {
         throw mapSupabaseError(fillErr, "Gagal menugaskan caregiver pada lowongan.");
       }
     }

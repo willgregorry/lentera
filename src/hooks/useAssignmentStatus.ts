@@ -4,6 +4,14 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
+export const ASSIGNMENT_CHANGE_EVENT = "lentera-assignment-change";
+
+export function notifyAssignmentChange(): void {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(ASSIGNMENT_CHANGE_EVENT));
+  }
+}
+
 export interface ActiveCaregiverInfo {
   id: string;
   name: string;
@@ -22,6 +30,9 @@ export function useAssignmentStatus() {
   const [activeCaregiver, setActiveCaregiver] =
     useState<ActiveCaregiverInfo | null>(null);
   const [caregiverHasJob, setCaregiverHasJob] = useState(false);
+
+  const isUnlocked =
+    user?.role === "caregiver" ? caregiverHasJob : Boolean(activeCaregiver);
 
   useEffect(() => {
     if (!hydrated || !user || !supabase) return;
@@ -99,10 +110,48 @@ export function useAssignmentStatus() {
     }
 
     void checkStatus();
+
+    const handleRefresh = () => {
+      void checkStatus();
+    };
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        void checkStatus();
+      }
+    };
+
+    window.addEventListener(ASSIGNMENT_CHANGE_EVENT, handleRefresh);
+    window.addEventListener("focus", handleRefresh);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    const channel = db
+      .channel(`assignment-status-${currentUser.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "care_jobs" },
+        handleRefresh
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "job_applications" },
+        handleRefresh
+      )
+      .subscribe();
+
+    // Lightweight fallback poll ONLY while menus are still locked
+    const intervalId = !isUnlocked
+      ? window.setInterval(handleRefresh, 5000)
+      : undefined;
+
     return () => {
       mounted = false;
+      window.removeEventListener(ASSIGNMENT_CHANGE_EVENT, handleRefresh);
+      window.removeEventListener("focus", handleRefresh);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      if (intervalId) window.clearInterval(intervalId);
+      db.removeChannel(channel);
     };
-  }, [hydrated, user]);
+  }, [hydrated, user, isUnlocked]);
 
   return {
     loading: Boolean(hydrated && user && loading),

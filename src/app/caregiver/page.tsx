@@ -72,6 +72,17 @@ export default function CaregiverPortalPage() {
             matchedFamilyId = String(jobsRes.data[0].family_id || "");
           } else if (appsRes.data && appsRes.data.length > 0) {
             assigned = true;
+            const acceptedJobId = appsRes.data[0].job_id;
+            if (acceptedJobId) {
+              const { data: jobOwner } = await supabase
+                .from("care_jobs")
+                .select("family_id")
+                .eq("id", acceptedJobId)
+                .maybeSingle();
+              if (jobOwner?.family_id) {
+                matchedFamilyId = String(jobOwner.family_id);
+              }
+            }
           }
 
           if (matchedFamilyId) {
