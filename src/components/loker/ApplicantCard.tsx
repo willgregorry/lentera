@@ -33,7 +33,7 @@ export function ApplicantCard({
                 {app.caregiver_name}
               </p>
               {app.verified && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-card-sage-border bg-card-sage px-2 py-0.5 text-[11px] font-semibold text-secondary">
+                <span className="inline-flex items-center gap-1 text-xs font-semibold text-secondary">
                   <BadgeCheck className="h-3.5 w-3.5" />
                   Terverifikasi
                 </span>
@@ -93,7 +93,7 @@ export function ApplicantCard({
         </button>
 
         {app.status === "accepted" ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-card-sage px-3 py-1 text-xs font-bold text-secondary">
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-secondary">
             <UserCheck className="h-3.5 w-3.5" />
             Direkrut
           </span>

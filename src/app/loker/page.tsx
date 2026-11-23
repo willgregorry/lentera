@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { PostJobForm } from "@/components/loker/PostJobForm";
 import { JobCard } from "@/components/loker/JobCard";
+import { CaregiverInvitesSection } from "@/components/loker/CaregiverInvitesSection";
 import { useLokerData } from "@/hooks/useLokerData";
 
 export default function LokerPage() {
@@ -49,6 +50,8 @@ export default function LokerPage() {
           </button>
         )}
       </div>
+
+      {user?.role === "caregiver" && <CaregiverInvitesSection user={user} />}
 
       {feedback && (
         <div className="mt-5 rounded-2xl border border-card-sage-border bg-card-sage px-4 py-3 text-xs font-semibold text-secondary sm:text-sm">

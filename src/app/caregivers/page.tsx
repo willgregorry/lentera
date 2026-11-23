@@ -20,6 +20,8 @@ import { useAssignmentStatus } from "@/hooks/useAssignmentStatus";
 import { supabase } from "@/lib/supabase";
 import { UserProfile } from "@/types";
 
+type InviteStatus = "pending" | "accepted" | "declined";
+
 export default function CaregiverDirectoryPage() {
   const router = useRouter();
   const { user, hydrated } = useAuth();
@@ -31,7 +33,13 @@ export default function CaregiverDirectoryPage() {
   const [caregivers, setCaregivers] = useState<UserProfile[]>([]);
   const [loadingList, setLoadingList] = useState(true);
   const [query, setQuery] = useState("");
-  const [invitedIds, setInvitedIds] = useState<string[]>([]);
+  const [inviteStatusMap, setInviteStatusMap] = useState<
+    Record<string, InviteStatus>
+  >({});
+  const [invitingId, setInvitingId] = useState<string | null>(null);
+  const [hiringId, setHiringId] = useState<string | null>(null);
+  const [actionMsg, setActionMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (hydrated && !user) {
@@ -44,15 +52,17 @@ export default function CaregiverDirectoryPage() {
   }, [hydrated, user, router]);
 
   useEffect(() => {
-    if (hasCaregiver) return;
+    if (hasCaregiver || !user) return;
     let active = true;
-    async function loadCaregivers() {
+
+    async function loadCaregiversAndInvites() {
       try {
         const busyIds = new Set<string>();
         const mergedMap = new Map<string, UserProfile>();
+        const sentInvites: Record<string, InviteStatus> = {};
 
         if (supabase) {
-          const [profilesRes, filledJobsRes, acceptedAppsRes] =
+          const [profilesRes, filledJobsRes, acceptedAppsRes, invitesRes] =
             await Promise.all([
               supabase
                 .from("profiles")
@@ -68,6 +78,10 @@ export default function CaregiverDirectoryPage() {
                 .from("job_applications")
                 .select("caregiver_id")
                 .eq("status", "accepted"),
+              supabase
+                .from("notifications")
+                .select("user_id, metadata")
+                .eq("type", "job"),
             ]);
 
           for (const row of filledJobsRes.data || []) {
@@ -78,6 +92,19 @@ export default function CaregiverDirectoryPage() {
           for (const row of acceptedAppsRes.data || []) {
             if (row.caregiver_id) {
               busyIds.add(String(row.caregiver_id));
+            }
+          }
+
+          for (const row of invitesRes.data || []) {
+            const meta = (row.metadata || {}) as Record<string, unknown>;
+            if (
+              meta.kind === "interview_invite" &&
+              String(meta.family_id || "") === user!.id &&
+              row.user_id
+            ) {
+              const st = String(meta.status || "pending");
+              sentInvites[String(row.user_id)] =
+                st === "accepted" || st === "declined" ? st : "pending";
             }
           }
 
@@ -104,16 +131,32 @@ export default function CaregiverDirectoryPage() {
 
         if (active) {
           setCaregivers(available);
+          setInviteStatusMap(sentInvites);
         }
       } finally {
         if (active) setLoadingList(false);
       }
     }
-    loadCaregivers();
+
+    void loadCaregiversAndInvites();
+
+    if (!supabase) return;
+    const channel = supabase
+      .channel(`family-invites-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "notifications" },
+        () => {
+          void loadCaregiversAndInvites();
+        }
+      )
+      .subscribe();
+
     return () => {
       active = false;
+      supabase?.removeChannel(channel);
     };
-  }, [hasCaregiver]);
+  }, [hasCaregiver, user]);
 
   if (!hydrated || !user || user.role !== "family") {
     return (
@@ -151,12 +194,11 @@ export default function CaregiverDirectoryPage() {
                 <UserCheck className="h-7 w-7" />
               </div>
               <div>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2.5">
                   <h2 className="font-display text-lg font-bold text-ink sm:text-xl">
                     {activeCaregiver.name}
                   </h2>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-card-sage-border bg-card-sage px-2.5 py-0.5 text-xs font-semibold text-secondary">
-                    <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
+                  <span className="text-xs font-semibold text-secondary">
                     Aktif Bertugas
                   </span>
                 </div>
@@ -256,8 +298,105 @@ export default function CaregiverDirectoryPage() {
     );
   });
 
-  function handleInvite(id: string) {
-    setInvitedIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  async function handleInvite(cg: UserProfile) {
+    if (!supabase || !user) return;
+    setInvitingId(cg.id);
+    setErrorMsg(null);
+    setActionMsg(null);
+
+    try {
+      const { error } = await supabase.from("notifications").insert({
+        user_id: cg.id,
+        type: "job",
+        title: `Undangan Wawancara dari ${user.name}`,
+        body: `Keluarga ${user.name} mengundang Anda untuk wawancara pendampingan lansia.`,
+        metadata: {
+          kind: "interview_invite",
+          status: "pending",
+          family_id: user.id,
+          family_name: user.name,
+          family_phone: user.phone || "",
+          family_city: user.city || "",
+          caregiver_id: cg.id,
+          caregiver_name: cg.name,
+        },
+      });
+
+      if (error) {
+        setErrorMsg(
+          `Gagal mengirim undangan ke Supabase: ${error.message}. Pastikan policy INSERT tabel notifications sudah aktif.`
+        );
+        return;
+      }
+
+      setInviteStatusMap((prev) => ({ ...prev, [cg.id]: "pending" }));
+      setActionMsg(
+        `Undangan wawancara terkirim ke ${cg.name}. Perawat dapat langsung melihat dan menerima undangan di Ruang Perawat.`
+      );
+    } finally {
+      setInvitingId(null);
+    }
+  }
+
+  async function handleHireDirectly(cg: UserProfile) {
+    if (!supabase || !user) return;
+    setHiringId(cg.id);
+    setErrorMsg(null);
+    setActionMsg(null);
+
+    try {
+      const { data: existingElderly } = await supabase
+        .from("elderly_profiles")
+        .select("id")
+        .eq("family_id", user.id)
+        .limit(1)
+        .maybeSingle();
+
+      let elderlyId = existingElderly?.id as string | undefined;
+      if (!elderlyId) {
+        const { data: createdElderly, error: eldErr } = await supabase
+          .from("elderly_profiles")
+          .insert({
+            family_id: user.id,
+            name: `Orang Tua ${user.name.split(" ")[0]}`,
+            age: 70,
+            address: user.city || "Indonesia",
+            status: "aman",
+          })
+          .select("id")
+          .single();
+
+        if (eldErr || !createdElderly) {
+          setErrorMsg(eldErr?.message || "Gagal menyiapkan profil orang tua.");
+          return;
+        }
+        elderlyId = createdElderly.id;
+      }
+
+      const { error: jobErr } = await supabase.from("care_jobs").insert({
+        family_id: user.id,
+        elderly_id: elderlyId,
+        title: `Pendamping Lansia — Keluarga ${user.name.split(" ")[0]}`,
+        description: "Penugasan langsung setelah wawancara disetujui.",
+        schedule: "Senin – Sabtu, 08.00 – 16.00 WIB",
+        location: user.city || "Indonesia",
+        salary_min: 3500000,
+        salary_max: 4000000,
+        required_skills: cg.skills || [],
+        status: "filled",
+        assigned_caregiver_id: cg.id,
+      });
+
+      if (jobErr) {
+        setErrorMsg(jobErr.message);
+        return;
+      }
+
+      router.push("/dashboard");
+      router.refresh();
+    } finally {
+      setHiringId(null);
+    }
   }
 
   return (
@@ -284,6 +423,21 @@ export default function CaregiverDirectoryPage() {
           <span>Pasang Lowongan</span>
         </Link>
       </div>
+
+      {actionMsg && (
+        <div className="mt-4 rounded-xl border border-card-sage-border bg-card-sage px-4 py-3 text-xs font-semibold text-secondary sm:text-sm">
+          {actionMsg}
+        </div>
+      )}
+
+      {errorMsg && (
+        <div
+          role="alert"
+          className="mt-4 rounded-xl border border-danger/25 bg-red-50 px-4 py-3 text-xs font-medium text-danger sm:text-sm"
+        >
+          {errorMsg}
+        </div>
+      )}
 
       <div className="mt-5">
         <div className="relative max-w-md">
@@ -323,7 +477,7 @@ export default function CaregiverDirectoryPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((cg, idx) => {
-              const invited = invitedIds.includes(cg.id);
+              const inviteStatus = inviteStatusMap[cg.id];
               const cardTint =
                 idx % 2 === 0
                   ? "border-card-blue-border bg-card-blue/40"
@@ -345,9 +499,8 @@ export default function CaregiverDirectoryPage() {
                         </p>
                       </div>
                       {cg.verified && (
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-card-sage-border bg-card-sage px-2.5 py-0.5 text-[11px] font-semibold text-secondary">
-                          <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
-                          <span>Tersedia</span>
+                        <span className="text-xs font-semibold text-secondary">
+                          Tersedia
                         </span>
                       )}
                     </div>
@@ -372,18 +525,46 @@ export default function CaregiverDirectoryPage() {
                     )}
                   </div>
 
-                  <button
-                    type="button"
-                    disabled={invited}
-                    onClick={() => handleInvite(cg.id)}
-                    className={`mt-5 w-full rounded-xl py-2.5 text-xs font-semibold transition-colors cursor-pointer ${
-                      invited
-                        ? "border border-card-sage-border bg-card-sage text-secondary"
-                        : "bg-primary text-white hover:bg-primary-hover"
-                    }`}
-                  >
-                    {invited ? "Undangan Terkirim" : "Undang untuk Wawancara"}
-                  </button>
+                  {inviteStatus === "accepted" ? (
+                    <div className="mt-5 space-y-2">
+                      <p className="text-center text-xs font-semibold text-secondary">
+                        Perawat bersedia wawancara
+                      </p>
+                      <button
+                        type="button"
+                        disabled={hiringId === cg.id}
+                        onClick={() => handleHireDirectly(cg)}
+                        className="w-full rounded-xl bg-primary py-2.5 text-xs font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 cursor-pointer"
+                      >
+                        {hiringId === cg.id
+                          ? "Memproses..."
+                          : "Tugaskan Perawat Ini"}
+                      </button>
+                    </div>
+                  ) : inviteStatus === "pending" ? (
+                    <button
+                      type="button"
+                      disabled
+                      className="mt-5 w-full rounded-xl bg-card-sage py-2.5 text-xs font-semibold text-secondary"
+                    >
+                      Undangan Terkirim · Menunggu Perawat
+                    </button>
+                  ) : inviteStatus === "declined" ? (
+                    <p className="mt-5 py-2 text-center text-xs font-medium text-ink-muted">
+                      Undangan ditolak oleh perawat
+                    </p>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={invitingId === cg.id}
+                      onClick={() => handleInvite(cg)}
+                      className="mt-5 w-full rounded-xl bg-primary py-2.5 text-xs font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 cursor-pointer"
+                    >
+                      {invitingId === cg.id
+                        ? "Mengirim..."
+                        : "Undang untuk Wawancara"}
+                    </button>
+                  )}
                 </div>
               );
             })}

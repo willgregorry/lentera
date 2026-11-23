@@ -36,7 +36,7 @@ export function ElderlyStatusCard({
               {elderly.name}
             </h1>
             {elderly.age > 0 && (
-              <span className="rounded-full border border-card-blue-border bg-card-blue px-2.5 py-0.5 text-xs font-semibold text-sidebar">
+              <span className="rounded-md bg-canvas-subtle px-2 py-0.5 text-xs font-medium text-ink-muted">
                 {elderly.age} tahun
               </span>
             )}
@@ -67,10 +67,8 @@ export function ElderlyStatusCard({
             </span>
             {latestLog && (
               <span
-                className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                  bpHigh
-                    ? "bg-amber-100 text-warning"
-                    : "bg-card-sage text-secondary"
+                className={`text-[11px] font-semibold ${
+                  bpHigh ? "text-warning" : "text-secondary"
                 }`}
               >
                 {bpHigh ? "Tinggi" : "Stabil"}

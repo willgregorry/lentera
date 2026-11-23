@@ -190,8 +190,8 @@ export default function NotifikasiLaporanPage() {
                         Laporan Pemantauan Harian
                       </p>
                     </div>
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-card-blue-border bg-card-blue px-3 py-1 text-xs font-medium text-ink-muted">
-                      <Clock className="h-3.5 w-3.5 text-sidebar" />
+                    <span className="inline-flex items-center gap-1.5 text-xs text-ink-muted">
+                      <Clock className="h-3.5 w-3.5" />
                       {new Date(log.logged_at).toLocaleDateString("id-ID", {
                         day: "2-digit",
                         month: "short",

@@ -246,11 +246,20 @@ CREATE POLICY "sos_insert_authenticated" ON public.sos_alerts
 CREATE POLICY "sos_update_authenticated" ON public.sos_alerts
   FOR UPDATE TO authenticated USING (true);
 
--- Notifications: user sees own notifications or global announcements (user_id IS NULL)
+-- Notifications: recipient, sender (metadata.family_id), or global announcements
 CREATE POLICY "notifications_select_own_or_global" ON public.notifications
-  FOR SELECT TO authenticated USING (user_id IS NULL OR auth.uid() = user_id);
+  FOR SELECT TO authenticated USING (
+    user_id IS NULL OR
+    auth.uid() = user_id OR
+    metadata->>'family_id' = auth.uid()::text
+  );
+CREATE POLICY "notifications_insert_authenticated" ON public.notifications
+  FOR INSERT TO authenticated WITH CHECK (true);
 CREATE POLICY "notifications_update_own" ON public.notifications
-  FOR UPDATE TO authenticated USING (auth.uid() = user_id);
+  FOR UPDATE TO authenticated USING (
+    auth.uid() = user_id OR
+    metadata->>'family_id' = auth.uid()::text
+  );
 
 -- ============================================================================
 -- STORAGE BUCKET FOR CARE LOG PHOTOS

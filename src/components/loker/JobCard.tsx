@@ -46,10 +46,8 @@ export function JobCard({
             </span>
             <span className="text-border">•</span>
             <span
-              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                job.status === "open"
-                  ? "border border-card-sage-border bg-card-sage text-secondary"
-                  : "border border-border bg-canvas-subtle text-ink-muted"
+              className={`font-semibold ${
+                job.status === "open" ? "text-secondary" : "text-ink-muted"
               }`}
             >
               {job.status === "open" ? "Lowongan Dibuka" : "Sudah Terisi"}
