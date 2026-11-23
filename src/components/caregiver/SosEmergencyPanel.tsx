@@ -39,7 +39,7 @@ interface SosEmergencyPanelProps {
   familyName?: string;
   triggering: boolean;
   activeSos: SosAlert | null;
-  onTriggerSos: (reason: string) => Promise<void>;
+  onTriggerSos: (reason: string) => Promise<boolean>;
 }
 
 export function SosEmergencyPanel({
@@ -130,29 +130,39 @@ export function SosEmergencyPanel({
         </div>
       </div>
 
-      {activeSos?.triage_brief && (
-        <div className="rounded-2xl border border-danger/25 bg-red-50/70 p-5">
+      {activeSos && (
+        <div className="rounded-2xl border border-danger/25 bg-red-50/80 p-5">
           <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-danger">
-            Ringkasan Triage Medis
+            Sinyal SOS Aktif · Terkirim ke Keluarga
           </p>
-          <p className="mt-2 text-sm font-semibold text-ink">
-            {activeSos.triage_brief.patient_summary}
+          <p className="mt-1.5 text-xs font-medium text-ink">
+            {activeSos.reason}
           </p>
-          {activeSos.triage_brief.allergies.length > 0 && (
-            <p className="mt-1.5 text-xs font-semibold text-danger">
-              Alergi: {activeSos.triage_brief.allergies.join(", ")}
-            </p>
+          {activeSos.triage_brief && (
+            <div className="mt-3 border-t border-danger/15 pt-3">
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-danger">
+                Ringkasan Triage Medis
+              </p>
+              <p className="mt-1.5 text-sm font-semibold text-ink">
+                {activeSos.triage_brief.patient_summary}
+              </p>
+              {activeSos.triage_brief.allergies.length > 0 && (
+                <p className="mt-1.5 text-xs font-semibold text-danger">
+                  Alergi: {activeSos.triage_brief.allergies.join(", ")}
+                </p>
+              )}
+              {activeSos.triage_brief.routine_meds.length > 0 && (
+                <p className="mt-1 text-xs text-ink">
+                  Obat Rutin: {activeSos.triage_brief.routine_meds.join(", ")}
+                </p>
+              )}
+              <ul className="mt-2.5 list-disc space-y-1 pl-4 text-xs leading-relaxed text-ink">
+                {activeSos.triage_brief.immediate_actions.map((act) => (
+                  <li key={act}>{act}</li>
+                ))}
+              </ul>
+            </div>
           )}
-          {activeSos.triage_brief.routine_meds.length > 0 && (
-            <p className="mt-1 text-xs text-ink">
-              Obat Rutin: {activeSos.triage_brief.routine_meds.join(", ")}
-            </p>
-          )}
-          <ul className="mt-2.5 list-disc space-y-1 pl-4 text-xs leading-relaxed text-ink">
-            {activeSos.triage_brief.immediate_actions.map((act) => (
-              <li key={act}>{act}</li>
-            ))}
-          </ul>
         </div>
       )}
       <ConfirmDialog
@@ -163,8 +173,11 @@ export function SosEmergencyPanel({
         tone="danger"
         loading={triggering}
         onConfirm={async () => {
-          await onTriggerSos(sosReason);
-          setConfirmSosOpen(false);
+          try {
+            await onTriggerSos(sosReason);
+          } finally {
+            setConfirmSosOpen(false);
+          }
         }}
         onCancel={() => setConfirmSosOpen(false)}
       />

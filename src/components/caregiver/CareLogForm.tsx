@@ -23,6 +23,7 @@ const MOOD_OPTIONS: SelectOption<CareLog["mood"]>[] = [
 interface CareLogFormProps {
   submitting: boolean;
   successMsg: string | null;
+  errorMsg?: string | null;
   onSubmit: (input: {
     heartRate: number;
     systolic: number;
@@ -32,12 +33,13 @@ interface CareLogFormProps {
     mood: CareLog["mood"];
     notes: string;
     photoFile: File | null;
-  }) => Promise<void>;
+  }) => Promise<boolean>;
 }
 
 export function CareLogForm({
   submitting,
   successMsg,
+  errorMsg,
   onSubmit,
 }: CareLogFormProps) {
   const [heartRateInput, setHeartRateInput] = useState("");
@@ -87,23 +89,28 @@ export function CareLogForm({
   }
 
   async function handleConfirmSubmit() {
-    await onSubmit({
-      heartRate: Number(heartRateInput),
-      systolic: Number(systolicInput),
-      diastolic: Number(diastolicInput),
-      mealPortion,
-      medicationTaken,
-      mood,
-      notes,
-      photoFile,
-    });
-    setConfirmOpen(false);
-    setHeartRateInput("");
-    setSystolicInput("");
-    setDiastolicInput("");
-    setNotes("");
-    setPhotoFile(null);
-    setPhotoPreview(null);
+    try {
+      const ok = await onSubmit({
+        heartRate: Number(heartRateInput),
+        systolic: Number(systolicInput),
+        diastolic: Number(diastolicInput),
+        mealPortion,
+        medicationTaken,
+        mood,
+        notes,
+        photoFile,
+      });
+      if (ok) {
+        setHeartRateInput("");
+        setSystolicInput("");
+        setDiastolicInput("");
+        setNotes("");
+        setPhotoFile(null);
+        setPhotoPreview(null);
+      }
+    } finally {
+      setConfirmOpen(false);
+    }
   }
 
   return (
@@ -272,6 +279,15 @@ export function CareLogForm({
             />
           )}
         </div>
+
+        {(validationError || errorMsg) && (
+          <div
+            role="alert"
+            className="rounded-xl border border-danger/25 bg-red-50 px-3.5 py-2.5 text-xs font-medium text-danger"
+          >
+            {validationError || errorMsg}
+          </div>
+        )}
 
         <button
           type="submit"

@@ -8,6 +8,7 @@ import {
   MOCK_NOTIFICATIONS,
 } from "@/content/mockData";
 import { apiService } from "@/services/api";
+import { notifyUserDevice } from "@/lib/notifications";
 import {
   AiDigest,
   AppNotification,
@@ -30,7 +31,7 @@ export function useDashboardData() {
   useEffect(() => {
     let active = true;
 
-    async function loadInitial() {
+    async function syncLiveData(includeDigest: boolean) {
       try {
         const eld = await apiService.getElderlyProfile();
         if (!active) return;
@@ -49,17 +50,34 @@ export function useDashboardData() {
         setNotifications(notifs);
         setSosAlerts(alerts);
 
-        const initialDigest = await apiService.generateAiDailyDigest({
-          elderly_id: eld.id,
-          logs: careLogs,
-        });
-        if (active) setDigest(initialDigest);
+        if (includeDigest) {
+          const initialDigest = await apiService.generateAiDailyDigest({
+            elderly_id: eld.id,
+            logs: careLogs,
+          });
+          if (active) setDigest(initialDigest);
+        }
       } catch {
-        // Keep clean empty defaults when profile is not initialized yet
+        // Keep clean defaults when profile is not initialized yet
       }
     }
 
-    void loadInitial();
+    void syncLiveData(true);
+
+    const handleFocus = () => {
+      void syncLiveData(false);
+    };
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        void syncLiveData(false);
+      }
+    };
+
+    window.addEventListener("focus", handleFocus);
+    document.addEventListener("visibilitychange", handleVisibility);
+    const pollId = window.setInterval(() => {
+      void syncLiveData(false);
+    }, 6000);
 
     const unsubscribe = apiService.subscribeToStream((ev) => {
       const currentElderlyId = elderlyIdRef.current;
@@ -70,6 +88,11 @@ export function useDashboardData() {
         setLogs((prev) =>
           prev.some((l) => l.id === incoming.id) ? prev : [...prev, incoming]
         );
+        void notifyUserDevice({
+          title: "Laporan Harian Baru Masuk",
+          body: `TD ${incoming.systolic}/${incoming.diastolic} mmHg · Nadi ${incoming.heart_rate} bpm`,
+          url: "/notifikasi",
+        });
       } else if (
         ev.type === "sos_alert" &&
         ev.data &&
@@ -80,6 +103,12 @@ export function useDashboardData() {
         setSosAlerts((prev) =>
           prev.some((a) => a.id === incoming.id) ? prev : [incoming, ...prev]
         );
+        void notifyUserDevice({
+          title: "DARURAT SOS AKTIF",
+          body: incoming.reason,
+          url: "/notifikasi",
+          urgent: true,
+        });
       } else if (
         ev.type === "sos_resolved" &&
         ev.data &&
@@ -102,12 +131,18 @@ export function useDashboardData() {
         ev.data &&
         typeof ev.data === "object"
       ) {
-        setNotifications((prev) => [ev.data as AppNotification, ...prev]);
+        const incoming = ev.data as AppNotification;
+        setNotifications((prev) =>
+          prev.some((n) => n.id === incoming.id) ? prev : [incoming, ...prev]
+        );
       }
     });
 
     return () => {
       active = false;
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.clearInterval(pollId);
       unsubscribe();
     };
   }, []);

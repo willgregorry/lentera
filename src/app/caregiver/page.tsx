@@ -199,6 +199,7 @@ export default function CaregiverPortalPage() {
           <CareLogForm
             submitting={submittingLog}
             successMsg={logSuccess}
+            errorMsg={portalError}
             onSubmit={submitCareLog}
           />
           <div id="sos-panel" className="lg:col-span-5">

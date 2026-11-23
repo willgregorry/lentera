@@ -140,10 +140,18 @@ export default function NotifikasiLaporanPage() {
               {notifications.map((notif) => (
                 <div
                   key={notif.id}
-                  className="rounded-2xl border border-card-cream-border bg-card-cream/60 p-4"
+                  className={`rounded-2xl border p-4 ${
+                    notif.type === "emergency"
+                      ? "border-danger/35 bg-red-50"
+                      : "border-card-cream-border bg-card-cream/60"
+                  }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm font-bold text-ink">
+                    <span
+                      className={`text-sm font-bold ${
+                        notif.type === "emergency" ? "text-danger" : "text-ink"
+                      }`}
+                    >
                       {notif.title}
                     </span>
                     <span className="text-xs text-ink-muted">

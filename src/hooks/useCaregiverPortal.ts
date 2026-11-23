@@ -18,12 +18,27 @@ export function useCaregiverPortal() {
   useEffect(() => {
     if (!user) return;
     let active = true;
-    apiService
-      .getElderlyProfile()
-      .then((profile) => {
-        if (active) setElderly(profile);
-      })
-      .catch(() => {});
+
+    async function loadPortalContext() {
+      try {
+        const profile = await apiService.getElderlyProfile();
+        if (!active) return;
+        setElderly(profile);
+
+        if (profile.id && profile.id !== "default-elderly") {
+          const alerts = await apiService.getSosAlerts(profile.id);
+          if (active) {
+            const currentActive =
+              alerts.find((a) => a.status === "active") || null;
+            setActiveSos(currentActive);
+          }
+        }
+      } catch {
+        // Keep clean initial state
+      }
+    }
+
+    void loadPortalContext();
     return () => {
       active = false;
     };
@@ -38,7 +53,7 @@ export function useCaregiverPortal() {
     mood: CareLog["mood"];
     notes: string;
     photoFile: File | null;
-  }) {
+  }): Promise<boolean> {
     setSubmittingLog(true);
     setLogSuccess(null);
     setPortalError(null);
@@ -72,18 +87,20 @@ export function useCaregiverPortal() {
       setLogSuccess(
         "Laporan harian berhasil dikirim dan tampil di Dashboard Keluarga."
       );
+      return true;
     } catch (err) {
       setPortalError(
         err instanceof Error
           ? err.message
           : "Gagal mengirim laporan harian. Coba lagi."
       );
+      return false;
     } finally {
       setSubmittingLog(false);
     }
   }
 
-  async function triggerSos(reason: string) {
+  async function triggerSos(reason: string): Promise<boolean> {
     setTriggeringSos(true);
     setPortalError(null);
     try {
@@ -91,19 +108,15 @@ export function useCaregiverPortal() {
         elderly_id: elderly.id,
         reason,
       });
-      if (!alert.triage_brief) {
-        alert.triage_brief = await apiService.generateAiTriageBrief({
-          elderly_id: elderly.id,
-          reason,
-        });
-      }
       setActiveSos(alert);
+      return true;
     } catch (err) {
       setPortalError(
         err instanceof Error
           ? err.message
           : "Gagal mengirim sinyal darurat SOS."
       );
+      return false;
     } finally {
       setTriggeringSos(false);
     }

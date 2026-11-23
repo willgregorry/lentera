@@ -3,7 +3,6 @@ import {
   MOCK_ELDERLY,
 } from "@/content/mockData";
 import { supabase } from "@/lib/supabase";
-import { notifyUserDevice } from "@/lib/notifications";
 import {
   AiDigest,
   AiMatchResult,
@@ -266,6 +265,8 @@ class LenteraSupabaseService implements ILenteraApiService {
     let data: Record<string, unknown> | null = null;
 
     if (currentUser?.role === "caregiver") {
+      let targetElderlyId: string | null = null;
+
       const { data: assignedJob } = await db
         .from("care_jobs")
         .select("elderly_id")
@@ -276,10 +277,34 @@ class LenteraSupabaseService implements ILenteraApiService {
         .maybeSingle();
 
       if (assignedJob?.elderly_id) {
+        targetElderlyId = String(assignedJob.elderly_id);
+      } else {
+        const { data: acceptedApp } = await db
+          .from("job_applications")
+          .select("job_id")
+          .eq("caregiver_id", currentUser.id)
+          .eq("status", "accepted")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (acceptedApp?.job_id) {
+          const { data: jobRow } = await db
+            .from("care_jobs")
+            .select("elderly_id")
+            .eq("id", acceptedApp.job_id)
+            .maybeSingle();
+          if (jobRow?.elderly_id) {
+            targetElderlyId = String(jobRow.elderly_id);
+          }
+        }
+      }
+
+      if (targetElderlyId) {
         const res = await db
           .from("elderly_profiles")
           .select("*")
-          .eq("id", assignedJob.elderly_id)
+          .eq("id", targetElderlyId)
           .maybeSingle();
         data = res.data as Record<string, unknown> | null;
       }
@@ -383,14 +408,14 @@ class LenteraSupabaseService implements ILenteraApiService {
     const db = requireSupabase();
     const currentUser = await this.requireAuthenticatedActor();
 
+    const elderlyProfile = await this.getElderlyProfile();
     let elderlyId =
       payload instanceof FormData
         ? String(payload.get("elderly_id") || "")
         : payload.elderly_id;
 
     if (!elderlyId || elderlyId === "demo" || elderlyId === "default-elderly") {
-      const eld = await this.getElderlyProfile();
-      elderlyId = eld.id;
+      elderlyId = elderlyProfile.id;
     }
 
     if (!elderlyId || elderlyId === "default-elderly") {
@@ -403,16 +428,28 @@ class LenteraSupabaseService implements ILenteraApiService {
     if (payload instanceof FormData) {
       const file = payload.get("photo") as File | null;
       if (file && file.size > 0) {
-        const ext = file.name.split(".").pop() || "jpg";
+        const rawExt = file.name.split(".").pop() || "jpg";
+        const ext = rawExt.replace(/[^a-zA-Z0-9]/g, "") || "jpg";
         const filePath = `${currentUser.id}/${Date.now()}.${ext}`;
-        const { error: uploadErr } = await db.storage
-          .from("care-photos")
-          .upload(filePath, file);
-        if (!uploadErr) {
-          const { data: pub } = db.storage
+        try {
+          const uploadPromise = db.storage
             .from("care-photos")
-            .getPublicUrl(filePath);
-          photoUrl = pub.publicUrl;
+            .upload(filePath, file, {
+              upsert: true,
+              contentType: file.type || "image/jpeg",
+            });
+          const timeoutPromise = new Promise<{ error: Error }>((resolve) =>
+            setTimeout(() => resolve({ error: new Error("timeout") }), 8000)
+          );
+          const result = await Promise.race([uploadPromise, timeoutPromise]);
+          if (!result.error) {
+            const { data: pub } = db.storage
+              .from("care-photos")
+              .getPublicUrl(filePath);
+            photoUrl = pub.publicUrl;
+          }
+        } catch {
+          // Proceed saving care log even if optional photo upload fails
         }
       }
     } else {
@@ -472,11 +509,22 @@ class LenteraSupabaseService implements ILenteraApiService {
       logged_at: data.logged_at || data.created_at,
     };
 
-    notifyUserDevice({
-      title: `Laporan Baru dari ${currentUser.name}`,
-      body: `TD ${created.systolic}/${created.diastolic} mmHg · Nadi ${created.heart_rate} bpm — ${created.notes}`,
-      url: "/notifikasi",
-    });
+    if (elderlyProfile.family_id) {
+      await db
+        .from("notifications")
+        .insert({
+          user_id: elderlyProfile.family_id,
+          type: "care_log",
+          title: `Laporan Baru dari ${currentUser.name}`,
+          body: `TD ${created.systolic}/${created.diastolic} mmHg · Nadi ${created.heart_rate} bpm — ${created.notes}`,
+          metadata: {
+            kind: "care_log",
+            elderly_id: elderlyId,
+            care_log_id: created.id,
+          },
+        })
+        .then(() => {});
+    }
 
     return created;
   }
@@ -844,10 +892,33 @@ class LenteraSupabaseService implements ILenteraApiService {
     if (!elderly.id || elderly.id === "default-elderly") {
       throw new Error("Profil lansia belum tersedia untuk pengiriman SOS.");
     }
-    const triageBrief = await this.generateAiTriageBrief({
-      elderly_id: elderly.id,
-      reason: payload.reason,
-    });
+
+    const fallbackBrief: AiTriageBrief = {
+      patient_summary: `${elderly.name}${elderly.age > 0 ? ` (${elderly.age} th)` : ""}`,
+      allergies: elderly.allergies,
+      routine_meds: elderly.routine_meds,
+      last_24h_vitals: "Pantau tanda vital terbaru dan kesiapan tim medis.",
+      immediate_actions: [
+        "Posisikan lansia nyaman, longgarkan pakaian, dan tetap tenang.",
+        "Segera hubungi layanan ambulans 119 dan kabari keluarga.",
+      ],
+      emergency_note: payload.reason,
+    };
+
+    let triageBrief: AiTriageBrief = fallbackBrief;
+    try {
+      triageBrief = await Promise.race([
+        this.generateAiTriageBrief({
+          elderly_id: elderly.id,
+          reason: payload.reason,
+        }),
+        new Promise<AiTriageBrief>((resolve) =>
+          setTimeout(() => resolve(fallbackBrief), 5000)
+        ),
+      ]);
+    } catch {
+      triageBrief = fallbackBrief;
+    }
 
     const { data, error } = await db
       .from("sos_alerts")
@@ -865,6 +936,25 @@ class LenteraSupabaseService implements ILenteraApiService {
       throw mapSupabaseError(error, "Gagal mengirim sinyal SOS.");
     }
 
+    // Write real SOS notification directly to Family's notification feed
+    if (elderly.family_id) {
+      await db
+        .from("notifications")
+        .insert({
+          user_id: elderly.family_id,
+          type: "sos",
+          title: `DARURAT SOS — ${elderly.name}`,
+          body: `${currentUser.name} mengirim sinyal darurat: ${payload.reason}`,
+          metadata: {
+            kind: "sos",
+            sos_id: data.id,
+            elderly_id: elderly.id,
+            triggered_by: currentUser.name,
+          },
+        })
+        .then(() => {});
+    }
+
     const alert: SosAlert = {
       id: data.id,
       elderly_id: data.elderly_id,
@@ -876,13 +966,6 @@ class LenteraSupabaseService implements ILenteraApiService {
       triage_brief: triageBrief,
       created_at: data.created_at,
     };
-
-    notifyUserDevice({
-      title: `DARURAT SOS — ${elderly.name}`,
-      body: payload.reason,
-      url: "/notifikasi",
-      urgent: true,
-    });
 
     return alert;
   }
@@ -1031,14 +1114,22 @@ class LenteraSupabaseService implements ILenteraApiService {
     const elderly = await this.getElderlyProfile();
     const logs = await this.getCareLogs(elderly.id);
 
-    const res = await fetch("/api/ai/triage-brief", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ elderly, logs, reason: payload.reason }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.triage_brief) return data.triage_brief;
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 5000);
+      const res = await fetch("/api/ai/triage-brief", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ elderly, logs, reason: payload.reason }),
+        signal: controller.signal,
+      });
+      clearTimeout(timer);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.triage_brief) return data.triage_brief;
+      }
+    } catch {
+      // Fall back to immediate clinical triage brief
     }
 
     return {
@@ -1099,6 +1190,46 @@ class LenteraSupabaseService implements ILenteraApiService {
               status: "active",
               triage_brief: row.triage_brief,
               created_at: String(row.created_at),
+            },
+          });
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "sos_alerts" },
+        (payload) => {
+          const row = payload.new as Record<string, unknown>;
+          if (row.status === "resolved") {
+            onEvent({
+              type: "sos_resolved",
+              data: {
+                id: String(row.id),
+                elderly_id: String(row.elderly_id),
+                status: "resolved",
+              },
+            });
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notifications" },
+        (payload) => {
+          const row = payload.new as Record<string, unknown>;
+          onEvent({
+            type: "notification",
+            data: {
+              id: String(row.id),
+              title: String(row.title || "Notifikasi Lentera"),
+              message: String(row.body || ""),
+              type:
+                row.type === "sos"
+                  ? "emergency"
+                  : row.type === "ai_digest"
+                  ? "warning"
+                  : "info",
+              created_at: String(row.created_at || new Date().toISOString()),
+              read: Boolean(row.is_read),
             },
           });
         }
