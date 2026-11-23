@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Briefcase, Calendar, MapPin, Wallet } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { CareJob, JobApplication, UserProfile } from "@/types";
 import { ApplicantCard } from "./ApplicantCard";
 
@@ -27,13 +28,21 @@ export function JobCard({
   onDecide,
 }: JobCardProps) {
   const [applying, setApplying] = useState(false);
+  const [confirmApplyOpen, setConfirmApplyOpen] = useState(false);
+  const [submittingApply, setSubmittingApply] = useState(false);
   const [coverNote, setCoverNote] = useState(
     "Saya berpengalaman mendampingi lansia dengan riwayat hipertensi dan rutin mencatat tanda vital harian."
   );
 
   async function handleApplySubmit() {
-    await onApply(job.id, coverNote);
-    setApplying(false);
+    setSubmittingApply(true);
+    try {
+      await onApply(job.id, coverNote);
+      setConfirmApplyOpen(false);
+      setApplying(false);
+    } finally {
+      setSubmittingApply(false);
+    }
   }
 
   return (
@@ -127,7 +136,7 @@ export function JobCard({
             </button>
             <button
               type="button"
-              onClick={handleApplySubmit}
+              onClick={() => setConfirmApplyOpen(true)}
               className="rounded-xl bg-primary px-4 py-1.5 text-xs font-semibold text-white hover:bg-primary-hover cursor-pointer"
             >
               Kirim Lamaran
@@ -163,6 +172,15 @@ export function JobCard({
           )}
         </div>
       )}
+      <ConfirmDialog
+        open={confirmApplyOpen}
+        title="Kirim Lamaran Sekarang?"
+        description={`Profil dan catatan pengalaman Anda akan dikirimkan ke keluarga ${job.family_name} untuk lowongan "${job.title}".`}
+        confirmLabel="Ya, Kirim Lamaran"
+        loading={submittingApply}
+        onConfirm={handleApplySubmit}
+        onCancel={() => setConfirmApplyOpen(false)}
+      />
     </article>
   );
 }

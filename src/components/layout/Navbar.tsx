@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { LogOut, Menu, UserCircle, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { LenteraMascot } from "@/components/shared/LenteraMascot";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const PUBLIC_NAV_LINKS = [
   { href: "/#cara-kerja", label: "Cara Kerja" },
@@ -15,6 +16,7 @@ const PUBLIC_NAV_LINKS = [
 export function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
   const { user, logout } = useAuth();
 
   const navLinks = user
@@ -70,7 +72,7 @@ export function Navbar() {
                 </span>
               </div>
               <button
-                onClick={logout}
+                onClick={() => setConfirmLogoutOpen(true)}
                 title="Keluar"
                 className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-ink-muted transition-colors hover:bg-red-50 hover:text-danger cursor-pointer"
               >
@@ -146,9 +148,9 @@ export function Navbar() {
                 <button
                   onClick={() => {
                     setMenuOpen(false);
-                    logout();
+                    setConfirmLogoutOpen(true);
                   }}
-                  className="rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-danger"
+                  className="rounded-xl bg-red-50 px-3 py-1.5 text-xs font-semibold text-danger cursor-pointer"
                 >
                   Keluar
                 </button>
@@ -174,6 +176,19 @@ export function Navbar() {
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmLogoutOpen}
+        title="Keluar dari Lentera?"
+        description="Anda akan keluar dari sesi saat ini dan perlu masuk kembali untuk mengakses data perawatan."
+        confirmLabel="Ya, Keluar"
+        tone="danger"
+        onConfirm={() => {
+          setConfirmLogoutOpen(false);
+          logout();
+        }}
+        onCancel={() => setConfirmLogoutOpen(false)}
+      />
     </header>
   );
 }

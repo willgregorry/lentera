@@ -15,6 +15,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useAssignmentStatus } from "@/hooks/useAssignmentStatus";
 import { supabase } from "@/lib/supabase";
@@ -38,6 +39,10 @@ export default function CaregiverDirectoryPage() {
   >({});
   const [invitingId, setInvitingId] = useState<string | null>(null);
   const [hiringId, setHiringId] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{
+    type: "invite" | "hire";
+    caregiver: UserProfile;
+  } | null>(null);
   const [actionMsg, setActionMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -533,7 +538,9 @@ export default function CaregiverDirectoryPage() {
                       <button
                         type="button"
                         disabled={hiringId === cg.id}
-                        onClick={() => handleHireDirectly(cg)}
+                        onClick={() =>
+                          setConfirmAction({ type: "hire", caregiver: cg })
+                        }
                         className="w-full rounded-xl bg-primary py-2.5 text-xs font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 cursor-pointer"
                       >
                         {hiringId === cg.id
@@ -557,7 +564,9 @@ export default function CaregiverDirectoryPage() {
                     <button
                       type="button"
                       disabled={invitingId === cg.id}
-                      onClick={() => handleInvite(cg)}
+                      onClick={() =>
+                        setConfirmAction({ type: "invite", caregiver: cg })
+                      }
                       className="mt-5 w-full rounded-xl bg-primary py-2.5 text-xs font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 cursor-pointer"
                     >
                       {invitingId === cg.id
@@ -571,6 +580,38 @@ export default function CaregiverDirectoryPage() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={Boolean(confirmAction)}
+        title={
+          confirmAction?.type === "hire"
+            ? `Tugaskan ${confirmAction.caregiver.name}?`
+            : `Undang ${confirmAction?.caregiver.name || "Perawat"} untuk Wawancara?`
+        }
+        description={
+          confirmAction?.type === "hire"
+            ? "Perawat ini akan langsung ditugaskan mendampingi orang tua Anda dan membuka menu Kondisi Orang Tua serta Laporan Masuk."
+            : "Undangan wawancara beserta nama dan kontak keluarga Anda akan langsung tampil di Ruang Perawat."
+        }
+        confirmLabel={
+          confirmAction?.type === "hire" ? "Ya, Tugaskan" : "Ya, Kirim Undangan"
+        }
+        loading={Boolean(
+          confirmAction &&
+            (invitingId === confirmAction.caregiver.id ||
+              hiringId === confirmAction.caregiver.id)
+        )}
+        onConfirm={async () => {
+          if (!confirmAction) return;
+          if (confirmAction.type === "invite") {
+            await handleInvite(confirmAction.caregiver);
+          } else {
+            await handleHireDirectly(confirmAction.caregiver);
+          }
+          setConfirmAction(null);
+        }}
+        onCancel={() => setConfirmAction(null)}
+      />
     </AppShell>
   );
 }

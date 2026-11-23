@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Camera, CheckCircle2, Send } from "lucide-react";
 import { CustomSelect, SelectOption } from "@/components/shared/CustomSelect";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { CareLog } from "@/types";
 
 const MEAL_OPTIONS: SelectOption<CareLog["meal_portion"]>[] = [
@@ -49,6 +50,7 @@ export function CareLogForm({
   const [notes, setNotes] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] || null;
@@ -62,8 +64,12 @@ export function CareLogForm({
     }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setConfirmOpen(true);
+  }
+
+  async function handleConfirmSubmit() {
     await onSubmit({
       heartRate,
       systolic,
@@ -74,6 +80,7 @@ export function CareLogForm({
       notes,
       photoFile,
     });
+    setConfirmOpen(false);
     setNotes("");
     setPhotoFile(null);
     setPhotoPreview(null);
@@ -237,6 +244,15 @@ export function CareLogForm({
           <span>{submitting ? "Mengirim..." : "Kirim Laporan Harian"}</span>
         </button>
       </form>
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Kirim Laporan Harian?"
+        description={`Catatan vital (tensi ${systolic}/${diastolic} mmHg, nadi ${heartRate} bpm) beserta dokumentasi akan langsung dikirimkan ke keluarga.`}
+        confirmLabel="Ya, Kirim Laporan"
+        loading={submitting}
+        onConfirm={handleConfirmSubmit}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </section>
   );
 }

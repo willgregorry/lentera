@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { BadgeCheck, RefreshCw, UserCheck } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { CareJob, JobApplication } from "@/types";
 
 interface ApplicantCardProps {
@@ -23,6 +24,8 @@ export function ApplicantCard({
   onRunAiMatch,
   onDecide,
 }: ApplicantCardProps) {
+  const [confirmHireOpen, setConfirmHireOpen] = useState(false);
+
   return (
     <div className="flex flex-col justify-between rounded-2xl border border-card-blue-border bg-card-blue/50 p-5">
       <div>
@@ -104,13 +107,25 @@ export function ApplicantCard({
         ) : (
           <button
             type="button"
-            onClick={() => onDecide(job.id, app.id, "accepted")}
+            onClick={() => setConfirmHireOpen(true)}
             className="rounded-xl bg-primary px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-primary-hover cursor-pointer"
           >
             Rekrut Caregiver
           </button>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmHireOpen}
+        title={`Rekrut ${app.caregiver_name}?`}
+        description={`Lowongan "${job.title}" akan ditandai terisi dan ${app.caregiver_name} akan ditugaskan mendampingi orang tua Anda.`}
+        confirmLabel="Ya, Rekrut"
+        onConfirm={() => {
+          setConfirmHireOpen(false);
+          onDecide(job.id, app.id, "accepted");
+        }}
+        onCancel={() => setConfirmHireOpen(false)}
+      />
     </div>
   );
 }

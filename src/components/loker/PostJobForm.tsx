@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 interface PostJobFormProps {
   onSubmit: (payload: {
@@ -27,23 +28,35 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
   const [skillsInput, setSkillsInput] = useState(
     "Hipertensi & Diabetes, Pencegahan Jatuh"
   );
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    await onSubmit({
-      title,
-      elderly_name: elderlyName,
-      elderly_age: Number(elderlyAge),
-      location,
-      schedule,
-      salary_display: salaryDisplay,
-      medical_notes: medicalNotes,
-      required_skills: skillsInput
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
-    });
-    onCancel();
+    setConfirmOpen(true);
+  }
+
+  async function handleConfirmSubmit() {
+    setSubmitting(true);
+    try {
+      await onSubmit({
+        title,
+        elderly_name: elderlyName,
+        elderly_age: Number(elderlyAge),
+        location,
+        schedule,
+        salary_display: salaryDisplay,
+        medical_notes: medicalNotes,
+        required_skills: skillsInput
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+      });
+      setConfirmOpen(false);
+      onCancel();
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -180,6 +193,15 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
           Terbitkan Lowongan
         </button>
       </div>
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Terbitkan Lowongan Sekarang?"
+        description={`Lowongan "${title || "Perawatan Lansia"}" akan langsung ditampilkan kepada perawat terdaftar di Lentera.`}
+        confirmLabel="Ya, Terbitkan"
+        loading={submitting}
+        onConfirm={handleConfirmSubmit}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </form>
   );
 }

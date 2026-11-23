@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { MapPin, PhoneCall } from "lucide-react";
 import { CustomSelect, SelectOption } from "@/components/shared/CustomSelect";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { ElderlyProfile, SosAlert } from "@/types";
 
 const SOS_OPTIONS: SelectOption<string>[] = [
@@ -50,6 +51,7 @@ export function SosEmergencyPanel({
   onTriggerSos,
 }: SosEmergencyPanelProps) {
   const [sosReason, setSosReason] = useState(SOS_OPTIONS[0].value);
+  const [confirmSosOpen, setConfirmSosOpen] = useState(false);
 
   const waNumber = formatWaNumber(familyPhone);
   const waText = encodeURIComponent(
@@ -84,7 +86,7 @@ export function SosEmergencyPanel({
 
         <button
           type="button"
-          onClick={() => onTriggerSos(sosReason)}
+          onClick={() => setConfirmSosOpen(true)}
           disabled={triggering}
           className="mt-4 flex min-h-[46px] w-full items-center justify-center rounded-xl bg-danger px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60 cursor-pointer"
         >
@@ -153,6 +155,19 @@ export function SosEmergencyPanel({
           </ul>
         </div>
       )}
+      <ConfirmDialog
+        open={confirmSosOpen}
+        title="Kirim Sinyal Darurat SOS?"
+        description={`Peringatan darurat untuk ${elderly.name} ("${sosReason}") akan langsung dikirimkan ke keluarga beserta ringkasan medis darurat.`}
+        confirmLabel="Ya, Kirim SOS"
+        tone="danger"
+        loading={triggering}
+        onConfirm={async () => {
+          await onTriggerSos(sosReason);
+          setConfirmSosOpen(false);
+        }}
+        onCancel={() => setConfirmSosOpen(false)}
+      />
     </section>
   );
 }

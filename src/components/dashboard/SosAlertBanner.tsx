@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { AlertTriangle, CheckCircle2, MapPin, PhoneCall } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { ElderlyProfile, SosAlert } from "@/types";
 
 interface SosAlertBannerProps {
@@ -15,6 +16,8 @@ export function SosAlertBanner({
   elderly,
   onResolve,
 }: SosAlertBannerProps) {
+  const [confirmResolveOpen, setConfirmResolveOpen] = useState(false);
+
   return (
     <section className="mb-6 rounded-2xl border-2 border-danger bg-red-50 p-6">
       <div className="flex flex-col justify-between gap-4 border-b border-danger/20 pb-4 md:flex-row md:items-center">
@@ -50,7 +53,7 @@ export function SosAlertBanner({
           </a>
           <button
             type="button"
-            onClick={() => onResolve(alert.id)}
+            onClick={() => setConfirmResolveOpen(true)}
             className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-ink hover:bg-canvas-subtle cursor-pointer"
           >
             <CheckCircle2 className="h-4 w-4 text-secondary" />
@@ -103,6 +106,17 @@ export function SosAlertBanner({
           </div>
         </div>
       )}
+      <ConfirmDialog
+        open={confirmResolveOpen}
+        title="Tandai Kondisi Darurat Selesai?"
+        description="Pastikan kondisi orang tua sudah aman dan tertangani sebelum menutup peringatan SOS aktif ini."
+        confirmLabel="Ya, Tandai Selesai"
+        onConfirm={() => {
+          setConfirmResolveOpen(false);
+          onResolve(alert.id);
+        }}
+        onCancel={() => setConfirmResolveOpen(false)}
+      />
     </section>
   );
 }

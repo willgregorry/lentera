@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useAssignmentStatus } from "@/hooks/useAssignmentStatus";
 import { LenteraMascot } from "@/components/shared/LenteraMascot";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -52,6 +53,7 @@ export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { hasCaregiver, caregiverHasJob } = useAssignmentStatus();
+  const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
   const isCaregiver = user?.role === "caregiver";
 
   const todayLabel = new Date().toLocaleDateString("id-ID", {
@@ -222,7 +224,7 @@ export function AppShell({ children }: AppShellProps) {
               </div>
               <button
                 type="button"
-                onClick={logout}
+                onClick={() => setConfirmLogoutOpen(true)}
                 className="mt-3 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-sidebar-muted transition-colors hover:bg-sidebar-hover hover:text-sidebar-ink cursor-pointer"
               >
                 <LogOut className="h-3.5 w-3.5" />
@@ -239,6 +241,19 @@ export function AppShell({ children }: AppShellProps) {
       </div>
 
       <MobileBottomNav />
+
+      <ConfirmDialog
+        open={confirmLogoutOpen}
+        title="Keluar dari Lentera?"
+        description="Anda akan keluar dari sesi saat ini dan perlu masuk kembali untuk mengakses data perawatan."
+        confirmLabel="Ya, Keluar"
+        tone="danger"
+        onConfirm={() => {
+          setConfirmLogoutOpen(false);
+          logout();
+        }}
+        onCancel={() => setConfirmLogoutOpen(false)}
+      />
     </div>
   );
 }

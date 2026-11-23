@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { CalendarCheck, Check, Clock, MapPin, MessageCircle, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { UserProfile } from "@/types";
 
 interface InterviewInvite {
@@ -35,6 +36,10 @@ export function CaregiverInvitesSection({
 }: CaregiverInvitesSectionProps) {
   const [invites, setInvites] = useState<InterviewInvite[]>([]);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [pendingAction, setPendingAction] = useState<{
+    invite: InterviewInvite;
+    nextStatus: "accepted" | "declined";
+  } | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -195,7 +200,9 @@ export function CaregiverInvitesSection({
                     <button
                       type="button"
                       disabled={updatingId === invite.id}
-                      onClick={() => handleRespond(invite, "accepted")}
+                      onClick={() =>
+                        setPendingAction({ invite, nextStatus: "accepted" })
+                      }
                       className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 cursor-pointer"
                     >
                       <Check className="h-3.5 w-3.5" />
@@ -204,7 +211,9 @@ export function CaregiverInvitesSection({
                     <button
                       type="button"
                       disabled={updatingId === invite.id}
-                      onClick={() => handleRespond(invite, "declined")}
+                      onClick={() =>
+                        setPendingAction({ invite, nextStatus: "declined" })
+                      }
                       className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3.5 py-2 text-xs font-semibold text-ink-muted transition-colors hover:text-danger disabled:opacity-60 cursor-pointer"
                     >
                       <X className="h-3.5 w-3.5" />
@@ -238,6 +247,35 @@ export function CaregiverInvitesSection({
           );
         })}
       </div>
+
+      <ConfirmDialog
+        open={Boolean(pendingAction)}
+        title={
+          pendingAction?.nextStatus === "accepted"
+            ? "Terima Undangan Wawancara?"
+            : "Tolak Undangan Wawancara?"
+        }
+        description={
+          pendingAction?.nextStatus === "accepted"
+            ? `Keluarga ${pendingAction.invite.family_name} akan diberi tahu bahwa Anda bersedia mengikuti wawancara.`
+            : `Undangan wawancara dari keluarga ${pendingAction?.invite.family_name || ""} akan ditandai ditolak.`
+        }
+        confirmLabel={
+          pendingAction?.nextStatus === "accepted"
+            ? "Ya, Terima"
+            : "Ya, Tolak"
+        }
+        tone={pendingAction?.nextStatus === "declined" ? "danger" : "primary"}
+        loading={Boolean(
+          pendingAction && updatingId === pendingAction.invite.id
+        )}
+        onConfirm={async () => {
+          if (!pendingAction) return;
+          await handleRespond(pendingAction.invite, pendingAction.nextStatus);
+          setPendingAction(null);
+        }}
+        onCancel={() => setPendingAction(null)}
+      />
     </section>
   );
 }

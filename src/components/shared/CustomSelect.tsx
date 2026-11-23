@@ -67,7 +67,7 @@ export function CustomSelect<T extends string>({
       {open && (
         <ul
           role="listbox"
-          className="absolute z-40 mt-1.5 max-h-60 w-full overflow-auto rounded-xl border border-border bg-surface p-1.5 shadow-lg"
+          className="animate-dropdown-in absolute z-40 mt-1.5 max-h-60 w-full overflow-auto rounded-xl border border-border bg-surface p-1.5 shadow-lg"
         >
           {options.map((opt) => {
             const active = opt.value === value;

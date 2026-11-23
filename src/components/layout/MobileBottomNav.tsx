@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -15,11 +15,13 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useAssignmentStatus } from "@/hooks/useAssignmentStatus";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 export function MobileBottomNav() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { hasCaregiver, caregiverHasJob } = useAssignmentStatus();
+  const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
 
   if (!user) return null;
 
@@ -105,13 +107,26 @@ export function MobileBottomNav() {
 
         <button
           type="button"
-          onClick={logout}
+          onClick={() => setConfirmLogoutOpen(true)}
           className="flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold text-sidebar-muted hover:text-red-300 cursor-pointer"
         >
           <LogOut className="h-5 w-5" />
           <span>Keluar</span>
         </button>
       </div>
+
+      <ConfirmDialog
+        open={confirmLogoutOpen}
+        title="Keluar dari Lentera?"
+        description="Anda akan keluar dari sesi saat ini dan perlu masuk kembali untuk mengakses data perawatan."
+        confirmLabel="Ya, Keluar"
+        tone="danger"
+        onConfirm={() => {
+          setConfirmLogoutOpen(false);
+          logout();
+        }}
+        onCancel={() => setConfirmLogoutOpen(false)}
+      />
     </nav>
   );
 }
