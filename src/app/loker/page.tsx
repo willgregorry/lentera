@@ -68,7 +68,7 @@ export default function LokerPage() {
 
       <div className="mt-6 space-y-6">
         {jobs.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-card-cream-border bg-card-cream/45 px-6 py-12 text-center">
+          <div className="rounded-2xl border border-dashed border-border bg-surface px-6 py-12 text-center">
             <p className="text-sm font-semibold text-ink">
               Belum ada lowongan aktif
             </p>

@@ -144,7 +144,7 @@ export function PostJobForm({ onSubmit, onCancel }: PostJobFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-5 rounded-2xl border border-card-cream-border bg-card-cream/60 p-5 sm:p-6"
+      className="mt-5 rounded-2xl border border-border bg-surface p-5 sm:p-6"
     >
       <div>
         <h2 className="font-display text-lg font-bold text-ink">
