@@ -6,7 +6,7 @@ import { LenteraMascot } from "@/components/shared/LenteraMascot";
 export function Footer() {
   return (
     <footer className="mt-auto border-t border-border bg-surface">
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <div className="grid gap-8 md:grid-cols-3">
           <div>
             <Link href="/" className="inline-flex items-center gap-2.5">

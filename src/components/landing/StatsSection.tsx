@@ -62,7 +62,7 @@ export function StatsSection() {
       ref={sectionRef}
       className="flex min-h-[80svh] items-center border-b border-border bg-primary-soft"
     >
-      <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
+      <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6">
         <div className="gsap-reveal max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             Realitas Indonesia

@@ -31,7 +31,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-4 z-40 px-4 sm:px-6">
-      <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-white/70 bg-white/70 px-4 py-2.5 shadow-[0_12px_36px_-14px_rgba(15,23,42,0.12)] ring-1 ring-black/[0.05] backdrop-blur-xl transition-all duration-300 sm:rounded-full sm:px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between rounded-2xl border border-white/70 bg-white/70 px-4 py-2.5 shadow-[0_12px_36px_-14px_rgba(15,23,42,0.12)] ring-1 ring-black/[0.05] backdrop-blur-xl transition-all duration-300 sm:rounded-full sm:px-6">
         <Link href="/" className="flex items-center gap-2.5">
           <LenteraMascot status="aman" size="sm" />
           <span className="font-display text-base font-bold tracking-tight text-ink sm:text-lg">
@@ -108,7 +108,7 @@ export function Navbar() {
 
       {/* Mobile Glassmorphic Drawer */}
       <div
-        className={`mx-auto max-w-6xl overflow-hidden transition-all duration-300 ease-out md:hidden ${
+        className={`mx-auto max-w-7xl overflow-hidden transition-all duration-300 ease-out md:hidden ${
           menuOpen
             ? "mt-2.5 max-h-96 opacity-100"
             : "max-h-0 opacity-0 pointer-events-none"

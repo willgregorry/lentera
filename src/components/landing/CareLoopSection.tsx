@@ -38,7 +38,7 @@ export function CareLoopSection() {
       ref={sectionRef}
       className="flex min-h-[85svh] items-center border-b border-border-subtle bg-surface"
     >
-      <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
+      <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="gsap-reveal lg:col-span-5">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-secondary">

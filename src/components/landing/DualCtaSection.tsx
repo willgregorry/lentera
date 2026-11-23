@@ -14,7 +14,7 @@ export function DualCtaSection() {
       ref={sectionRef}
       className="flex min-h-[80svh] items-center border-b border-border bg-surface"
     >
-      <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
+      <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6">
         <div className="grid gap-12 md:grid-cols-2 md:divide-x md:divide-border">
           <div className="gsap-reveal md:pr-10">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">

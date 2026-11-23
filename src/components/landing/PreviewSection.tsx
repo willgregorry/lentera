@@ -19,7 +19,7 @@ export function PreviewSection() {
       ref={sectionRef}
       className="flex min-h-[90svh] items-center border-b border-border bg-surface"
     >
-      <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
+      <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6">
         <div className="grid items-center gap-12 lg:grid-cols-12">
           <div className="gsap-reveal lg:col-span-5">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
