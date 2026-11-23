@@ -80,7 +80,7 @@ export function CareLogForm({
   }
 
   return (
-    <section className="rounded-2xl border border-border bg-surface p-4 sm:p-6 lg:col-span-7">
+    <section className="rounded-2xl border border-card-blue-border bg-card-blue/45 p-4 sm:p-6 lg:col-span-7">
       <h2 className="font-display text-base font-bold text-ink sm:text-lg">
         Catatan Perawatan Harian
       </h2>

@@ -62,9 +62,9 @@ export default function FamilyDashboardPage() {
           Memuat kondisi orang tua...
         </div>
       ) : !hasCaregiver ? (
-        <div className="mt-4 rounded-2xl border border-dashed border-border bg-surface px-6 py-14 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-border-subtle text-ink-muted">
-            <Lock className="h-5 w-5" />
+        <div className="mt-2 rounded-2xl border border-dashed border-card-blue-border bg-card-blue/45 px-6 py-14 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-card-cream-border bg-card-cream text-primary">
+            <Lock className="h-6 w-6" />
           </div>
           <h1 className="mt-4 font-display text-lg font-bold text-ink sm:text-xl">
             Pemantauan Belum Aktif
@@ -77,16 +77,16 @@ export default function FamilyDashboardPage() {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/caregivers"
-              className="btn-diagonal-secondary inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-semibold text-white sm:text-sm"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-primary-hover sm:text-sm"
             >
               <Users className="h-4 w-4" />
               <span>Cari Perawat</span>
             </Link>
             <Link
               href="/loker"
-              className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-5 py-2.5 text-xs font-semibold text-ink transition-colors hover:bg-canvas-subtle sm:text-sm"
+              className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-5 py-2.5 text-xs font-semibold text-ink transition-colors hover:border-primary/40 sm:text-sm"
             >
-              <Briefcase className="h-4 w-4" />
+              <Briefcase className="h-4 w-4 text-primary" />
               <span>Pasang Lowongan</span>
             </Link>
           </div>

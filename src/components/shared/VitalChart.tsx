@@ -53,24 +53,24 @@ export function VitalChart({ logs }: VitalChartProps) {
           data={chartData}
           margin={{ top: 10, right: 16, left: -12, bottom: 4 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
           <XAxis
             dataKey="waktu"
-            tick={{ fontSize: 11, fill: "#6B7280" }}
-            stroke="#E5E5E5"
+            tick={{ fontSize: 11, fill: "#64748B" }}
+            stroke="#E2E8F0"
           />
           <YAxis
             domain={[50, 170]}
-            tick={{ fontSize: 11, fill: "#6B7280" }}
-            stroke="#E5E5E5"
+            tick={{ fontSize: 11, fill: "#64748B" }}
+            stroke="#E2E8F0"
           />
           <Tooltip
             contentStyle={{
               backgroundColor: "#FFFFFF",
-              borderColor: "#E5E5E5",
-              borderRadius: "12px",
+              borderColor: "#DCE7F5",
+              borderRadius: "14px",
               fontSize: "12px",
-              color: "#1F2937",
+              color: "#1E293B",
             }}
           />
           <Legend wrapperStyle={{ fontSize: "12px" }} />
@@ -87,18 +87,18 @@ export function VitalChart({ logs }: VitalChartProps) {
             type="monotone"
             dataKey="Diastolik"
             name="Tensi Diastolik (mmHg)"
-            stroke="#4A7C59"
+            stroke="#3F6E51"
             strokeWidth={2.5}
-            dot={{ r: 4, fill: "#4A7C59" }}
+            dot={{ r: 4, fill: "#3F6E51" }}
           />
           <Line
             type="monotone"
             dataKey="DetakJantung"
             name="Detak Jantung (bpm)"
-            stroke="#1F2937"
-            strokeWidth={2}
+            stroke="#13233A"
+            strokeWidth={2.25}
             strokeDasharray="4 4"
-            dot={{ r: 3.5, fill: "#1F2937" }}
+            dot={{ r: 3.5, fill: "#13233A" }}
           />
         </LineChart>
       </ResponsiveContainer>

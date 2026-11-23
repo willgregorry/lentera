@@ -54,11 +54,11 @@ export function CareLogTimeline({ logs }: CareLogTimelineProps) {
               <span className="font-mono-vital font-semibold text-ink">
                 {log.systolic}/{log.diastolic} mmHg
               </span>
-              <span className="text-[#E5E5E5]">•</span>
+              <span className="text-border">•</span>
               <span className="font-mono-vital font-semibold text-primary">
                 {log.heart_rate} bpm
               </span>
-              <span className="text-[#E5E5E5]">•</span>
+              <span className="text-border">•</span>
               <span className="font-medium text-secondary">
                 {MEAL_LABEL[log.meal_portion]}
               </span>

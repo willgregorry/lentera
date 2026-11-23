@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { BadgeCheck, Sparkles, UserCheck } from "lucide-react";
+import { BadgeCheck, RefreshCw, UserCheck } from "lucide-react";
 import { CareJob, JobApplication } from "@/types";
 
 interface ApplicantCardProps {
@@ -24,7 +24,7 @@ export function ApplicantCard({
   onDecide,
 }: ApplicantCardProps) {
   return (
-    <div className="flex flex-col justify-between rounded-2xl border border-border bg-surface p-5">
+    <div className="flex flex-col justify-between rounded-2xl border border-card-blue-border bg-card-blue/50 p-5">
       <div>
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -33,8 +33,8 @@ export function ApplicantCard({
                 {app.caregiver_name}
               </p>
               {app.verified && (
-                <span className="inline-flex items-center gap-1 text-xs font-semibold text-secondary">
-                  <BadgeCheck className="h-4 w-4" />
+                <span className="inline-flex items-center gap-1 rounded-full border border-card-sage-border bg-card-sage px-2 py-0.5 text-[11px] font-semibold text-secondary">
+                  <BadgeCheck className="h-3.5 w-3.5" />
                   Terverifikasi
                 </span>
               )}
@@ -45,50 +45,56 @@ export function ApplicantCard({
           </div>
 
           {typeof app.ai_match_score === "number" && (
-            <div className="shrink-0 text-right">
+            <div className="shrink-0 rounded-xl border border-card-sage-border bg-surface px-3 py-1.5 text-right">
               <span className="block text-[10px] font-semibold uppercase tracking-wider text-ink-muted">
                 AI Match
               </span>
-              <span className="font-mono-vital text-2xl font-bold text-secondary">
+              <span className="font-mono-vital text-xl font-bold text-secondary">
                 {app.ai_match_score}%
               </span>
             </div>
           )}
         </div>
 
-        <p className="mt-3 text-xs font-medium text-ink">
-          {app.skills.join(" · ")}
-        </p>
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {app.skills.map((skill) => (
+            <span
+              key={skill}
+              className="rounded-md bg-surface px-2 py-0.5 text-[11px] font-medium text-ink"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
 
         <p className="mt-2.5 text-xs leading-relaxed text-ink-muted">
           &ldquo;{app.cover_note}&rdquo;
         </p>
 
         {app.ai_match_reason && (
-          <div className="mt-3 border-l-2 border-primary pl-3 text-xs leading-relaxed text-ink">
-            <span className="inline-flex items-center gap-1 font-semibold text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              Analisis AI:
-            </span>{" "}
+          <div className="mt-3 rounded-xl border border-card-cream-border bg-card-cream px-3 py-2.5 text-xs leading-relaxed text-ink">
+            <span className="font-bold text-primary">Analisis AI:</span>{" "}
             {app.ai_match_reason}
           </div>
         )}
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-card-blue-border pt-3">
         <button
           type="button"
           onClick={() => onRunAiMatch(job, app)}
           disabled={matching}
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink hover:text-primary cursor-pointer"
         >
-          <Sparkles className="h-3.5 w-3.5 text-primary" />
+          <RefreshCw
+            className={`h-3.5 w-3.5 text-primary ${matching ? "animate-spin" : ""}`}
+          />
           <span>{matching ? "Menilai..." : "Hitung Ulang AI Match"}</span>
         </button>
 
         {app.status === "accepted" ? (
-          <span className="inline-flex items-center gap-1 text-xs font-bold text-secondary">
-            <UserCheck className="h-4 w-4" />
+          <span className="inline-flex items-center gap-1 rounded-full bg-card-sage px-3 py-1 text-xs font-bold text-secondary">
+            <UserCheck className="h-3.5 w-3.5" />
             Direkrut
           </span>
         ) : app.status === "rejected" ? (
@@ -99,7 +105,7 @@ export function ApplicantCard({
           <button
             type="button"
             onClick={() => onDecide(job.id, app.id, "accepted")}
-            className="rounded-xl bg-[#4A7C59] px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-[#3B6448] cursor-pointer"
+            className="rounded-xl bg-primary px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-primary-hover cursor-pointer"
           >
             Rekrut Caregiver
           </button>

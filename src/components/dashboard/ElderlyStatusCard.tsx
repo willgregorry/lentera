@@ -28,7 +28,7 @@ export function ElderlyStatusCard({
   const bpHigh = latestLog ? latestLog.systolic >= 140 : false;
 
   return (
-    <section className="rounded-2xl border border-border bg-surface p-5 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:p-6">
+    <section className="rounded-2xl border border-border bg-surface p-5 shadow-[0_1px_4px_rgba(15,23,42,0.03)] sm:p-6">
       <div className="flex flex-col justify-between gap-4 border-b border-border-subtle pb-5 sm:flex-row sm:items-center">
         <div>
           <div className="flex flex-wrap items-center gap-2">
@@ -36,7 +36,7 @@ export function ElderlyStatusCard({
               {elderly.name}
             </h1>
             {elderly.age > 0 && (
-              <span className="rounded-md bg-canvas-subtle px-2 py-0.5 text-xs font-medium text-ink-muted">
+              <span className="rounded-full border border-card-blue-border bg-card-blue px-2.5 py-0.5 text-xs font-semibold text-sidebar">
                 {elderly.age} tahun
               </span>
             )}
@@ -46,7 +46,7 @@ export function ElderlyStatusCard({
             {caregiverName && (
               <Link
                 href="/caregivers"
-                className="font-medium text-ink underline decoration-border underline-offset-4 transition-colors hover:text-primary"
+                className="font-semibold text-ink underline decoration-border underline-offset-4 transition-colors hover:text-primary"
               >
                 Perawat: {caregiverName}
               </Link>
@@ -58,24 +58,26 @@ export function ElderlyStatusCard({
         <LenteraMascot status={status} size="sm" showLabel />
       </div>
 
-      {/* Apple Health / Linear style KPI strip */}
-      <div className="mt-5 grid grid-cols-2 divide-y divide-border-subtle sm:grid-cols-4 sm:divide-x sm:divide-y-0">
-        <div className="pb-4 pr-3 sm:pb-0 sm:pr-5">
+      {/* Subtly Tinted 4-Card KPI Grid */}
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="rounded-2xl border border-card-cream-border bg-card-cream/75 p-4">
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs font-medium text-ink-muted">
               Tekanan Darah
             </span>
             {latestLog && (
               <span
-                className={`text-[11px] font-semibold ${
-                  bpHigh ? "text-warning" : "text-secondary"
+                className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                  bpHigh
+                    ? "bg-amber-100 text-warning"
+                    : "bg-card-sage text-secondary"
                 }`}
               >
                 {bpHigh ? "Tinggi" : "Stabil"}
               </span>
             )}
           </div>
-          <p className="mt-2 text-2xl font-bold tracking-tight tabular-nums text-ink sm:text-3xl">
+          <p className="mt-2.5 text-2xl font-bold tracking-tight tabular-nums text-ink sm:text-3xl">
             {latestLog
               ? `${latestLog.systolic}/${latestLog.diastolic}`
               : "--/--"}
@@ -83,9 +85,9 @@ export function ElderlyStatusCard({
           <p className="mt-0.5 text-[11px] text-ink-muted">mmHg</p>
         </div>
 
-        <div className="pb-4 pl-3 sm:px-5 sm:pb-0">
+        <div className="rounded-2xl border border-card-blue-border bg-card-blue/85 p-4">
           <span className="text-xs font-medium text-ink-muted">Detak Nadi</span>
-          <p className="mt-2 text-2xl font-bold tracking-tight tabular-nums text-ink sm:text-3xl">
+          <p className="mt-2.5 text-2xl font-bold tracking-tight tabular-nums text-ink sm:text-3xl">
             {latestLog ? latestLog.heart_rate : "--"}
             {latestLog && (
               <span className="ml-1 text-xs font-medium text-ink-muted">
@@ -96,9 +98,9 @@ export function ElderlyStatusCard({
           <p className="mt-0.5 text-[11px] text-ink-muted">Rentang 60–100</p>
         </div>
 
-        <div className="pt-4 pr-3 sm:px-5 sm:pt-0">
+        <div className="rounded-2xl border border-card-sage-border bg-card-sage/85 p-4">
           <span className="text-xs font-medium text-ink-muted">Obat Rutin</span>
-          <p className="mt-2 text-lg font-bold tracking-tight text-ink sm:text-xl">
+          <p className="mt-2.5 text-lg font-bold tracking-tight text-ink sm:text-xl">
             {latestLog
               ? latestLog.medication_taken
                 ? "Sudah Diminum"
@@ -108,9 +110,11 @@ export function ElderlyStatusCard({
           <p className="mt-1 text-[11px] text-ink-muted">Catatan terakhir</p>
         </div>
 
-        <div className="pt-4 pl-3 sm:pl-5 sm:pt-0">
-          <span className="text-xs font-medium text-ink-muted">Porsi Makan</span>
-          <p className="mt-2 text-lg font-bold tracking-tight text-ink sm:text-xl">
+        <div className="rounded-2xl border border-card-cream-border bg-card-cream/55 p-4">
+          <span className="text-xs font-medium text-ink-muted">
+            Porsi Makan
+          </span>
+          <p className="mt-2.5 text-lg font-bold tracking-tight text-ink sm:text-xl">
             {latestLog ? MEAL_LABEL[latestLog.meal_portion] : "Menunggu"}
           </p>
           <p className="mt-1 text-[11px] text-ink-muted">Catatan terakhir</p>

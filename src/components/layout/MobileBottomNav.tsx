@@ -25,20 +25,22 @@ export function MobileBottomNav() {
 
   const isCaregiver = user.role === "caregiver";
 
+  const linkClass = (active: boolean) =>
+    `flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold transition-colors ${
+      active
+        ? "bg-primary/15 text-primary"
+        : "text-sidebar-muted hover:text-sidebar-ink"
+    }`;
+
   return (
     <nav
       aria-label="Navigasi Mobile"
-      className="fixed right-0 bottom-0 left-0 z-50 border-t border-border bg-surface/95 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-xl md:hidden"
+      className="fixed right-0 bottom-0 left-0 z-50 border-t border-sidebar-border bg-sidebar/98 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-xl md:hidden"
     >
       <div className="mx-auto flex max-w-md items-center justify-around">
         {isCaregiver ? (
           <>
-            <Link
-              href="/loker"
-              className={`flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold transition-colors ${
-                pathname === "/loker" ? "text-primary" : "text-ink-muted"
-              }`}
-            >
+            <Link href="/loker" className={linkClass(pathname === "/loker")}>
               <Briefcase className="h-5 w-5" />
               <span>Lowongan</span>
             </Link>
@@ -46,18 +48,14 @@ export function MobileBottomNav() {
               <>
                 <Link
                   href="/caregiver"
-                  className={`flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold transition-colors ${
-                    pathname === "/caregiver"
-                      ? "text-primary"
-                      : "text-ink-muted"
-                  }`}
+                  className={linkClass(pathname === "/caregiver")}
                 >
                   <ClipboardPlus className="h-5 w-5" />
                   <span>Catat</span>
                 </Link>
                 <Link
                   href="/caregiver#sos-panel"
-                  className="flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold text-danger"
+                  className="flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold text-red-300"
                 >
                   <AlertTriangle className="h-5 w-5" />
                   <span>SOS</span>
@@ -69,27 +67,21 @@ export function MobileBottomNav() {
           <>
             <Link
               href="/dashboard"
-              className={`flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold transition-colors ${
-                pathname === "/dashboard" ? "text-primary" : "text-ink-muted"
-              }`}
+              className={linkClass(pathname === "/dashboard")}
             >
               <Activity className="h-5 w-5" />
               <span>Kondisi</span>
             </Link>
             <Link
               href="/notifikasi"
-              className={`flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold transition-colors ${
-                pathname === "/notifikasi" ? "text-primary" : "text-ink-muted"
-              }`}
+              className={linkClass(pathname === "/notifikasi")}
             >
               <Bell className="h-5 w-5" />
               <span>Laporan</span>
             </Link>
             <Link
               href="/caregivers"
-              className={`flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold transition-colors ${
-                pathname === "/caregivers" ? "text-primary" : "text-ink-muted"
-              }`}
+              className={linkClass(pathname === "/caregivers")}
             >
               <UserCheck className="h-5 w-5" />
               <span>Perawat</span>
@@ -99,19 +91,12 @@ export function MobileBottomNav() {
           <>
             <Link
               href="/caregivers"
-              className={`flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold transition-colors ${
-                pathname === "/caregivers" ? "text-primary" : "text-ink-muted"
-              }`}
+              className={linkClass(pathname === "/caregivers")}
             >
               <Users className="h-5 w-5" />
               <span>Perawat</span>
             </Link>
-            <Link
-              href="/loker"
-              className={`flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold transition-colors ${
-                pathname === "/loker" ? "text-primary" : "text-ink-muted"
-              }`}
-            >
+            <Link href="/loker" className={linkClass(pathname === "/loker")}>
               <Briefcase className="h-5 w-5" />
               <span>Lowongan</span>
             </Link>
@@ -121,7 +106,7 @@ export function MobileBottomNav() {
         <button
           type="button"
           onClick={logout}
-          className="flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold text-ink-muted hover:text-danger cursor-pointer"
+          className="flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl px-3 text-[11px] font-semibold text-sidebar-muted hover:text-red-300 cursor-pointer"
         >
           <LogOut className="h-5 w-5" />
           <span>Keluar</span>

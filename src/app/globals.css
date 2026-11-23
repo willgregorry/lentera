@@ -3,8 +3,9 @@
 :root {
   --bg-canvas: #FFFFFF;
   --bg-canvas-subtle: #F7F8FA;
+  --bg-app-shell: #EEF2F7;
   --bg-surface: #FFFFFF;
-  --border-default: #E5E7EB;
+  --border-default: #E2E8F0;
   --border-subtle: #F1F5F9;
 
   --brand-primary: #E8912E;
@@ -13,6 +14,20 @@
 
   --brand-secondary: #3F6E51;
   --brand-secondary-soft: #EDF4EF;
+
+  --sidebar-bg: #13233A;
+  --sidebar-surface: #1B304D;
+  --sidebar-hover: #213859;
+  --sidebar-border: #264066;
+  --sidebar-ink: #F8FAFC;
+  --sidebar-muted: #9FB2CC;
+
+  --card-blue: #F2F6FC;
+  --card-blue-border: #DCE7F5;
+  --card-cream: #FDF5E8;
+  --card-cream-border: #F5E1C2;
+  --card-sage: #EDF6F0;
+  --card-sage-border: #D2E8D9;
 
   --text-ink: #1E293B;
   --text-ink-muted: #64748B;
@@ -24,6 +39,7 @@
 @theme inline {
   --color-canvas: var(--bg-canvas);
   --color-canvas-subtle: var(--bg-canvas-subtle);
+  --color-app-shell: var(--bg-app-shell);
   --color-surface: var(--bg-surface);
   --color-border: var(--border-default);
   --color-border-subtle: var(--border-subtle);
@@ -34,6 +50,20 @@
 
   --color-secondary: var(--brand-secondary);
   --color-secondary-soft: var(--brand-secondary-soft);
+
+  --color-sidebar: var(--sidebar-bg);
+  --color-sidebar-surface: var(--sidebar-surface);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ink: var(--sidebar-ink);
+  --color-sidebar-muted: var(--sidebar-muted);
+
+  --color-card-blue: var(--card-blue);
+  --color-card-blue-border: var(--card-blue-border);
+  --color-card-cream: var(--card-cream);
+  --color-card-cream-border: var(--card-cream-border);
+  --color-card-sage: var(--card-sage);
+  --color-card-sage-border: var(--card-sage-border);
 
   --color-ink: var(--text-ink);
   --color-ink-muted: var(--text-ink-muted);

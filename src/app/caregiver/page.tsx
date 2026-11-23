@@ -153,9 +153,9 @@ export default function CaregiverPortalPage() {
           Memeriksa status penugasan Anda...
         </div>
       ) : !hasActiveJob ? (
-        <div className="mt-8 rounded-2xl border border-dashed border-border bg-surface px-6 py-14 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-border-subtle text-ink-muted">
-            <Lock className="h-5 w-5" />
+        <div className="mt-6 rounded-2xl border border-dashed border-card-blue-border bg-card-blue/45 px-6 py-14 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-card-cream-border bg-card-cream text-primary">
+            <Lock className="h-6 w-6" />
           </div>
           <h2 className="mt-4 font-display text-lg font-bold text-ink">
             Anda Belum Memiliki Penugasan Aktif
@@ -167,7 +167,7 @@ export default function CaregiverPortalPage() {
           </p>
           <Link
             href="/loker"
-            className="btn-diagonal-secondary mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-semibold text-white sm:text-sm"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-primary-hover sm:text-sm"
           >
             <Briefcase className="h-4 w-4" />
             <span>Cari & Lamar Lowongan</span>

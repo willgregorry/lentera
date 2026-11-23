@@ -16,12 +16,12 @@ export function SosAlertBanner({
   onResolve,
 }: SosAlertBannerProps) {
   return (
-    <section className="mb-6 rounded-2xl border-2 border-[#DC4A3D] bg-[#FCECEB] p-6">
-      <div className="flex flex-col justify-between gap-4 border-b border-[#F3C6C2] pb-4 md:flex-row md:items-center">
+    <section className="mb-6 rounded-2xl border-2 border-danger bg-red-50 p-6">
+      <div className="flex flex-col justify-between gap-4 border-b border-danger/20 pb-4 md:flex-row md:items-center">
         <div className="flex items-start gap-3">
           <AlertTriangle className="mt-1 h-6 w-6 shrink-0 text-danger" />
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-[#A82E23]">
+            <p className="text-xs font-bold uppercase tracking-wider text-danger">
               Peringatan Darurat SOS Aktif
             </p>
             <h2 className="mt-1 font-display text-xl font-bold text-ink">
@@ -43,7 +43,7 @@ export function SosAlertBanner({
         <div className="flex flex-wrap gap-3">
           <a
             href="tel:119"
-            className="inline-flex items-center gap-2 rounded-xl bg-danger px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover"
+            className="inline-flex items-center gap-2 rounded-xl bg-danger px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
           >
             <PhoneCall className="h-4 w-4" />
             <span>Hubungi 119</span>
@@ -51,7 +51,7 @@ export function SosAlertBanner({
           <button
             type="button"
             onClick={() => onResolve(alert.id)}
-            className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-ink hover:bg-surface cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-ink hover:bg-canvas-subtle cursor-pointer"
           >
             <CheckCircle2 className="h-4 w-4 text-secondary" />
             <span>Tandai Selesai</span>
@@ -61,19 +61,19 @@ export function SosAlertBanner({
 
       {alert.triage_brief && (
         <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <div className="rounded-xl border border-[#F3C6C2] bg-surface p-4">
-            <p className="text-xs font-bold uppercase text-[#A82E23]">
+          <div className="rounded-xl border border-danger/20 bg-surface p-4">
+            <p className="text-xs font-bold uppercase text-danger">
               Pasien & Alergi
             </p>
             <p className="mt-1.5 text-sm text-ink">
               {alert.triage_brief.patient_summary}
             </p>
-            <p className="mt-2 text-xs font-semibold text-[#A82E23]">
+            <p className="mt-2 text-xs font-semibold text-danger">
               Alergi: {alert.triage_brief.allergies.join(", ")}
             </p>
           </div>
 
-          <div className="rounded-xl border border-[#F3C6C2] bg-surface p-4">
+          <div className="rounded-xl border border-danger/20 bg-surface p-4">
             <p className="text-xs font-bold uppercase text-ink">
               Obat Rutin & Vital 24 Jam
             </p>
@@ -87,7 +87,7 @@ export function SosAlertBanner({
             </p>
           </div>
 
-          <div className="rounded-xl border border-[#F3C6C2] bg-surface p-4">
+          <div className="rounded-xl border border-danger/20 bg-surface p-4">
             <p className="text-xs font-bold uppercase text-ink">
               Langkah Segera & RS Terdekat
             </p>
