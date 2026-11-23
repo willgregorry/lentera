@@ -79,7 +79,14 @@ export interface ILenteraApiService {
     status: "accepted" | "rejected"
   ): Promise<{ id: string; status: "accepted" | "rejected" }>;
 
-  getSosAlerts(): Promise<SosAlert[]>;
+  sendInterviewInvite(caregiver: { id: string; name: string }): Promise<void>;
+  hireCaregiverDirectly(caregiver: {
+    id: string;
+    name: string;
+    skills?: string[];
+  }): Promise<void>;
+
+  getSosAlerts(elderlyId?: string): Promise<SosAlert[]>;
   triggerSosAlert(payload: {
     elderly_id: string;
     reason: string;

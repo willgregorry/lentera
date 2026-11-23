@@ -11,12 +11,23 @@ export function useCaregiverPortal() {
   const [elderly, setElderly] = useState<ElderlyProfile>(MOCK_ELDERLY);
   const [submittingLog, setSubmittingLog] = useState(false);
   const [logSuccess, setLogSuccess] = useState<string | null>(null);
+  const [portalError, setPortalError] = useState<string | null>(null);
   const [triggeringSos, setTriggeringSos] = useState(false);
   const [activeSos, setActiveSos] = useState<SosAlert | null>(null);
 
   useEffect(() => {
-    apiService.getElderlyProfile("demo").then(setElderly);
-  }, []);
+    if (!user) return;
+    let active = true;
+    apiService
+      .getElderlyProfile()
+      .then((profile) => {
+        if (active) setElderly(profile);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [user]);
 
   async function submitCareLog(input: {
     heartRate: number;
@@ -30,6 +41,7 @@ export function useCaregiverPortal() {
   }) {
     setSubmittingLog(true);
     setLogSuccess(null);
+    setPortalError(null);
     try {
       if (input.photoFile) {
         const fd = new FormData();
@@ -60,6 +72,12 @@ export function useCaregiverPortal() {
       setLogSuccess(
         "Laporan harian berhasil dikirim dan tampil di Dashboard Keluarga."
       );
+    } catch (err) {
+      setPortalError(
+        err instanceof Error
+          ? err.message
+          : "Gagal mengirim laporan harian. Coba lagi."
+      );
     } finally {
       setSubmittingLog(false);
     }
@@ -67,6 +85,7 @@ export function useCaregiverPortal() {
 
   async function triggerSos(reason: string) {
     setTriggeringSos(true);
+    setPortalError(null);
     try {
       const alert = await apiService.triggerSosAlert({
         elderly_id: elderly.id,
@@ -79,6 +98,12 @@ export function useCaregiverPortal() {
         });
       }
       setActiveSos(alert);
+    } catch (err) {
+      setPortalError(
+        err instanceof Error
+          ? err.message
+          : "Gagal mengirim sinyal darurat SOS."
+      );
     } finally {
       setTriggeringSos(false);
     }
@@ -89,6 +114,7 @@ export function useCaregiverPortal() {
     elderly,
     submittingLog,
     logSuccess,
+    portalError,
     triggeringSos,
     activeSos,
     submitCareLog,

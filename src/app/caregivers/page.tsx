@@ -19,6 +19,7 @@ import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useAssignmentStatus } from "@/hooks/useAssignmentStatus";
 import { supabase } from "@/lib/supabase";
+import { apiService } from "@/services/api";
 import { UserProfile } from "@/types";
 
 type InviteStatus = "pending" | "accepted" | "declined";
@@ -304,39 +305,22 @@ export default function CaregiverDirectoryPage() {
   });
 
   async function handleInvite(cg: UserProfile) {
-    if (!supabase || !user) return;
+    if (!user) return;
     setInvitingId(cg.id);
     setErrorMsg(null);
     setActionMsg(null);
 
     try {
-      const { error } = await supabase.from("notifications").insert({
-        user_id: cg.id,
-        type: "job",
-        title: `Undangan Wawancara dari ${user.name}`,
-        body: `Keluarga ${user.name} mengundang Anda untuk wawancara pendampingan lansia.`,
-        metadata: {
-          kind: "interview_invite",
-          status: "pending",
-          family_id: user.id,
-          family_name: user.name,
-          family_phone: user.phone || "",
-          family_city: user.city || "",
-          caregiver_id: cg.id,
-          caregiver_name: cg.name,
-        },
-      });
-
-      if (error) {
-        setErrorMsg(
-          `Gagal mengirim undangan ke Supabase: ${error.message}. Pastikan policy INSERT tabel notifications sudah aktif.`
-        );
-        return;
-      }
-
+      await apiService.sendInterviewInvite({ id: cg.id, name: cg.name });
       setInviteStatusMap((prev) => ({ ...prev, [cg.id]: "pending" }));
       setActionMsg(
         `Undangan wawancara terkirim ke ${cg.name}. Perawat dapat langsung melihat dan menerima undangan di Ruang Perawat.`
+      );
+    } catch (err) {
+      setErrorMsg(
+        err instanceof Error
+          ? err.message
+          : "Gagal mengirim undangan wawancara."
       );
     } finally {
       setInvitingId(null);
@@ -344,61 +328,23 @@ export default function CaregiverDirectoryPage() {
   }
 
   async function handleHireDirectly(cg: UserProfile) {
-    if (!supabase || !user) return;
+    if (!user) return;
     setHiringId(cg.id);
     setErrorMsg(null);
     setActionMsg(null);
 
     try {
-      const { data: existingElderly } = await supabase
-        .from("elderly_profiles")
-        .select("id")
-        .eq("family_id", user.id)
-        .limit(1)
-        .maybeSingle();
-
-      let elderlyId = existingElderly?.id as string | undefined;
-      if (!elderlyId) {
-        const { data: createdElderly, error: eldErr } = await supabase
-          .from("elderly_profiles")
-          .insert({
-            family_id: user.id,
-            name: `Orang Tua ${user.name.split(" ")[0]}`,
-            age: 70,
-            address: user.city || "Indonesia",
-            status: "aman",
-          })
-          .select("id")
-          .single();
-
-        if (eldErr || !createdElderly) {
-          setErrorMsg(eldErr?.message || "Gagal menyiapkan profil orang tua.");
-          return;
-        }
-        elderlyId = createdElderly.id;
-      }
-
-      const { error: jobErr } = await supabase.from("care_jobs").insert({
-        family_id: user.id,
-        elderly_id: elderlyId,
-        title: `Pendamping Lansia — Keluarga ${user.name.split(" ")[0]}`,
-        description: "Penugasan langsung setelah wawancara disetujui.",
-        schedule: "Senin – Sabtu, 08.00 – 16.00 WIB",
-        location: user.city || "Indonesia",
-        salary_min: 3500000,
-        salary_max: 4000000,
-        required_skills: cg.skills || [],
-        status: "filled",
-        assigned_caregiver_id: cg.id,
+      await apiService.hireCaregiverDirectly({
+        id: cg.id,
+        name: cg.name,
+        skills: cg.skills,
       });
-
-      if (jobErr) {
-        setErrorMsg(jobErr.message);
-        return;
-      }
-
       router.push("/dashboard");
       router.refresh();
+    } catch (err) {
+      setErrorMsg(
+        err instanceof Error ? err.message : "Gagal menugaskan perawat."
+      );
     } finally {
       setHiringId(null);
     }

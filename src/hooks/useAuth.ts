@@ -58,13 +58,22 @@ export function useAuth() {
     getServerHydratedSnapshot
   );
 
-  // Sync display_name / full_name from active Supabase Auth session
+  // Keep local session profile strictly aligned with the tab's real Supabase auth.uid()
   useEffect(() => {
     if (!supabase || !user) return;
     let active = true;
 
-    supabase.auth.getUser().then(({ data }) => {
-      if (!active || !data?.user) return;
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (!active) return;
+
+      // If the underlying Supabase JWT is gone or belongs to a different user,
+      // clear stale client profile to prevent RLS mismatch errors.
+      if (error || !data?.user || data.user.id !== user.id) {
+        clearAuthSession();
+        cachedRaw = undefined;
+        return;
+      }
+
       const meta = data.user.user_metadata || {};
       const realName = String(
         meta.display_name || meta.full_name || meta.name || ""
@@ -85,7 +94,7 @@ export function useAuth() {
 
   function logout() {
     if (supabase) {
-      supabase.auth.signOut().catch(() => {});
+      supabase.auth.signOut({ scope: "local" }).catch(() => {});
     }
     clearAuthSession();
     cachedRaw = undefined;

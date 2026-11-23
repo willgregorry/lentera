@@ -30,7 +30,91 @@ function requireSupabase() {
   return supabase;
 }
 
+function mapSupabaseError(
+  error: { message?: string; code?: string } | null | undefined,
+  fallback: string
+): Error {
+  const raw = error?.message || "";
+  const lower = raw.toLowerCase();
+  if (lower.includes("row-level security")) {
+    return new Error(
+      "Sesi akun Anda tidak sesuai atau sudah berakhir. Silakan keluar lalu masuk kembali."
+    );
+  }
+  if (lower.includes("duplicate key") || error?.code === "23505") {
+    return new Error("Data ini sudah pernah dikirim sebelumnya.");
+  }
+  return new Error(raw || fallback);
+}
+
 class LenteraSupabaseService implements ILenteraApiService {
+  /**
+   * Verifies the cryptographic Supabase Auth JWT for this tab, ensures a
+   * matching row exists in `public.profiles`, and returns the authoritative
+   * actor identity (`auth.uid()`).
+   */
+  private async requireAuthenticatedActor(): Promise<UserProfile> {
+    const db = requireSupabase();
+    const { data: authData, error: authErr } = await db.auth.getUser();
+    const authUser = authData?.user;
+
+    if (authErr || !authUser) {
+      throw new Error(
+        "Sesi login Anda telah berakhir. Silakan masuk kembali untuk melanjutkan."
+      );
+    }
+
+    const stored = getStoredUser();
+    const meta = authUser.user_metadata || {};
+
+    const { data: profile } = await db
+      .from("profiles")
+      .select("*")
+      .eq("id", authUser.id)
+      .maybeSingle();
+
+    const resolvedName = String(
+      profile?.full_name ||
+        meta.display_name ||
+        meta.full_name ||
+        meta.name ||
+        (stored?.id === authUser.id ? stored.name : "") ||
+        authUser.email?.split("@")[0] ||
+        "Pengguna"
+    );
+
+    const resolvedRole: UserRole =
+      (profile?.role as UserRole) ||
+      (meta.role as UserRole) ||
+      (stored?.id === authUser.id ? stored.role : "family") ||
+      "family";
+
+    if (!profile) {
+      await db.from("profiles").upsert({
+        id: authUser.id,
+        email: authUser.email || stored?.email || `${authUser.id}@lentera.id`,
+        full_name: resolvedName,
+        role: resolvedRole,
+        phone: meta.phone || (stored?.id === authUser.id ? stored.phone : null) || null,
+        location:
+          meta.location || (stored?.id === authUser.id ? stored.city : null) || null,
+        skills: Array.isArray(meta.skills) ? meta.skills : [],
+      });
+    }
+
+    return {
+      id: authUser.id,
+      name: resolvedName,
+      email: authUser.email || stored?.email || "",
+      role: resolvedRole,
+      phone: profile?.phone || meta.phone || "",
+      city: profile?.location || meta.location || "",
+      verified: Boolean(profile?.is_verified ?? true),
+      skills: Array.isArray(profile?.skills) ? profile.skills : [],
+      experience_years: Number(profile?.experience_years || 0),
+      bio: profile?.bio || "",
+    };
+  }
   async loginUser(payload: {
     email: string;
     password: string;
@@ -175,17 +259,40 @@ class LenteraSupabaseService implements ILenteraApiService {
 
   async getElderlyProfile(): Promise<ElderlyProfile> {
     const db = requireSupabase();
-    const currentUser = getStoredUser();
+    const currentUser = await this.requireAuthenticatedActor().catch(() =>
+      getStoredUser()
+    );
 
-    let query = db.from("elderly_profiles").select("*");
-    if (currentUser?.role === "family") {
-      query = query.eq("family_id", currentUser.id);
+    let data: Record<string, unknown> | null = null;
+
+    if (currentUser?.role === "caregiver") {
+      const { data: assignedJob } = await db
+        .from("care_jobs")
+        .select("elderly_id")
+        .eq("assigned_caregiver_id", currentUser.id)
+        .eq("status", "filled")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (assignedJob?.elderly_id) {
+        const res = await db
+          .from("elderly_profiles")
+          .select("*")
+          .eq("id", assignedJob.elderly_id)
+          .maybeSingle();
+        data = res.data as Record<string, unknown> | null;
+      }
+    } else if (currentUser?.role === "family") {
+      const res = await db
+        .from("elderly_profiles")
+        .select("*")
+        .eq("family_id", currentUser.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      data = res.data as Record<string, unknown> | null;
     }
-
-    const { data } = await query
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
 
     if (!data) return MOCK_ELDERLY;
 
@@ -194,18 +301,22 @@ class LenteraSupabaseService implements ILenteraApiService {
       statusVal === "darurat" || statusVal === "waspada" ? statusVal : "aman";
 
     return {
-      id: data.id,
-      name: data.name,
-      age: data.age,
-      family_id: data.family_id,
-      conditions: data.medical_conditions || [],
-      allergies: data.allergies || [],
+      id: String(data.id),
+      name: String(data.name || "Orang Tua"),
+      age: Number(data.age || 0),
+      family_id: String(data.family_id || ""),
+      conditions: Array.isArray(data.medical_conditions)
+        ? (data.medical_conditions as string[])
+        : [],
+      allergies: Array.isArray(data.allergies)
+        ? (data.allergies as string[])
+        : [],
       routine_meds: Array.isArray(data.routine_medications)
-        ? data.routine_medications.map((m: { name?: string }) =>
-            typeof m === "string" ? m : m?.name || "Obat"
+        ? (data.routine_medications as Array<string | { name?: string }>).map(
+            (m) => (typeof m === "string" ? m : m?.name || "Obat")
           )
         : [],
-      address: data.address || "",
+      address: String(data.address || ""),
       nearest_hospital: "RS Terdekat (119)",
       nearest_hospital_phone: "119",
       status,
@@ -214,16 +325,25 @@ class LenteraSupabaseService implements ILenteraApiService {
 
   async getCareLogs(elderlyId?: string): Promise<CareLog[]> {
     const db = requireSupabase();
-    let query = db
-      .from("care_logs")
-      .select("*, caregiver:profiles!care_logs_caregiver_id_fkey(full_name)")
-      .order("logged_at", { ascending: true });
-
-    if (elderlyId && elderlyId !== "demo" && elderlyId !== "default-elderly") {
-      query = query.eq("elderly_id", elderlyId);
+    let targetElderlyId = elderlyId;
+    if (
+      !targetElderlyId ||
+      targetElderlyId === "demo" ||
+      targetElderlyId === "default-elderly"
+    ) {
+      const eld = await this.getElderlyProfile();
+      targetElderlyId = eld.id;
+    }
+    if (!targetElderlyId || targetElderlyId === "default-elderly") {
+      return [];
     }
 
-    const { data } = await query;
+    const { data } = await db
+      .from("care_logs")
+      .select("*, caregiver:profiles!care_logs_caregiver_id_fkey(full_name)")
+      .eq("elderly_id", targetElderlyId)
+      .order("logged_at", { ascending: true });
+
     if (!data) return [];
 
     return data.map((row) => ({
@@ -261,8 +381,7 @@ class LenteraSupabaseService implements ILenteraApiService {
         }
   ): Promise<CareLog> {
     const db = requireSupabase();
-    const currentUser = getStoredUser();
-    if (!currentUser) throw new Error("Silakan masuk terlebih dahulu.");
+    const currentUser = await this.requireAuthenticatedActor();
 
     let elderlyId =
       payload instanceof FormData
@@ -272,6 +391,12 @@ class LenteraSupabaseService implements ILenteraApiService {
     if (!elderlyId || elderlyId === "demo" || elderlyId === "default-elderly") {
       const eld = await this.getElderlyProfile();
       elderlyId = eld.id;
+    }
+
+    if (!elderlyId || elderlyId === "default-elderly") {
+      throw new Error(
+        "Profil lansia untuk penugasan Anda belum ditemukan. Pastikan Anda sudah ditugaskan oleh keluarga."
+      );
     }
 
     let photoUrl: string | undefined;
@@ -328,7 +453,7 @@ class LenteraSupabaseService implements ILenteraApiService {
       .single();
 
     if (error || !data) {
-      throw new Error(error?.message || "Gagal menyimpan laporan harian.");
+      throw mapSupabaseError(error, "Gagal menyimpan laporan harian.");
     }
 
     const created: CareLog = {
@@ -358,12 +483,22 @@ class LenteraSupabaseService implements ILenteraApiService {
 
   async getJobs(): Promise<CareJob[]> {
     const db = requireSupabase();
-    const { data } = await db
+    const currentUser = await this.requireAuthenticatedActor().catch(() =>
+      getStoredUser()
+    );
+
+    let query = db
       .from("care_jobs")
       .select(
         "*, family:profiles!care_jobs_family_id_fkey(full_name), elderly:elderly_profiles(name, age), applications:job_applications(*, caregiver:profiles!job_applications_caregiver_id_fkey(id, full_name, location, experience_years, skills, is_verified))"
       )
       .order("created_at", { ascending: false });
+
+    if (currentUser?.role === "family") {
+      query = query.eq("family_id", currentUser.id);
+    }
+
+    const { data } = await query;
 
     if (!data) return [];
 
@@ -426,8 +561,7 @@ class LenteraSupabaseService implements ILenteraApiService {
     required_skills: string[];
   }): Promise<CareJob> {
     const db = requireSupabase();
-    const currentUser = getStoredUser();
-    if (!currentUser) throw new Error("Silakan masuk terlebih dahulu.");
+    const currentUser = await this.requireAuthenticatedActor();
 
     // Ensure an elderly_profile exists in Supabase for this family
     const { data: existingEld } = await db
@@ -451,7 +585,7 @@ class LenteraSupabaseService implements ILenteraApiService {
         .select("id")
         .single();
       if (eldErr || !createdEld) {
-        throw new Error(eldErr?.message || "Gagal membuat profil lansia.");
+        throw mapSupabaseError(eldErr, "Gagal membuat profil lansia.");
       }
       elderlyId = createdEld.id;
     }
@@ -474,7 +608,7 @@ class LenteraSupabaseService implements ILenteraApiService {
       .single();
 
     if (error || !jobRow) {
-      throw new Error(error?.message || "Gagal membuat lowongan.");
+      throw mapSupabaseError(error, "Gagal membuat lowongan.");
     }
 
     return {
@@ -495,6 +629,96 @@ class LenteraSupabaseService implements ILenteraApiService {
     };
   }
 
+  async sendInterviewInvite(caregiver: {
+    id: string;
+    name: string;
+  }): Promise<void> {
+    const db = requireSupabase();
+    const actor = await this.requireAuthenticatedActor();
+
+    const { error } = await db.from("notifications").insert({
+      user_id: caregiver.id,
+      type: "job",
+      title: `Undangan Wawancara dari ${actor.name}`,
+      body: `Keluarga ${actor.name} mengundang Anda untuk wawancara pendampingan lansia.`,
+      metadata: {
+        kind: "interview_invite",
+        status: "pending",
+        family_id: actor.id,
+        family_name: actor.name,
+        family_phone: actor.phone || "",
+        family_city: actor.city || "",
+        caregiver_id: caregiver.id,
+        caregiver_name: caregiver.name,
+      },
+    });
+
+    if (error) {
+      throw mapSupabaseError(
+        error,
+        "Gagal mengirim undangan wawancara ke perawat."
+      );
+    }
+  }
+
+  async hireCaregiverDirectly(caregiver: {
+    id: string;
+    name: string;
+    skills?: string[];
+  }): Promise<void> {
+    const db = requireSupabase();
+    const actor = await this.requireAuthenticatedActor();
+
+    if (actor.role !== "family") {
+      throw new Error("Hanya akun keluarga yang dapat menugaskan perawat.");
+    }
+
+    const { data: existingElderly } = await db
+      .from("elderly_profiles")
+      .select("id")
+      .eq("family_id", actor.id)
+      .limit(1)
+      .maybeSingle();
+
+    let elderlyId = existingElderly?.id as string | undefined;
+    if (!elderlyId) {
+      const { data: createdElderly, error: eldErr } = await db
+        .from("elderly_profiles")
+        .insert({
+          family_id: actor.id,
+          name: `Orang Tua ${actor.name.split(" ")[0]}`,
+          age: 70,
+          address: actor.city || "Indonesia",
+          status: "aman",
+        })
+        .select("id")
+        .single();
+
+      if (eldErr || !createdElderly) {
+        throw mapSupabaseError(eldErr, "Gagal menyiapkan profil orang tua.");
+      }
+      elderlyId = createdElderly.id;
+    }
+
+    const { error: jobErr } = await db.from("care_jobs").insert({
+      family_id: actor.id,
+      elderly_id: elderlyId,
+      title: `Pendamping Lansia — Keluarga ${actor.name.split(" ")[0]}`,
+      description: "Penugasan langsung setelah wawancara disetujui.",
+      schedule: "Senin – Sabtu, 08.00 – 16.00 WIB",
+      location: actor.city || "Indonesia",
+      salary_min: 3500000,
+      salary_max: 4000000,
+      required_skills: caregiver.skills || [],
+      status: "filled",
+      assigned_caregiver_id: caregiver.id,
+    });
+
+    if (jobErr) {
+      throw mapSupabaseError(jobErr, "Gagal menugaskan perawat.");
+    }
+  }
+
   async applyToJob(
     jobId: string,
     payload: {
@@ -506,8 +730,7 @@ class LenteraSupabaseService implements ILenteraApiService {
     }
   ): Promise<JobApplication> {
     const db = requireSupabase();
-    const currentUser = getStoredUser();
-    if (!currentUser) throw new Error("Silakan masuk terlebih dahulu.");
+    const currentUser = await this.requireAuthenticatedActor();
 
     const { data, error } = await db
       .from("job_applications")
@@ -520,7 +743,7 @@ class LenteraSupabaseService implements ILenteraApiService {
       .single();
 
     if (error || !data) {
-      throw new Error(error?.message || "Gagal mengirim lamaran.");
+      throw mapSupabaseError(error, "Gagal mengirim lamaran.");
     }
 
     return {
@@ -543,6 +766,7 @@ class LenteraSupabaseService implements ILenteraApiService {
     status: "accepted" | "rejected"
   ): Promise<{ id: string; status: "accepted" | "rejected" }> {
     const db = requireSupabase();
+    await this.requireAuthenticatedActor();
 
     const { data: appRow, error } = await db
       .from("job_applications")
@@ -552,27 +776,40 @@ class LenteraSupabaseService implements ILenteraApiService {
       .single();
 
     if (error || !appRow) {
-      throw new Error(error?.message || "Gagal memperbarui status lamaran.");
+      throw mapSupabaseError(error, "Gagal memperbarui status lamaran.");
     }
 
     if (status === "accepted") {
-      await db
+      const { error: fillErr } = await db
         .from("care_jobs")
         .update({
           status: "filled",
           assigned_caregiver_id: appRow.caregiver_id,
         })
         .eq("id", appRow.job_id);
+      if (fillErr) {
+        throw mapSupabaseError(fillErr, "Gagal menugaskan caregiver pada lowongan.");
+      }
     }
 
     return { id: appRow.id, status };
   }
 
-  async getSosAlerts(): Promise<SosAlert[]> {
+  async getSosAlerts(elderlyId?: string): Promise<SosAlert[]> {
     const db = requireSupabase();
+    let targetElderlyId = elderlyId;
+    if (!targetElderlyId) {
+      const eld = await this.getElderlyProfile();
+      targetElderlyId = eld.id;
+    }
+    if (!targetElderlyId || targetElderlyId === "default-elderly") {
+      return [];
+    }
+
     const { data } = await db
       .from("sos_alerts")
       .select("*, elderly:elderly_profiles(name), triggerer:profiles!sos_alerts_triggered_by_fkey(full_name)")
+      .eq("elderly_id", targetElderlyId)
       .order("created_at", { ascending: false });
 
     if (!data) return [];
@@ -599,11 +836,12 @@ class LenteraSupabaseService implements ILenteraApiService {
     reason: string;
   }): Promise<SosAlert> {
     const db = requireSupabase();
-    const currentUser = getStoredUser();
-    if (!currentUser) throw new Error("Silakan masuk terlebih dahulu.");
+    const currentUser = await this.requireAuthenticatedActor();
 
     const elderly = await this.getElderlyProfile();
-    const logs = await this.getCareLogs(elderly.id);
+    if (!elderly.id || elderly.id === "default-elderly") {
+      throw new Error("Profil lansia belum tersedia untuk pengiriman SOS.");
+    }
     const triageBrief = await this.generateAiTriageBrief({
       elderly_id: elderly.id,
       reason: payload.reason,
@@ -622,7 +860,7 @@ class LenteraSupabaseService implements ILenteraApiService {
       .single();
 
     if (error || !data) {
-      throw new Error(error?.message || "Gagal mengirim sinyal SOS.");
+      throw mapSupabaseError(error, "Gagal mengirim sinyal SOS.");
     }
 
     const alert: SosAlert = {
@@ -637,7 +875,6 @@ class LenteraSupabaseService implements ILenteraApiService {
       created_at: data.created_at,
     };
 
-    void logs;
     notifyUserDevice({
       title: `DARURAT SOS — ${elderly.name}`,
       body: payload.reason,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   MOCK_AI_DIGEST,
   MOCK_CARE_LOGS,
@@ -25,38 +25,61 @@ export function useDashboardData() {
     useState<AppNotification[]>(MOCK_NOTIFICATIONS);
   const [sosAlerts, setSosAlerts] = useState<SosAlert[]>([]);
   const [digestLoading, setDigestLoading] = useState(false);
+  const elderlyIdRef = useRef<string>("");
 
   useEffect(() => {
-    async function loadInitial() {
-      const [eld, careLogs, notifs, alerts] = await Promise.all([
-        apiService.getElderlyProfile("demo"),
-        apiService.getCareLogs("demo"),
-        apiService.getNotifications(),
-        apiService.getSosAlerts(),
-      ]);
-      setElderly(eld);
-      setLogs(careLogs);
-      setNotifications(notifs);
-      setSosAlerts(alerts);
+    let active = true;
 
-      const initialDigest = await apiService.generateAiDailyDigest({
-        elderly_id: eld.id,
-        logs: careLogs,
-      });
-      setDigest(initialDigest);
+    async function loadInitial() {
+      try {
+        const eld = await apiService.getElderlyProfile();
+        if (!active) return;
+
+        elderlyIdRef.current = eld.id;
+        setElderly(eld);
+
+        const [careLogs, notifs, alerts] = await Promise.all([
+          apiService.getCareLogs(eld.id),
+          apiService.getNotifications(),
+          apiService.getSosAlerts(eld.id),
+        ]);
+
+        if (!active) return;
+        setLogs(careLogs);
+        setNotifications(notifs);
+        setSosAlerts(alerts);
+
+        const initialDigest = await apiService.generateAiDailyDigest({
+          elderly_id: eld.id,
+          logs: careLogs,
+        });
+        if (active) setDigest(initialDigest);
+      } catch {
+        // Keep clean empty defaults when profile is not initialized yet
+      }
     }
 
-    loadInitial();
+    void loadInitial();
 
     const unsubscribe = apiService.subscribeToStream((ev) => {
+      const currentElderlyId = elderlyIdRef.current;
+
       if (ev.type === "care_log" && ev.data && typeof ev.data === "object") {
-        setLogs((prev) => [...prev, ev.data as CareLog]);
+        const incoming = ev.data as CareLog;
+        if (currentElderlyId && incoming.elderly_id !== currentElderlyId) return;
+        setLogs((prev) =>
+          prev.some((l) => l.id === incoming.id) ? prev : [...prev, incoming]
+        );
       } else if (
         ev.type === "sos_alert" &&
         ev.data &&
         typeof ev.data === "object"
       ) {
-        setSosAlerts((prev) => [ev.data as SosAlert, ...prev]);
+        const incoming = ev.data as SosAlert;
+        if (currentElderlyId && incoming.elderly_id !== currentElderlyId) return;
+        setSosAlerts((prev) =>
+          prev.some((a) => a.id === incoming.id) ? prev : [incoming, ...prev]
+        );
       } else if (
         ev.type === "sos_resolved" &&
         ev.data &&
@@ -83,7 +106,10 @@ export function useDashboardData() {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      active = false;
+      unsubscribe();
+    };
   }, []);
 
   const activeSos = sosAlerts.find((a) => a.status === "active") || null;

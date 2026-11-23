@@ -14,6 +14,7 @@ export default function LokerPage() {
     user,
     matchingId,
     feedback,
+    errorMsg,
     createJob,
     applyToJob,
     runAiMatch,
@@ -52,6 +53,15 @@ export default function LokerPage() {
       </div>
 
       {user?.role === "caregiver" && <CaregiverInvitesSection user={user} />}
+
+      {errorMsg && (
+        <div
+          role="alert"
+          className="mt-5 rounded-xl border border-danger/25 bg-red-50 px-4 py-3 text-xs font-medium text-danger sm:text-sm"
+        >
+          {errorMsg}
+        </div>
+      )}
 
       {feedback && (
         <div className="mt-5 rounded-2xl border border-card-sage-border bg-card-sage px-4 py-3 text-xs font-semibold text-secondary sm:text-sm">

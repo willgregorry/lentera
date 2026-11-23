@@ -20,6 +20,7 @@ export default function CaregiverPortalPage() {
     elderly,
     submittingLog,
     logSuccess,
+    portalError,
     triggeringSos,
     activeSos,
     submitCareLog,
@@ -147,6 +148,15 @@ export default function CaregiverPortalPage() {
           </div>
         )}
       </div>
+
+      {portalError && (
+        <div
+          role="alert"
+          className="mt-5 rounded-xl border border-danger/25 bg-red-50 px-4 py-3 text-xs font-medium text-danger sm:text-sm"
+        >
+          {portalError}
+        </div>
+      )}
 
       {checkingJob ? (
         <div className="py-16 text-center text-sm text-ink-muted">
