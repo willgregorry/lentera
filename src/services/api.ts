@@ -99,12 +99,17 @@ class LenteraApiService implements ILenteraApiService {
             .eq("email", payload.email)
             .maybeSingle();
 
+          const meta = data.user.user_metadata || {};
+          const displayName =
+            profile?.full_name ||
+            meta.display_name ||
+            meta.full_name ||
+            meta.name ||
+            payload.email.split("@")[0];
+
           const user: UserProfile = {
             id: profile?.id || data.user.id,
-            name:
-              profile?.full_name ||
-              data.user.user_metadata?.full_name ||
-              payload.email.split("@")[0],
+            name: String(displayName),
             email: payload.email,
             role: (profile?.role as UserRole) || targetRole,
             phone: profile?.phone || "",
@@ -190,7 +195,9 @@ class LenteraApiService implements ILenteraApiService {
           password: payload.password,
           options: {
             data: {
+              display_name: payload.name,
               full_name: payload.name,
+              name: payload.name,
               role: payload.role,
               phone: payload.phone || "",
               location: payload.city || "",

@@ -1,12 +1,15 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import {
   AUTH_CHANGE_EVENT,
   USER_KEY,
   clearAuthSession,
+  getStoredToken,
   getStoredUser,
+  setAuthSession,
 } from "@/services/authStorage";
 import { UserProfile } from "@/types";
 
@@ -55,7 +58,35 @@ export function useAuth() {
     getServerHydratedSnapshot
   );
 
+  // Sync display_name / full_name from active Supabase Auth session
+  useEffect(() => {
+    if (!supabase || !user) return;
+    let active = true;
+
+    supabase.auth.getUser().then(({ data }) => {
+      if (!active || !data?.user) return;
+      const meta = data.user.user_metadata || {};
+      const realName = String(
+        meta.display_name || meta.full_name || meta.name || ""
+      ).trim();
+
+      if (realName && realName !== user.name) {
+        setAuthSession(getStoredToken() || "supabase-session", {
+          ...user,
+          name: realName,
+        });
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
   function logout() {
+    if (supabase) {
+      supabase.auth.signOut().catch(() => {});
+    }
     clearAuthSession();
     cachedRaw = undefined;
     router.push("/login");
