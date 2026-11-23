@@ -1,14 +1,42 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowDown, ArrowRight } from "lucide-react";
+import { gsap } from "@/lib/gsap";
 import { useHeroReveal } from "@/hooks/useGsapReveal";
 import { SplitText } from "@/components/shared/SplitText";
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
+  const parallaxRef = useRef<HTMLDivElement>(null);
   useHeroReveal(sectionRef);
+
+  useEffect(() => {
+    const el = parallaxRef.current;
+    const trigger = sectionRef.current;
+    if (!el || !trigger) return;
+
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+
+    const ctx = gsap.context(() => {
+      gsap.to(el, {
+        yPercent: 8,
+        ease: "none",
+        scrollTrigger: {
+          trigger,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    }, trigger);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <section
@@ -16,17 +44,29 @@ export function HeroSection() {
       className="border-b border-border-subtle bg-surface px-4 pt-5 pb-12 sm:px-6 sm:pt-6 sm:pb-16"
     >
       <div className="relative mx-auto flex min-h-[560px] w-full max-w-7xl items-end overflow-hidden rounded-3xl border border-border bg-canvas-subtle sm:min-h-[640px]">
-        <img
-          src="/images/hero_care.jpg"
-          alt="Pendampingan lansia yang hangat di rumah bersama Lentera"
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center select-none"
-        />
+        <div
+          ref={parallaxRef}
+          className="pointer-events-none absolute -inset-y-8 inset-x-0 will-change-transform"
+        >
+          <img
+            src="/images/hero_care.jpg"
+            alt="Pendampingan lansia yang hangat di rumah bersama Lentera"
+            className="animate-ken-burns h-full w-full object-cover object-center select-none"
+          />
+        </div>
 
-        {/* Subtle bottom vignette only — keeps photo 100% crisp and clear */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent"
         />
+
+        <a
+          href="#cara-kerja"
+          className="absolute top-5 right-6 z-10 hidden items-center gap-1.5 rounded-full bg-black/25 px-3.5 py-1.5 text-xs font-medium text-white/90 backdrop-blur-md transition-colors hover:bg-black/40 sm:inline-flex"
+        >
+          <span>Gulir ke bawah</span>
+          <ArrowDown className="h-3.5 w-3.5" />
+        </a>
 
         <div className="relative z-10 flex w-full flex-col justify-between gap-6 px-6 pb-8 pt-16 sm:flex-row sm:items-end sm:px-12 sm:pb-12">
           <div className="max-w-2xl text-left">
