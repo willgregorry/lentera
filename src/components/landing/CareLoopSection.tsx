@@ -10,21 +10,18 @@ const ACTORS = [
     role: "Keluarga",
     title: "Tenang saat bekerja",
     desc: "Pantau tren tekanan darah, detak jantung, dan ringkasan harian orang tua dari kantor tanpa harus terus menelepon.",
-    tag: "Pemantauan & Ringkasan Harian",
   },
   {
     num: "02",
     role: "Caregiver",
     title: "Catat kondisi dalam hitungan detik",
     desc: "Input tanda vital, porsi makan, jadwal obat, dan foto aktivitas secara ringkas dengan akses darurat SOS 119.",
-    tag: "Log Cepat & Siaga Darurat",
   },
   {
     num: "03",
     role: "Lansia",
     title: "Terjaga nyaman di rumah sendiri",
     desc: "Mendapat pendampingan yang konsisten dan sesuai dengan riwayat medis, alergi, serta rutinitas harian.",
-    tag: "Perawatan Personal",
   },
 ];
 
@@ -65,14 +62,9 @@ export function CareLoopSection() {
                   </span>
                 </div>
                 <div className="col-span-10 transition-transform duration-300 group-hover:translate-x-1 sm:col-span-10">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-secondary">
-                      {actor.role}
-                    </span>
-                    <span className="text-xs font-medium text-ink-muted">
-                      {actor.tag}
-                    </span>
-                  </div>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-secondary">
+                    {actor.role}
+                  </span>
                   <h3 className="mt-1.5 font-display text-xl font-bold text-ink sm:text-2xl">
                     {actor.title}
                   </h3>
