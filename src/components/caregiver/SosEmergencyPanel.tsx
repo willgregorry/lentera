@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { AlertTriangle, MapPin, PhoneCall, ShieldAlert } from "lucide-react";
+import { MapPin, PhoneCall } from "lucide-react";
 import { CustomSelect, SelectOption } from "@/components/shared/CustomSelect";
 import { ElderlyProfile, SosAlert } from "@/types";
 
@@ -58,24 +58,24 @@ export function SosEmergencyPanel({
   const waHref = waNumber ? `https://wa.me/${waNumber}?text=${waText}` : "";
 
   return (
-    <section className="space-y-5 lg:col-span-5">
-      <div className="rounded-2xl border-2 border-danger bg-surface p-5 sm:p-6">
-        <div className="flex items-start gap-3">
-          <ShieldAlert className="mt-0.5 h-6 w-6 shrink-0 text-danger" />
-          <div>
-            <h2 className="font-display text-base font-bold text-ink sm:text-lg">
-              Tombol Darurat SOS
-            </h2>
-            <p className="text-xs text-ink-muted">
-              Picu peringatan real-time ke keluarga & siapkan Kartu Triage
-              Medis.
-            </p>
-          </div>
+    <section className="space-y-4 lg:col-span-5">
+      <div className="overflow-hidden rounded-2xl border border-border border-t-4 border-t-danger bg-surface p-5 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:p-6">
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="font-display text-base font-bold tracking-[-0.01em] text-ink sm:text-lg">
+            Panggilan Darurat SOS
+          </h2>
+          <span className="rounded-md bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-danger">
+            Siaga 119
+          </span>
         </div>
+        <p className="mt-1 text-xs leading-relaxed text-ink-muted">
+          Kirim peringatan ke keluarga dan siapkan ringkasan riwayat medis untuk
+          tim ambulans.
+        </p>
 
         <div className="mt-4">
           <CustomSelect
-            label="Kondisi Darurat"
+            label="Pilih Kondisi Darurat"
             value={sosReason}
             options={SOS_OPTIONS}
             onChange={setSosReason}
@@ -86,28 +86,23 @@ export function SosEmergencyPanel({
           type="button"
           onClick={() => onTriggerSos(sosReason)}
           disabled={triggering}
-          className="mt-4 flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-danger px-5 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-60 cursor-pointer"
+          className="mt-4 flex min-h-[46px] w-full items-center justify-center rounded-xl bg-danger px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60 cursor-pointer"
         >
-          <AlertTriangle className="h-5 w-5" />
-          <span>
-            {triggering
-              ? "Mengirim Sinyal SOS..."
-              : "PICU DARURAT SOS SEKARANG"}
-          </span>
+          {triggering ? "Mengirim Sinyal SOS..." : "Kirim Sinyal Darurat SOS"}
         </button>
 
-        <div className="mt-5 space-y-2.5 border-t border-border pt-4">
-          <p className="text-xs font-bold text-ink">
-            Akses Cepat Medis & Keluarga:
+        <div className="mt-5 space-y-2.5 border-t border-border-subtle pt-4">
+          <p className="text-xs font-semibold text-ink">
+            Kontak Medis & Keluarga
           </p>
           <p className="inline-flex items-center gap-1.5 text-xs text-ink-muted">
-            <MapPin className="h-4 w-4 shrink-0 text-danger" />
+            <MapPin className="h-3.5 w-3.5 shrink-0 text-ink-muted" />
             <span>{elderly.nearest_hospital}</span>
           </p>
-          <div className="grid grid-cols-2 gap-2 pt-1">
+          <div className="grid grid-cols-2 gap-2.5 pt-1">
             <a
               href="tel:119"
-              className="inline-flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl bg-primary-soft py-2 text-xs font-bold text-danger"
+              className="inline-flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl border border-danger/25 bg-red-50 py-2 text-xs font-semibold text-danger transition-colors hover:bg-red-100"
             >
               <PhoneCall className="h-3.5 w-3.5" />
               <span>Panggil 119</span>
@@ -117,7 +112,7 @@ export function SosEmergencyPanel({
                 href={waHref}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-h-[42px] items-center justify-center rounded-xl bg-secondary-soft px-2 py-2 text-center text-xs font-bold text-secondary"
+                className="inline-flex min-h-[42px] items-center justify-center rounded-xl border border-secondary/25 bg-secondary-soft px-2 py-2 text-center text-xs font-semibold text-secondary transition-opacity hover:opacity-90"
               >
                 WA {familyName ? familyName.split(" ")[0] : "Keluarga"}
               </a>
@@ -134,15 +129,15 @@ export function SosEmergencyPanel({
       </div>
 
       {activeSos?.triage_brief && (
-        <div className="rounded-2xl border border-danger/30 bg-primary-soft p-5">
-          <p className="text-xs font-bold uppercase tracking-wider text-danger">
-            Kartu Triage Darurat AI Siap-Baca
+        <div className="rounded-2xl border border-danger/25 bg-red-50/70 p-5">
+          <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-danger">
+            Ringkasan Triage Medis
           </p>
-          <p className="mt-2 text-xs font-semibold text-ink">
+          <p className="mt-2 text-sm font-semibold text-ink">
             {activeSos.triage_brief.patient_summary}
           </p>
           {activeSos.triage_brief.allergies.length > 0 && (
-            <p className="mt-1.5 text-xs font-bold text-danger">
+            <p className="mt-1.5 text-xs font-semibold text-danger">
               Alergi: {activeSos.triage_brief.allergies.join(", ")}
             </p>
           )}
@@ -151,7 +146,7 @@ export function SosEmergencyPanel({
               Obat Rutin: {activeSos.triage_brief.routine_meds.join(", ")}
             </p>
           )}
-          <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-ink">
+          <ul className="mt-2.5 list-disc space-y-1 pl-4 text-xs leading-relaxed text-ink">
             {activeSos.triage_brief.immediate_actions.map((act) => (
               <li key={act}>{act}</li>
             ))}

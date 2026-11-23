@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { Activity, HeartPulse, Pill, UserCheck, Utensils } from "lucide-react";
 import { LenteraMascot } from "@/components/shared/LenteraMascot";
 import { CareLog, ElderlyProfile, LenteraStatus } from "@/types";
 
@@ -26,24 +25,30 @@ export function ElderlyStatusCard({
   latestLog,
   caregiverName,
 }: ElderlyStatusCardProps) {
+  const bpHigh = latestLog ? latestLog.systolic >= 140 : false;
+
   return (
-    <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+    <section className="rounded-2xl border border-border bg-surface p-5 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:p-6">
       <div className="flex flex-col justify-between gap-4 border-b border-border-subtle pb-5 sm:flex-row sm:items-center">
         <div>
-          <p className="text-xs font-semibold text-secondary">
-            Kondisi Orang Tua Hari Ini
-          </p>
-          <h1 className="mt-1 font-display text-xl font-bold text-ink sm:text-2xl">
-            {elderly.name}
-          </h1>
-          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-muted">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="font-display text-xl font-bold tracking-[-0.02em] text-ink sm:text-2xl">
+              {elderly.name}
+            </h1>
+            {elderly.age > 0 && (
+              <span className="rounded-md bg-canvas-subtle px-2 py-0.5 text-xs font-medium text-ink-muted">
+                {elderly.age} tahun
+              </span>
+            )}
+          </div>
+
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-muted">
             {caregiverName && (
               <Link
                 href="/caregivers"
-                className="inline-flex items-center gap-1 font-medium text-ink hover:text-primary"
+                className="font-medium text-ink underline decoration-border underline-offset-4 transition-colors hover:text-primary"
               >
-                <UserCheck className="h-3.5 w-3.5 text-secondary" />
-                <span>Didampingi {caregiverName}</span>
+                Perawat: {caregiverName}
               </Link>
             )}
             {elderly.address && <span>· {elderly.address}</span>}
@@ -53,55 +58,62 @@ export function ElderlyStatusCard({
         <LenteraMascot status={status} size="sm" showLabel />
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-xl bg-canvas-subtle p-3.5">
-          <div className="flex items-center gap-1.5 text-xs text-ink-muted">
-            <Activity className="h-3.5 w-3.5 text-primary" />
-            <span>Tekanan Darah</span>
+      {/* Apple Health / Linear style KPI strip */}
+      <div className="mt-5 grid grid-cols-2 divide-y divide-border-subtle sm:grid-cols-4 sm:divide-x sm:divide-y-0">
+        <div className="pb-4 pr-3 sm:pb-0 sm:pr-5">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-medium text-ink-muted">
+              Tekanan Darah
+            </span>
+            {latestLog && (
+              <span
+                className={`text-[11px] font-semibold ${
+                  bpHigh ? "text-warning" : "text-secondary"
+                }`}
+              >
+                {bpHigh ? "Tinggi" : "Stabil"}
+              </span>
+            )}
           </div>
-          <p className="mt-1.5 text-lg font-bold tabular-nums text-ink sm:text-xl">
+          <p className="mt-2 text-2xl font-bold tracking-tight tabular-nums text-ink sm:text-3xl">
             {latestLog
               ? `${latestLog.systolic}/${latestLog.diastolic}`
               : "--/--"}
           </p>
-          <p className="text-[11px] text-ink-muted">mmHg</p>
+          <p className="mt-0.5 text-[11px] text-ink-muted">mmHg</p>
         </div>
 
-        <div className="rounded-xl bg-canvas-subtle p-3.5">
-          <div className="flex items-center gap-1.5 text-xs text-ink-muted">
-            <HeartPulse className="h-3.5 w-3.5 text-danger" />
-            <span>Detak Nadi</span>
-          </div>
-          <p className="mt-1.5 text-lg font-bold tabular-nums text-ink sm:text-xl">
-            {latestLog ? `${latestLog.heart_rate} bpm` : "--"}
+        <div className="pb-4 pl-3 sm:px-5 sm:pb-0">
+          <span className="text-xs font-medium text-ink-muted">Detak Nadi</span>
+          <p className="mt-2 text-2xl font-bold tracking-tight tabular-nums text-ink sm:text-3xl">
+            {latestLog ? latestLog.heart_rate : "--"}
+            {latestLog && (
+              <span className="ml-1 text-xs font-medium text-ink-muted">
+                bpm
+              </span>
+            )}
           </p>
-          <p className="text-[11px] text-ink-muted">Normal 60–100</p>
+          <p className="mt-0.5 text-[11px] text-ink-muted">Rentang 60–100</p>
         </div>
 
-        <div className="rounded-xl bg-canvas-subtle p-3.5">
-          <div className="flex items-center gap-1.5 text-xs text-ink-muted">
-            <Pill className="h-3.5 w-3.5 text-secondary" />
-            <span>Obat Rutin</span>
-          </div>
-          <p className="mt-1.5 text-base font-bold text-secondary sm:text-lg">
+        <div className="pt-4 pr-3 sm:px-5 sm:pt-0">
+          <span className="text-xs font-medium text-ink-muted">Obat Rutin</span>
+          <p className="mt-2 text-lg font-bold tracking-tight text-ink sm:text-xl">
             {latestLog
               ? latestLog.medication_taken
                 ? "Sudah Diminum"
                 : "Belum Diminum"
               : "Menunggu"}
           </p>
-          <p className="text-[11px] text-ink-muted">Catatan terbaru</p>
+          <p className="mt-1 text-[11px] text-ink-muted">Catatan terakhir</p>
         </div>
 
-        <div className="rounded-xl bg-canvas-subtle p-3.5">
-          <div className="flex items-center gap-1.5 text-xs text-ink-muted">
-            <Utensils className="h-3.5 w-3.5 text-primary" />
-            <span>Porsi Makan</span>
-          </div>
-          <p className="mt-1.5 text-base font-bold text-ink sm:text-lg">
+        <div className="pt-4 pl-3 sm:pl-5 sm:pt-0">
+          <span className="text-xs font-medium text-ink-muted">Porsi Makan</span>
+          <p className="mt-2 text-lg font-bold tracking-tight text-ink sm:text-xl">
             {latestLog ? MEAL_LABEL[latestLog.meal_portion] : "Menunggu"}
           </p>
-          <p className="text-[11px] text-ink-muted">Catatan terbaru</p>
+          <p className="mt-1 text-[11px] text-ink-muted">Catatan terakhir</p>
         </div>
       </div>
     </section>

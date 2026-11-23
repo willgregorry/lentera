@@ -10,7 +10,6 @@ import {
   MapPin,
   Phone,
   Search,
-  ShieldCheck,
   Stethoscope,
   UserCheck,
   UserPlus,
@@ -177,8 +176,8 @@ export default function CaregiverDirectoryPage() {
                   <h2 className="font-display text-lg font-bold text-ink sm:text-xl">
                     {activeCaregiver.name}
                   </h2>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-secondary-soft px-2.5 py-0.5 text-xs font-semibold text-secondary">
-                    <ShieldCheck className="h-3.5 w-3.5" />
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary-soft px-2.5 py-0.5 text-xs font-semibold text-secondary">
+                    <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
                     Aktif Bertugas
                   </span>
                 </div>
@@ -363,8 +362,8 @@ export default function CaregiverDirectoryPage() {
                         </p>
                       </div>
                       {cg.verified && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-secondary-soft px-2.5 py-0.5 text-[11px] font-semibold text-secondary">
-                          <ShieldCheck className="h-3 w-3" />
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary-soft px-2.5 py-0.5 text-[11px] font-semibold text-secondary">
+                          <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
                           <span>Tersedia</span>
                         </span>
                       )}
