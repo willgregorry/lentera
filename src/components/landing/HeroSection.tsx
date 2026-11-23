@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import Link from "next/link";
-import { ArrowDown, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { gsap } from "@/lib/gsap";
 import { useHeroReveal } from "@/hooks/useGsapReveal";
 import { SplitText } from "@/components/shared/SplitText";
@@ -59,14 +59,6 @@ export function HeroSection() {
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent"
         />
-
-        <a
-          href="#cara-kerja"
-          className="absolute top-5 right-6 z-10 hidden items-center gap-1.5 rounded-full bg-black/25 px-3.5 py-1.5 text-xs font-medium text-white/90 backdrop-blur-md transition-colors hover:bg-black/40 sm:inline-flex"
-        >
-          <span>Gulir ke bawah</span>
-          <ArrowDown className="h-3.5 w-3.5" />
-        </a>
 
         <div className="relative z-10 flex w-full flex-col justify-between gap-6 px-6 pb-8 pt-16 sm:flex-row sm:items-end sm:px-12 sm:pb-12">
           <div className="max-w-2xl text-left">

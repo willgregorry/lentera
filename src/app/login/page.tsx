@@ -3,8 +3,7 @@
 import React, { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
+import { LenteraMascot } from "@/components/shared/LenteraMascot";
 import { apiService } from "@/services/api";
 import { UserRole } from "@/types";
 
@@ -51,17 +50,21 @@ function LoginFormContent() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-sm flex-col justify-center px-4 py-16">
-      <div className="text-center">
-        <h1 className="font-display text-2xl font-bold tracking-tight text-ink">
-          Masuk ke Lentera
+    <div className="mx-auto flex w-full max-w-sm flex-col justify-center">
+      <Link href="/" className="mb-8 inline-flex items-center gap-2 lg:hidden">
+        <LenteraMascot status="aman" size="sm" />
+        <span className="font-display text-lg font-bold text-ink">Lentera</span>
+      </Link>
+
+      <div>
+        <h1 className="font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+          Selamat datang kembali
         </h1>
         <p className="mt-1.5 text-sm text-ink-muted">
-          Masuk sebagai keluarga atau caregiver.
+          Masuk ke akun keluarga atau caregiver Anda.
         </p>
       </div>
 
-      {/* Clean segmented role switch */}
       <div className="mt-6 grid grid-cols-2 rounded-lg bg-border-subtle p-1">
         <button
           type="button"
@@ -127,16 +130,16 @@ function LoginFormContent() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 cursor-pointer"
+          className="btn-diagonal-secondary w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white disabled:opacity-60 cursor-pointer"
         >
           {loading ? "Memproses..." : "Masuk"}
         </button>
       </form>
 
       <div className="my-5 flex items-center gap-3">
-        <div className="h-px flex-1 bg-[#E5E7EB]" />
+        <div className="h-px flex-1 bg-border" />
         <span className="text-xs text-ink-muted">atau</span>
-        <div className="h-px flex-1 bg-[#E5E7EB]" />
+        <div className="h-px flex-1 bg-border" />
       </div>
 
       <button
@@ -200,9 +203,41 @@ function LoginFormContent() {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-surface">
-      <Navbar />
-      <main className="flex flex-1 items-center justify-center">
+    <div className="grid min-h-screen bg-surface lg:grid-cols-2">
+      {/* Left Visual Panel */}
+      <div className="relative hidden p-4 lg:block">
+        <div className="relative flex h-full w-full flex-col justify-between overflow-hidden rounded-3xl bg-canvas-subtle p-10">
+          <img
+            src="/images/auth_care.jpg"
+            alt="Pendampingan lansia yang hangat bersama Lentera"
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover select-none"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/20"
+          />
+
+          <Link href="/" className="relative z-10 inline-flex items-center gap-2.5">
+            <LenteraMascot status="aman" size="sm" />
+            <span className="font-display text-lg font-bold text-white">
+              Lentera
+            </span>
+          </Link>
+
+          <div className="relative z-10 max-w-md">
+            <p className="font-display text-2xl font-bold leading-snug text-white">
+              Ketenangan keluarga dimulai dari perawatan yang terpercaya.
+            </p>
+            <p className="mt-2 text-sm text-white/80">
+              Pantau kesehatan orang tua di rumah dan terhubung langsung dengan
+              caregiver profesional.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Form Panel */}
+      <main className="flex items-center justify-center px-6 py-12 sm:px-10">
         <Suspense
           fallback={
             <div className="py-16 text-center text-sm text-ink-muted">
@@ -213,7 +248,6 @@ export default function LoginPage() {
           <LoginFormContent />
         </Suspense>
       </main>
-      <Footer />
     </div>
   );
 }
