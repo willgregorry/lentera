@@ -11,7 +11,6 @@ import { SosEmergencyPanel } from "@/components/caregiver/SosEmergencyPanel";
 import { useCaregiverPortal } from "@/hooks/useCaregiverPortal";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
-import { apiService, getLocalRegisteredUsers } from "@/services/api";
 
 export default function CaregiverPortalPage() {
   const router = useRouter();
@@ -51,7 +50,6 @@ export default function CaregiverPortalPage() {
       try {
         let assigned = false;
         let matchedFamilyId = "";
-        let matchedFamilyName = "";
 
         if (supabase) {
           const [jobsRes, appsRes] = await Promise.all([
@@ -84,31 +82,6 @@ export default function CaregiverPortalPage() {
             if (fam && active) {
               setFamilyPhone(fam.phone || "");
               setFamilyName(fam.full_name || "");
-            }
-          }
-        }
-
-        if (!assigned || !matchedFamilyId) {
-          const jobs = await apiService.getJobs();
-          const matchedJob = jobs.find((job) =>
-            (job.applications || []).some(
-              (app) =>
-                (app.caregiver_id === authUser!.id ||
-                  app.caregiver_name === authUser!.name) &&
-                app.status === "accepted"
-            )
-          );
-          if (matchedJob) {
-            assigned = true;
-            matchedFamilyId = matchedJob.family_id;
-            matchedFamilyName = matchedJob.family_name;
-            const localUsers = getLocalRegisteredUsers();
-            const famUser =
-              localUsers.find((u) => u.id === matchedJob.family_id) ||
-              localUsers.find((u) => u.role === "family");
-            if (famUser && active) {
-              if (famUser.phone) setFamilyPhone(famUser.phone);
-              setFamilyName(famUser.name || matchedFamilyName);
             }
           }
         }

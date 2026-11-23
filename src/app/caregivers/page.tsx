@@ -18,7 +18,6 @@ import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/hooks/useAuth";
 import { useAssignmentStatus } from "@/hooks/useAssignmentStatus";
 import { supabase } from "@/lib/supabase";
-import { apiService, getLocalRegisteredCaregivers } from "@/services/api";
 import { UserProfile } from "@/types";
 
 export default function CaregiverDirectoryPage() {
@@ -50,7 +49,6 @@ export default function CaregiverDirectoryPage() {
     async function loadCaregivers() {
       try {
         const busyIds = new Set<string>();
-        const busyNames = new Set<string>();
         const mergedMap = new Map<string, UserProfile>();
 
         if (supabase) {
@@ -100,27 +98,8 @@ export default function CaregiverDirectoryPage() {
           }
         }
 
-        const allJobs = await apiService.getJobs();
-        for (const job of allJobs) {
-          for (const app of job.applications || []) {
-            if (app.status === "accepted") {
-              busyIds.add(String(app.caregiver_id));
-              busyNames.add(app.caregiver_name.toLowerCase());
-            }
-          }
-        }
-
-        for (const localCg of getLocalRegisteredCaregivers()) {
-          const key = String(localCg.email || localCg.id).toLowerCase();
-          if (!mergedMap.has(key)) {
-            mergedMap.set(key, localCg);
-          }
-        }
-
         const available = Array.from(mergedMap.values()).filter(
-          (cg) =>
-            !busyIds.has(String(cg.id)) &&
-            !busyNames.has(cg.name.toLowerCase())
+          (cg) => !busyIds.has(String(cg.id))
         );
 
         if (active) {

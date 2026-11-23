@@ -1,11 +1,6 @@
 import {
-  DEMO_USERS,
   MOCK_AI_DIGEST,
-  MOCK_CARE_LOGS,
   MOCK_ELDERLY,
-  MOCK_JOBS,
-  MOCK_NOTIFICATIONS,
-  MOCK_SOS_LIST,
 } from "@/content/mockData";
 import { supabase } from "@/lib/supabase";
 import { notifyUserDevice } from "@/lib/notifications";
@@ -26,127 +21,90 @@ import {
 import { ILenteraApiService, StreamEvent } from "./api.interface";
 import { getStoredUser, setAuthSession } from "./authStorage";
 
-const SHARED_STATE_KEY = "lentera_shared_state_v1";
-
-interface SharedStore {
-  elderly: ElderlyProfile;
-  logs: CareLog[];
-  jobs: CareJob[];
-  sosAlerts: SosAlert[];
-  notifications: AppNotification[];
-  registeredCaregivers: UserProfile[];
-  registeredUsers: UserProfile[];
+function requireSupabase() {
+  if (!supabase) {
+    throw new Error(
+      "Konfigurasi Supabase belum tersedia. Pastikan NEXT_PUBLIC_SUPABASE_URL dan NEXT_PUBLIC_SUPABASE_ANON_KEY terisi."
+    );
+  }
+  return supabase;
 }
 
-function readSharedStore(): SharedStore {
-  const empty: SharedStore = {
-    elderly: MOCK_ELDERLY,
-    logs: MOCK_CARE_LOGS,
-    jobs: MOCK_JOBS,
-    sosAlerts: MOCK_SOS_LIST,
-    notifications: MOCK_NOTIFICATIONS,
-    registeredCaregivers: [],
-    registeredUsers: [],
-  };
-  if (typeof window === "undefined") {
-    return empty;
-  }
-  try {
-    const raw = window.localStorage.getItem(SHARED_STATE_KEY);
-    if (raw) {
-      return { ...empty, ...(JSON.parse(raw) as Partial<SharedStore>) };
-    }
-  } catch {
-    // ignore parse error
-  }
-  return empty;
-}
-
-function writeSharedStore(updater: (prev: SharedStore) => SharedStore): SharedStore {
-  const next = updater(readSharedStore());
-  if (typeof window !== "undefined") {
-    try {
-      window.localStorage.setItem(SHARED_STATE_KEY, JSON.stringify(next));
-    } catch {
-      // ignore quota error
-    }
-  }
-  return next;
-}
-
-class LenteraApiService implements ILenteraApiService {
+class LenteraSupabaseService implements ILenteraApiService {
   async loginUser(payload: {
     email: string;
     password: string;
     role?: UserRole;
-  }): Promise<{ user: UserProfile; token: string; isDemoFallback?: boolean }> {
-    const targetRole: UserRole =
-      payload.role ||
-      (payload.email.toLowerCase().includes("caregiver") ||
-      payload.email.toLowerCase().includes("rini")
-        ? "caregiver"
-        : "family");
+  }): Promise<{ user: UserProfile; token: string }> {
+    const db = requireSupabase();
 
-    if (supabase && payload.password !== "google-oauth-session") {
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: payload.email,
-          password: payload.password,
-        });
-        if (!error && data.user && data.session) {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("email", payload.email)
-            .maybeSingle();
-
-          const meta = data.user.user_metadata || {};
-          const displayName =
-            profile?.full_name ||
-            meta.display_name ||
-            meta.full_name ||
-            meta.name ||
-            payload.email.split("@")[0];
-
-          const user: UserProfile = {
-            id: profile?.id || data.user.id,
-            name: String(displayName),
-            email: payload.email,
-            role: (profile?.role as UserRole) || targetRole,
-            phone: profile?.phone || "",
-            city: profile?.location || "",
-            verified: Boolean(profile?.is_verified ?? true),
-            skills: Array.isArray(profile?.skills) ? profile.skills : [],
-            experience_years: profile?.experience_years || 0,
-            bio: profile?.bio || "",
-          };
-          setAuthSession(data.session.access_token, user);
-          return { user, token: data.session.access_token };
-        }
-      } catch {
-        // fallback below
-      }
+    if (payload.password === "google-oauth-session") {
+      await db.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo:
+            typeof window !== "undefined"
+              ? `${window.location.origin}/${payload.role === "caregiver" ? "loker" : "caregivers"}`
+              : undefined,
+        },
+      });
     }
 
-    const storedMatch = readSharedStore().registeredUsers.find(
-      (u) => u.email.toLowerCase() === (payload.email || "").toLowerCase()
-    );
+    const { data, error } = await db.auth.signInWithPassword({
+      email: payload.email,
+      password: payload.password,
+    });
 
-    const baseUser = DEMO_USERS[targetRole];
-    const user: UserProfile = storedMatch
-      ? { ...storedMatch, role: targetRole }
-      : {
-          ...baseUser,
-          email: payload.email || baseUser.email,
-          name:
-            payload.email && !payload.email.includes("lentera.id")
-              ? payload.email.split("@")[0]
-              : baseUser.name,
-          role: targetRole,
-        };
-    const token = `session-${targetRole}-${Date.now()}`;
-    setAuthSession(token, user);
-    return { user, token, isDemoFallback: true };
+    if (error || !data.user || !data.session) {
+      throw new Error(error?.message || "Email atau kata sandi tidak sesuai.");
+    }
+
+    const { data: profile } = await db
+      .from("profiles")
+      .select("*")
+      .eq("id", data.user.id)
+      .maybeSingle();
+
+    const meta = data.user.user_metadata || {};
+    const displayName =
+      profile?.full_name ||
+      meta.display_name ||
+      meta.full_name ||
+      meta.name ||
+      payload.email.split("@")[0];
+
+    const resolvedRole: UserRole =
+      (profile?.role as UserRole) ||
+      (meta.role as UserRole) ||
+      payload.role ||
+      "family";
+
+    if (!profile) {
+      await db.from("profiles").upsert({
+        id: data.user.id,
+        email: payload.email,
+        full_name: String(displayName),
+        role: resolvedRole,
+        phone: meta.phone || null,
+        location: meta.location || null,
+      });
+    }
+
+    const user: UserProfile = {
+      id: data.user.id,
+      name: String(displayName),
+      email: payload.email,
+      role: resolvedRole,
+      phone: profile?.phone || meta.phone || "",
+      city: profile?.location || meta.location || "",
+      verified: Boolean(profile?.is_verified ?? true),
+      skills: Array.isArray(profile?.skills) ? profile.skills : [],
+      experience_years: Number(profile?.experience_years || 0),
+      bio: profile?.bio || "",
+    };
+
+    setAuthSession(data.session.access_token, user);
+    return { user, token: data.session.access_token };
   }
 
   async registerUser(payload: {
@@ -157,99 +115,53 @@ class LenteraApiService implements ILenteraApiService {
     phone?: string;
     city?: string;
     skills?: string[];
-  }): Promise<{ user: UserProfile; token: string; isDemoFallback?: boolean }> {
-    const saveUserLocally = (u: UserProfile) => {
-      writeSharedStore((prev) => {
-        const userExists = prev.registeredUsers.some(
-          (item) => item.email.toLowerCase() === u.email.toLowerCase()
-        );
-        const nextUsers = userExists
-          ? prev.registeredUsers.map((item) =>
-              item.email.toLowerCase() === u.email.toLowerCase() ? u : item
-            )
-          : [u, ...prev.registeredUsers];
+  }): Promise<{ user: UserProfile; token: string }> {
+    const db = requireSupabase();
 
-        let nextCaregivers = prev.registeredCaregivers;
-        if (u.role === "caregiver") {
-          const cgExists = prev.registeredCaregivers.some(
-            (c) => c.email.toLowerCase() === u.email.toLowerCase()
-          );
-          nextCaregivers = cgExists
-            ? prev.registeredCaregivers.map((c) =>
-                c.email.toLowerCase() === u.email.toLowerCase() ? u : c
-              )
-            : [u, ...prev.registeredCaregivers];
-        }
+    const { data, error } = await db.auth.signUp({
+      email: payload.email,
+      password: payload.password,
+      options: {
+        data: {
+          display_name: payload.name,
+          full_name: payload.name,
+          name: payload.name,
+          role: payload.role,
+          phone: payload.phone || "",
+          location: payload.city || "",
+          skills: payload.skills || [],
+        },
+      },
+    });
 
-        return {
-          ...prev,
-          registeredUsers: nextUsers,
-          registeredCaregivers: nextCaregivers,
-        };
-      });
-    };
-
-    if (supabase) {
-      try {
-        const { data, error } = await supabase.auth.signUp({
-          email: payload.email,
-          password: payload.password,
-          options: {
-            data: {
-              display_name: payload.name,
-              full_name: payload.name,
-              name: payload.name,
-              role: payload.role,
-              phone: payload.phone || "",
-              location: payload.city || "",
-              skills: payload.skills || [],
-            },
-          },
-        });
-        if (!error && data.user) {
-          await supabase.from("profiles").upsert({
-            id: data.user.id,
-            email: payload.email,
-            full_name: payload.name,
-            role: payload.role,
-            phone: payload.phone || null,
-            location: payload.city || null,
-            skills: payload.skills || [],
-          });
-          const user: UserProfile = {
-            id: data.user.id,
-            name: payload.name,
-            email: payload.email,
-            role: payload.role,
-            phone: payload.phone || "",
-            city: payload.city || "",
-            verified: payload.role === "caregiver",
-            skills: payload.skills || [],
-          };
-          saveUserLocally(user);
-          const token = data.session?.access_token || `session-${data.user.id}`;
-          setAuthSession(token, user);
-          return { user, token };
-        }
-      } catch {
-        // fallback below
-      }
+    if (error || !data.user) {
+      throw new Error(error?.message || "Gagal mendaftarkan akun baru.");
     }
 
+    await db.from("profiles").upsert({
+      id: data.user.id,
+      email: payload.email,
+      full_name: payload.name,
+      role: payload.role,
+      phone: payload.phone || null,
+      location: payload.city || null,
+      skills: payload.skills || [],
+    });
+
     const user: UserProfile = {
-      id: `user-${Date.now()}`,
+      id: data.user.id,
       name: payload.name,
       email: payload.email,
       role: payload.role,
       phone: payload.phone || "",
       city: payload.city || "",
-      verified: payload.role === "caregiver",
+      verified: true,
       skills: payload.skills || [],
     };
-    saveUserLocally(user);
-    const token = `session-${payload.role}-${Date.now()}`;
+
+    const token = data.session?.access_token || `supabase-${data.user.id}`;
     setAuthSession(token, user);
-    return { user, token, isDemoFallback: true };
+    return { user, token };
   }
 
   async getCurrentProfile(): Promise<UserProfile | null> {
@@ -257,73 +169,75 @@ class LenteraApiService implements ILenteraApiService {
   }
 
   async getElderlyProfile(): Promise<ElderlyProfile> {
-    if (supabase) {
-      try {
-        const { data } = await supabase
-          .from("elderly_profiles")
-          .select("*")
-          .limit(1)
-          .maybeSingle();
-        if (data) {
-          const statusVal = String(data.status || "aman").toLowerCase();
-          const status: LenteraStatus =
-            statusVal === "darurat" || statusVal === "waspada"
-              ? statusVal
-              : "aman";
-          return {
-            id: data.id,
-            name: data.name,
-            age: data.age,
-            family_id: data.family_id,
-            conditions: data.medical_conditions || [],
-            allergies: data.allergies || [],
-            routine_meds: Array.isArray(data.routine_medications)
-              ? data.routine_medications.map((m: { name?: string }) =>
-                  typeof m === "string" ? m : m?.name || "Obat"
-                )
-              : [],
-            address: data.address || "",
-            nearest_hospital: "RS Terdekat (119)",
-            nearest_hospital_phone: "119",
-            status,
-          };
-        }
-      } catch {
-        // fallback
-      }
+    const db = requireSupabase();
+    const currentUser = getStoredUser();
+
+    let query = db.from("elderly_profiles").select("*");
+    if (currentUser?.role === "family") {
+      query = query.eq("family_id", currentUser.id);
     }
-    return readSharedStore().elderly;
+
+    const { data } = await query
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!data) return MOCK_ELDERLY;
+
+    const statusVal = String(data.status || "aman").toLowerCase();
+    const status: LenteraStatus =
+      statusVal === "darurat" || statusVal === "waspada" ? statusVal : "aman";
+
+    return {
+      id: data.id,
+      name: data.name,
+      age: data.age,
+      family_id: data.family_id,
+      conditions: data.medical_conditions || [],
+      allergies: data.allergies || [],
+      routine_meds: Array.isArray(data.routine_medications)
+        ? data.routine_medications.map((m: { name?: string }) =>
+            typeof m === "string" ? m : m?.name || "Obat"
+          )
+        : [],
+      address: data.address || "",
+      nearest_hospital: "RS Terdekat (119)",
+      nearest_hospital_phone: "119",
+      status,
+    };
   }
 
-  async getCareLogs(): Promise<CareLog[]> {
-    if (supabase) {
-      try {
-        const { data } = await supabase
-          .from("care_logs")
-          .select("*")
-          .order("logged_at", { ascending: true });
-        if (data && data.length > 0) {
-          return data.map((row) => ({
-            id: row.id,
-            elderly_id: row.elderly_id,
-            caregiver_id: row.caregiver_id,
-            caregiver_name: "Caregiver Bertugas",
-            heart_rate: row.heart_rate || 78,
-            systolic: row.blood_pressure_systolic || 120,
-            diastolic: row.blood_pressure_diastolic || 80,
-            meal_portion: row.meal_portion || "habis",
-            medication_taken: Boolean(row.medication_taken),
-            mood: row.mood || "tenang",
-            notes: row.notes || "",
-            photo_url: row.photo_url || undefined,
-            logged_at: row.logged_at || row.created_at,
-          }));
-        }
-      } catch {
-        // fallback
-      }
+  async getCareLogs(elderlyId?: string): Promise<CareLog[]> {
+    const db = requireSupabase();
+    let query = db
+      .from("care_logs")
+      .select("*, caregiver:profiles!care_logs_caregiver_id_fkey(full_name)")
+      .order("logged_at", { ascending: true });
+
+    if (elderlyId && elderlyId !== "demo" && elderlyId !== "default-elderly") {
+      query = query.eq("elderly_id", elderlyId);
     }
-    return readSharedStore().logs;
+
+    const { data } = await query;
+    if (!data) return [];
+
+    return data.map((row) => ({
+      id: row.id,
+      elderly_id: row.elderly_id,
+      caregiver_id: row.caregiver_id,
+      caregiver_name:
+        (row.caregiver as { full_name?: string } | null)?.full_name ||
+        "Perawat Bertugas",
+      heart_rate: row.heart_rate || 78,
+      systolic: row.blood_pressure_systolic || 120,
+      diastolic: row.blood_pressure_diastolic || 80,
+      meal_portion: row.meal_portion || "habis",
+      medication_taken: Boolean(row.medication_taken),
+      mood: row.mood || "tenang",
+      notes: row.notes || "",
+      photo_url: row.photo_url || undefined,
+      logged_at: row.logged_at || row.created_at,
+    }));
   }
 
   async createCareLog(
@@ -341,89 +255,159 @@ class LenteraApiService implements ILenteraApiService {
           photo_url?: string;
         }
   ): Promise<CareLog> {
+    const db = requireSupabase();
     const currentUser = getStoredUser();
-    const obj =
+    if (!currentUser) throw new Error("Silakan masuk terlebih dahulu.");
+
+    let elderlyId =
       payload instanceof FormData
-        ? {
-            elderly_id: String(payload.get("elderly_id") || "default-elderly"),
-            heart_rate: Number(payload.get("heart_rate") || 78),
-            systolic: Number(payload.get("systolic") || 120),
-            diastolic: Number(payload.get("diastolic") || 80),
-            meal_portion: (String(payload.get("meal_portion") || "habis") as CareLog["meal_portion"]),
-            medication_taken: payload.get("medication_taken") !== "false",
-            mood: (String(payload.get("mood") || "tenang") as CareLog["mood"]),
-            notes: String(payload.get("notes") || ""),
-          }
-        : payload;
+        ? String(payload.get("elderly_id") || "")
+        : payload.elderly_id;
 
-    const newLog: CareLog = {
-      id: `log-${Date.now()}`,
-      caregiver_id: currentUser?.id || "caregiver",
-      caregiver_name: currentUser?.name || "Caregiver",
-      logged_at: new Date().toISOString(),
-      ...obj,
-    };
-
-    if (supabase) {
-      try {
-        await supabase.from("care_logs").insert({
-          elderly_id: obj.elderly_id,
-          caregiver_id: newLog.caregiver_id,
-          heart_rate: obj.heart_rate,
-          blood_pressure_systolic: obj.systolic,
-          blood_pressure_diastolic: obj.diastolic,
-          meal_portion: obj.meal_portion,
-          medication_taken: obj.medication_taken,
-          mood: obj.mood,
-          notes: obj.notes,
-        });
-      } catch {
-        // persisted locally below
-      }
+    if (!elderlyId || elderlyId === "demo" || elderlyId === "default-elderly") {
+      const eld = await this.getElderlyProfile();
+      elderlyId = eld.id;
     }
 
-    writeSharedStore((prev) => ({
-      ...prev,
-      logs: [...prev.logs, newLog],
-    }));
+    let photoUrl: string | undefined;
+    if (payload instanceof FormData) {
+      const file = payload.get("photo") as File | null;
+      if (file && file.size > 0) {
+        const ext = file.name.split(".").pop() || "jpg";
+        const filePath = `${currentUser.id}/${Date.now()}.${ext}`;
+        const { error: uploadErr } = await db.storage
+          .from("care-photos")
+          .upload(filePath, file);
+        if (!uploadErr) {
+          const { data: pub } = db.storage
+            .from("care-photos")
+            .getPublicUrl(filePath);
+          photoUrl = pub.publicUrl;
+        }
+      }
+    } else {
+      photoUrl = payload.photo_url;
+    }
+
+    const rowPayload =
+      payload instanceof FormData
+        ? {
+            elderly_id: elderlyId,
+            caregiver_id: currentUser.id,
+            heart_rate: Number(payload.get("heart_rate") || 78),
+            blood_pressure_systolic: Number(payload.get("systolic") || 120),
+            blood_pressure_diastolic: Number(payload.get("diastolic") || 80),
+            meal_portion: String(payload.get("meal_portion") || "habis"),
+            medication_taken: payload.get("medication_taken") !== "false",
+            mood: String(payload.get("mood") || "tenang"),
+            notes: String(payload.get("notes") || ""),
+            photo_url: photoUrl || null,
+          }
+        : {
+            elderly_id: elderlyId,
+            caregiver_id: currentUser.id,
+            heart_rate: payload.heart_rate,
+            blood_pressure_systolic: payload.systolic,
+            blood_pressure_diastolic: payload.diastolic,
+            meal_portion: payload.meal_portion,
+            medication_taken: payload.medication_taken,
+            mood: payload.mood,
+            notes: payload.notes,
+            photo_url: photoUrl || null,
+          };
+
+    const { data, error } = await db
+      .from("care_logs")
+      .insert(rowPayload)
+      .select("*")
+      .single();
+
+    if (error || !data) {
+      throw new Error(error?.message || "Gagal menyimpan laporan harian.");
+    }
+
+    const created: CareLog = {
+      id: data.id,
+      elderly_id: data.elderly_id,
+      caregiver_id: data.caregiver_id,
+      caregiver_name: currentUser.name,
+      heart_rate: data.heart_rate,
+      systolic: data.blood_pressure_systolic,
+      diastolic: data.blood_pressure_diastolic,
+      meal_portion: data.meal_portion,
+      medication_taken: Boolean(data.medication_taken),
+      mood: data.mood,
+      notes: data.notes,
+      photo_url: data.photo_url || undefined,
+      logged_at: data.logged_at || data.created_at,
+    };
+
     notifyUserDevice({
-      title: `Laporan Baru dari ${newLog.caregiver_name}`,
-      body: `TD ${newLog.systolic}/${newLog.diastolic} mmHg · Nadi ${newLog.heart_rate} bpm — ${newLog.notes}`,
+      title: `Laporan Baru dari ${currentUser.name}`,
+      body: `TD ${created.systolic}/${created.diastolic} mmHg · Nadi ${created.heart_rate} bpm — ${created.notes}`,
       url: "/notifikasi",
     });
-    return newLog;
+
+    return created;
   }
 
   async getJobs(): Promise<CareJob[]> {
-    if (supabase) {
-      try {
-        const { data } = await supabase
-          .from("care_jobs")
-          .select("*")
-          .order("created_at", { ascending: false });
-        if (data && data.length > 0) {
-          return data.map((j) => ({
-            id: j.id,
-            family_id: j.family_id,
-            family_name: "Keluarga",
-            elderly_name: "Orang Tua",
-            elderly_age: 70,
-            title: j.title,
-            location: j.location,
-            schedule: j.schedule,
-            salary_display: `Rp ${Number(j.salary_min || 0).toLocaleString("id-ID")} / bulan`,
-            medical_notes: j.description,
-            required_skills: j.required_skills || [],
-            status: j.status === "filled" ? "filled" : "open",
-            created_at: j.created_at,
-            applications: [],
-          }));
+    const db = requireSupabase();
+    const { data } = await db
+      .from("care_jobs")
+      .select(
+        "*, family:profiles!care_jobs_family_id_fkey(full_name), elderly:elderly_profiles(name, age), applications:job_applications(*, caregiver:profiles!job_applications_caregiver_id_fkey(id, full_name, location, experience_years, skills, is_verified))"
+      )
+      .order("created_at", { ascending: false });
+
+    if (!data) return [];
+
+    return data.map((j) => {
+      const fam = j.family as { full_name?: string } | null;
+      const eld = j.elderly as { name?: string; age?: number } | null;
+      const rawApps = Array.isArray(j.applications) ? j.applications : [];
+
+      const apps: JobApplication[] = rawApps.map(
+        (a: Record<string, unknown>) => {
+          const cg = (a.caregiver || {}) as Record<string, unknown>;
+          return {
+            id: String(a.id),
+            job_id: String(a.job_id),
+            caregiver_id: String(a.caregiver_id),
+            caregiver_name: String(cg.full_name || "Perawat Terdaftar"),
+            caregiver_city: String(cg.location || "Indonesia"),
+            experience_years: Number(cg.experience_years || 0),
+            skills: Array.isArray(cg.skills) ? (cg.skills as string[]) : [],
+            verified: Boolean(cg.is_verified ?? true),
+            cover_note: String(a.cover_note || ""),
+            status: (a.status as JobApplication["status"]) || "pending",
+            ai_match_score:
+              typeof a.match_score === "number" ? a.match_score : undefined,
+            ai_match_reason: a.match_reason
+              ? String(a.match_reason)
+              : undefined,
+            applied_at: String(a.created_at || new Date().toISOString()),
+          };
         }
-      } catch {
-        // fallback
-      }
-    }
-    return readSharedStore().jobs;
+      );
+
+      return {
+        id: j.id,
+        family_id: j.family_id,
+        family_name: fam?.full_name || "Keluarga",
+        elderly_name: eld?.name || "Orang Tua",
+        elderly_age: Number(eld?.age || 70),
+        title: j.title,
+        location: j.location,
+        schedule: j.schedule,
+        salary_display: `Rp ${Number(j.salary_min || 0).toLocaleString("id-ID")} / bulan`,
+        medical_notes: j.description,
+        required_skills: j.required_skills || [],
+        status: j.status === "filled" ? "filled" : "open",
+        created_at: j.created_at,
+        applications: apps,
+      };
+    });
   }
 
   async createJob(payload: {
@@ -436,46 +420,74 @@ class LenteraApiService implements ILenteraApiService {
     medical_notes: string;
     required_skills: string[];
   }): Promise<CareJob> {
+    const db = requireSupabase();
     const currentUser = getStoredUser();
-    const newJob: CareJob = {
-      id: `job-${Date.now()}`,
-      family_id: currentUser?.id || "family",
-      family_name: currentUser?.name || "Keluarga",
-      status: "open",
-      created_at: new Date().toISOString(),
-      applications: [],
-      ...payload,
-    };
+    if (!currentUser) throw new Error("Silakan masuk terlebih dahulu.");
 
-    if (supabase) {
-      try {
-        const numeric = Number(payload.salary_display.replace(/[^\d]/g, "")) || 0;
-        await supabase.from("care_jobs").insert({
-          family_id: newJob.family_id,
-          title: payload.title,
-          description: payload.medical_notes,
-          schedule: payload.schedule,
-          location: payload.location,
-          salary_min: numeric,
-          salary_max: numeric,
-          required_skills: payload.required_skills,
-        });
-      } catch {
-        // persisted locally below
+    // Ensure an elderly_profile exists in Supabase for this family
+    const { data: existingEld } = await db
+      .from("elderly_profiles")
+      .select("id")
+      .eq("family_id", currentUser.id)
+      .limit(1)
+      .maybeSingle();
+
+    let elderlyId = existingEld?.id as string | undefined;
+    if (!elderlyId) {
+      const { data: createdEld, error: eldErr } = await db
+        .from("elderly_profiles")
+        .insert({
+          family_id: currentUser.id,
+          name: payload.elderly_name,
+          age: payload.elderly_age || 70,
+          address: payload.location,
+          medical_conditions: payload.required_skills,
+        })
+        .select("id")
+        .single();
+      if (eldErr || !createdEld) {
+        throw new Error(eldErr?.message || "Gagal membuat profil lansia.");
       }
+      elderlyId = createdEld.id;
     }
 
-    writeSharedStore((prev) => ({
-      ...prev,
-      elderly: {
-        ...prev.elderly,
-        name: payload.elderly_name || prev.elderly.name,
-        age: payload.elderly_age || prev.elderly.age,
-        address: payload.location || prev.elderly.address,
-      },
-      jobs: [newJob, ...prev.jobs],
-    }));
-    return newJob;
+    const numeric = Number(payload.salary_display.replace(/[^\d]/g, "")) || 0;
+    const { data: jobRow, error } = await db
+      .from("care_jobs")
+      .insert({
+        family_id: currentUser.id,
+        elderly_id: elderlyId,
+        title: payload.title,
+        description: payload.medical_notes,
+        schedule: payload.schedule,
+        location: payload.location,
+        salary_min: numeric,
+        salary_max: numeric,
+        required_skills: payload.required_skills,
+      })
+      .select("*")
+      .single();
+
+    if (error || !jobRow) {
+      throw new Error(error?.message || "Gagal membuat lowongan.");
+    }
+
+    return {
+      id: jobRow.id,
+      family_id: currentUser.id,
+      family_name: currentUser.name,
+      elderly_name: payload.elderly_name,
+      elderly_age: payload.elderly_age,
+      title: jobRow.title,
+      location: jobRow.location,
+      schedule: jobRow.schedule,
+      salary_display: payload.salary_display,
+      medical_notes: jobRow.description,
+      required_skills: jobRow.required_skills || [],
+      status: "open",
+      created_at: jobRow.created_at,
+      applications: [],
+    };
   }
 
   async applyToJob(
@@ -488,190 +500,253 @@ class LenteraApiService implements ILenteraApiService {
       cover_note: string;
     }
   ): Promise<JobApplication> {
+    const db = requireSupabase();
     const currentUser = getStoredUser();
-    const newApp: JobApplication = {
-      id: `app-${Date.now()}`,
-      job_id: jobId,
-      caregiver_id: currentUser?.id || "caregiver",
-      verified: true,
-      status: "pending",
-      applied_at: new Date().toISOString(),
-      ...payload,
-    };
+    if (!currentUser) throw new Error("Silakan masuk terlebih dahulu.");
 
-    writeSharedStore((prev) => ({
-      ...prev,
-      jobs: prev.jobs.map((j) =>
-        j.id === jobId
-          ? { ...j, applications: [...(j.applications || []), newApp] }
-          : j
-      ),
-    }));
-    return newApp;
+    const { data, error } = await db
+      .from("job_applications")
+      .insert({
+        job_id: jobId,
+        caregiver_id: currentUser.id,
+        cover_note: payload.cover_note,
+      })
+      .select("*")
+      .single();
+
+    if (error || !data) {
+      throw new Error(error?.message || "Gagal mengirim lamaran.");
+    }
+
+    return {
+      id: data.id,
+      job_id: data.job_id,
+      caregiver_id: currentUser.id,
+      caregiver_name: currentUser.name,
+      caregiver_city: currentUser.city || payload.caregiver_city,
+      experience_years: currentUser.experience_years || payload.experience_years,
+      skills: currentUser.skills || payload.skills,
+      verified: true,
+      cover_note: data.cover_note || payload.cover_note,
+      status: "pending",
+      applied_at: data.created_at,
+    };
   }
 
   async updateApplicationStatus(
     applicationId: string,
     status: "accepted" | "rejected"
   ): Promise<{ id: string; status: "accepted" | "rejected" }> {
-    writeSharedStore((prev) => ({
-      ...prev,
-      jobs: prev.jobs.map((j) => {
-        const apps = j.applications || [];
-        const hasApp = apps.some((a) => a.id === applicationId);
-        if (!hasApp) return j;
-        return {
-          ...j,
-          status: status === "accepted" ? "filled" : j.status,
-          applications: apps.map((a) =>
-            a.id === applicationId ? { ...a, status } : a
-          ),
-        };
-      }),
-    }));
-    return { id: applicationId, status };
+    const db = requireSupabase();
+
+    const { data: appRow, error } = await db
+      .from("job_applications")
+      .update({ status })
+      .eq("id", applicationId)
+      .select("id, job_id, caregiver_id, status")
+      .single();
+
+    if (error || !appRow) {
+      throw new Error(error?.message || "Gagal memperbarui status lamaran.");
+    }
+
+    if (status === "accepted") {
+      await db
+        .from("care_jobs")
+        .update({
+          status: "filled",
+          assigned_caregiver_id: appRow.caregiver_id,
+        })
+        .eq("id", appRow.job_id);
+    }
+
+    return { id: appRow.id, status };
   }
 
   async getSosAlerts(): Promise<SosAlert[]> {
-    return readSharedStore().sosAlerts;
+    const db = requireSupabase();
+    const { data } = await db
+      .from("sos_alerts")
+      .select("*, elderly:elderly_profiles(name), triggerer:profiles!sos_alerts_triggered_by_fkey(full_name)")
+      .order("created_at", { ascending: false });
+
+    if (!data) return [];
+
+    return data.map((row) => ({
+      id: row.id,
+      elderly_id: row.elderly_id,
+      elderly_name:
+        (row.elderly as { name?: string } | null)?.name || "Orang Tua",
+      triggered_by:
+        (row.triggerer as { full_name?: string } | null)?.full_name ||
+        "Perawat",
+      reason: row.location_note || "Kondisi darurat medis di rumah",
+      status: row.status === "resolved" ? "resolved" : "active",
+      triage_brief: row.triage_brief as AiTriageBrief | undefined,
+      nearest_hospital: "RS Terdekat (119)",
+      created_at: row.created_at,
+      resolved_at: row.resolved_at || undefined,
+    }));
   }
 
   async triggerSosAlert(payload: {
     elderly_id: string;
     reason: string;
   }): Promise<SosAlert> {
+    const db = requireSupabase();
     const currentUser = getStoredUser();
-    const store = readSharedStore();
-    let triageBrief: AiTriageBrief | undefined;
+    if (!currentUser) throw new Error("Silakan masuk terlebih dahulu.");
 
-    try {
-      const res = await fetch("/api/ai/triage-brief", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          elderly: store.elderly,
-          logs: store.logs,
-          reason: payload.reason,
-        }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        triageBrief = data.triage_brief;
-      }
-    } catch {
-      // fallback below
+    const elderly = await this.getElderlyProfile();
+    const logs = await this.getCareLogs(elderly.id);
+    const triageBrief = await this.generateAiTriageBrief({
+      elderly_id: elderly.id,
+      reason: payload.reason,
+    });
+
+    const { data, error } = await db
+      .from("sos_alerts")
+      .insert({
+        elderly_id: elderly.id,
+        triggered_by: currentUser.id,
+        status: "active",
+        location_note: payload.reason,
+        triage_brief: triageBrief,
+      })
+      .select("*")
+      .single();
+
+    if (error || !data) {
+      throw new Error(error?.message || "Gagal mengirim sinyal SOS.");
     }
 
     const alert: SosAlert = {
-      id: `sos-${Date.now()}`,
-      elderly_id: payload.elderly_id,
-      elderly_name: store.elderly.name,
-      triggered_by: currentUser?.name || "Caregiver",
+      id: data.id,
+      elderly_id: data.elderly_id,
+      elderly_name: elderly.name,
+      triggered_by: currentUser.name,
       reason: payload.reason,
       status: "active",
-      nearest_hospital: store.elderly.nearest_hospital,
-      created_at: new Date().toISOString(),
-      triage_brief: triageBrief || {
-        patient_summary: `${store.elderly.name} (${store.elderly.age} th)`,
-        allergies: store.elderly.allergies,
-        routine_meds: store.elderly.routine_meds,
-        last_24h_vitals: "Vital terakhir terpantau dalam catatan harian.",
-        immediate_actions: [
-          "Posisikan pasien nyaman dan longgarkan pakaian.",
-          "Segera hubungi layanan darurat 119.",
-        ],
-        emergency_note: payload.reason,
-      },
+      nearest_hospital: elderly.nearest_hospital,
+      triage_brief: triageBrief,
+      created_at: data.created_at,
     };
 
-    writeSharedStore((prev) => ({
-      ...prev,
-      sosAlerts: [alert, ...prev.sosAlerts],
-    }));
+    void logs;
     notifyUserDevice({
-      title: `DARURAT SOS — ${alert.elderly_name}`,
-      body: alert.reason,
+      title: `DARURAT SOS — ${elderly.name}`,
+      body: payload.reason,
       url: "/notifikasi",
       urgent: true,
     });
+
     return alert;
   }
 
   async resolveSosAlert(sosId: string): Promise<SosAlert> {
-    let resolved: SosAlert | undefined;
-    writeSharedStore((prev) => ({
-      ...prev,
-      sosAlerts: prev.sosAlerts.map((s) => {
-        if (s.id === sosId) {
-          resolved = {
-            ...s,
-            status: "resolved",
-            resolved_at: new Date().toISOString(),
-          };
-          return resolved;
-        }
-        return s;
-      }),
-    }));
-    return (
-      resolved || {
-        id: sosId,
-        elderly_id: "default-elderly",
-        triggered_by: "Caregiver",
-        reason: "Ditangani",
+    const db = requireSupabase();
+    const { data, error } = await db
+      .from("sos_alerts")
+      .update({
         status: "resolved",
-        created_at: new Date().toISOString(),
         resolved_at: new Date().toISOString(),
-      }
-    );
+      })
+      .eq("id", sosId)
+      .select("*")
+      .single();
+
+    if (error || !data) {
+      throw new Error(error?.message || "Gagal menyelesaikan status SOS.");
+    }
+
+    return {
+      id: data.id,
+      elderly_id: data.elderly_id,
+      triggered_by: "Perawat",
+      reason: data.location_note || "Ditangani",
+      status: "resolved",
+      created_at: data.created_at,
+      resolved_at: data.resolved_at,
+    };
   }
 
   async getNotifications(): Promise<AppNotification[]> {
-    return readSharedStore().notifications;
+    const db = requireSupabase();
+    const { data } = await db
+      .from("notifications")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    if (!data) return [];
+
+    return data.map((n) => ({
+      id: n.id,
+      title: n.title,
+      message: n.body,
+      type:
+        n.type === "sos"
+          ? "emergency"
+          : n.type === "ai_digest"
+          ? "warning"
+          : "info",
+      created_at: n.created_at,
+      read: Boolean(n.is_read),
+    }));
   }
 
   async postAnnouncement(payload: {
     title: string;
     message: string;
   }): Promise<AppNotification> {
-    const notif: AppNotification = {
-      id: `notif-${Date.now()}`,
+    const db = requireSupabase();
+    const { data, error } = await db
+      .from("notifications")
+      .insert({
+        title: payload.title,
+        body: payload.message,
+        type: "announcement",
+      })
+      .select("*")
+      .single();
+
+    if (error || !data) {
+      throw new Error(error?.message || "Gagal mengirim pengumuman.");
+    }
+
+    return {
+      id: data.id,
+      title: data.title,
+      message: data.body,
       type: "announcement",
-      created_at: new Date().toISOString(),
-      ...payload,
+      created_at: data.created_at,
     };
-    writeSharedStore((prev) => ({
-      ...prev,
-      notifications: [notif, ...prev.notifications],
-    }));
-    return notif;
   }
 
   async generateAiDailyDigest(payload: {
     elderly_id: string;
     logs?: CareLog[];
   }): Promise<AiDigest> {
-    const store = readSharedStore();
+    const elderly = await this.getElderlyProfile();
+    const logs = payload.logs || (await this.getCareLogs(elderly.id));
+
     try {
       const res = await fetch("/api/ai/daily-digest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          elderly: store.elderly,
-          logs: payload.logs || store.logs,
-        }),
+        body: JSON.stringify({ elderly, logs }),
       });
       if (res.ok) {
         const data = await res.json();
         if (data.digest) {
           return {
-            elderly_id: payload.elderly_id,
+            elderly_id: elderly.id,
             ...data.digest,
           };
         }
       }
     } catch {
-      // fallback
+      // fallback below
     }
     return MOCK_AI_DIGEST;
   }
@@ -685,28 +760,23 @@ class LenteraApiService implements ILenteraApiService {
       skills: string[];
     };
   }): Promise<AiMatchResult> {
-    try {
-      const res = await fetch("/api/ai/match-caregiver", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ job: payload.job, applicant: payload.caregiver }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        return {
-          caregiver_id: payload.caregiver.id,
-          match_score: Number(data.match_score || 92),
-          reason: String(data.reason || ""),
-        };
-      }
-    } catch {
-      // fallback
+    const res = await fetch("/api/ai/match-caregiver", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ job: payload.job, applicant: payload.caregiver }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return {
+        caregiver_id: payload.caregiver.id,
+        match_score: Number(data.match_score || 92),
+        reason: String(data.reason || ""),
+      };
     }
     return {
       caregiver_id: payload.caregiver.id,
-      match_score: 92,
-      reason:
-        "Keahlian dan pengalaman pelamar sangat sesuai dengan kebutuhan perawatan keluarga.",
+      match_score: 90,
+      reason: "Keahlian pelamar sesuai dengan kebutuhan perawatan keluarga.",
     };
   }
 
@@ -714,28 +784,23 @@ class LenteraApiService implements ILenteraApiService {
     elderly_id: string;
     reason: string;
   }): Promise<AiTriageBrief> {
-    const store = readSharedStore();
-    try {
-      const res = await fetch("/api/ai/triage-brief", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          elderly: store.elderly,
-          logs: store.logs,
-          reason: payload.reason,
-        }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.triage_brief) return data.triage_brief;
-      }
-    } catch {
-      // fallback
+    const elderly = await this.getElderlyProfile();
+    const logs = await this.getCareLogs(elderly.id);
+
+    const res = await fetch("/api/ai/triage-brief", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ elderly, logs, reason: payload.reason }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.triage_brief) return data.triage_brief;
     }
+
     return {
-      patient_summary: `${store.elderly.name} (${store.elderly.age} th)`,
-      allergies: store.elderly.allergies,
-      routine_meds: store.elderly.routine_meds,
+      patient_summary: `${elderly.name} (${elderly.age} th)`,
+      allergies: elderly.allergies,
+      routine_meds: elderly.routine_meds,
       last_24h_vitals: "Vital terakhir terpantau dalam catatan harian.",
       immediate_actions: [
         "Posisikan pasien nyaman dan longgarkan pakaian.",
@@ -745,17 +810,61 @@ class LenteraApiService implements ILenteraApiService {
     };
   }
 
-  subscribeToStream(_onEvent: (event: StreamEvent) => void): () => void {
-    return () => {};
+  subscribeToStream(onEvent: (event: StreamEvent) => void): () => void {
+    if (!supabase) return () => {};
+
+    const channel = supabase
+      .channel("lentera-realtime")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "care_logs" },
+        (payload) => {
+          const row = payload.new as Record<string, unknown>;
+          onEvent({
+            type: "care_log",
+            data: {
+              id: String(row.id),
+              elderly_id: String(row.elderly_id),
+              caregiver_id: String(row.caregiver_id),
+              caregiver_name: "Perawat Bertugas",
+              heart_rate: Number(row.heart_rate || 78),
+              systolic: Number(row.blood_pressure_systolic || 120),
+              diastolic: Number(row.blood_pressure_diastolic || 80),
+              meal_portion: String(row.meal_portion || "habis"),
+              medication_taken: Boolean(row.medication_taken),
+              mood: String(row.mood || "tenang"),
+              notes: String(row.notes || ""),
+              photo_url: row.photo_url ? String(row.photo_url) : undefined,
+              logged_at: String(row.logged_at || row.created_at),
+            },
+          });
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "sos_alerts" },
+        (payload) => {
+          const row = payload.new as Record<string, unknown>;
+          onEvent({
+            type: "sos_alert",
+            data: {
+              id: String(row.id),
+              elderly_id: String(row.elderly_id),
+              triggered_by: "Perawat",
+              reason: String(row.location_note || "Darurat Medis"),
+              status: "active",
+              triage_brief: row.triage_brief,
+              created_at: String(row.created_at),
+            },
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase?.removeChannel(channel);
+    };
   }
 }
 
-export function getLocalRegisteredCaregivers(): UserProfile[] {
-  return readSharedStore().registeredCaregivers;
-}
-
-export function getLocalRegisteredUsers(): UserProfile[] {
-  return readSharedStore().registeredUsers;
-}
-
-export const apiService: ILenteraApiService = new LenteraApiService();
+export const apiService: ILenteraApiService = new LenteraSupabaseService();
