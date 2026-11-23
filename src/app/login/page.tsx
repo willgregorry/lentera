@@ -29,7 +29,7 @@ function LoginFormContent() {
     setLoading(true);
     try {
       const res = await apiService.loginUser({ email, password, role });
-      router.push(res.user.role === "caregiver" ? "/caregiver" : "/dashboard");
+      router.push(res.user.role === "caregiver" ? "/loker" : "/caregivers");
     } finally {
       setLoading(false);
     }
@@ -43,7 +43,7 @@ function LoginFormContent() {
         password: "google-oauth-session",
         role,
       });
-      router.push(res.user.role === "caregiver" ? "/caregiver" : "/dashboard");
+      router.push(res.user.role === "caregiver" ? "/loker" : "/caregivers");
     } finally {
       setLoading(false);
     }

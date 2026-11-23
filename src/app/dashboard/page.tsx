@@ -1,25 +1,30 @@
 "use client";
 
 import React, { useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ArrowRight, Briefcase, Lock, Users } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { VitalChart } from "@/components/shared/VitalChart";
-import { NotificationBanner } from "@/components/dashboard/NotificationBanner";
 import { SosAlertBanner } from "@/components/dashboard/SosAlertBanner";
 import { ElderlyStatusCard } from "@/components/dashboard/ElderlyStatusCard";
 import { AiDigestCard } from "@/components/dashboard/AiDigestCard";
-import { CareLogTimeline } from "@/components/dashboard/CareLogTimeline";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useAuth } from "@/hooks/useAuth";
+import { useAssignmentStatus } from "@/hooks/useAssignmentStatus";
 
 export default function FamilyDashboardPage() {
   const router = useRouter();
   const { user, hydrated } = useAuth();
   const {
+    loading: checkingStatus,
+    hasCaregiver,
+    activeCaregiver,
+  } = useAssignmentStatus();
+  const {
     elderly,
     logs,
     digest,
-    notifications,
     activeSos,
     currentStatus,
     latestLog,
@@ -52,45 +57,85 @@ export default function FamilyDashboardPage() {
 
   return (
     <AppShell>
-      {notifications.length > 0 && (
-        <NotificationBanner notification={notifications[0]} />
-      )}
-
-      {activeSos && (
-        <SosAlertBanner
-          alert={activeSos}
-          elderly={elderly}
-          onResolve={resolveSos}
-        />
-      )}
-
-      <ElderlyStatusCard
-        elderly={elderly}
-        status={currentStatus}
-        latestLog={latestLog}
-      />
-
-      <AiDigestCard
-        digest={digest}
-        loading={digestLoading}
-        onRefresh={refreshDigest}
-      />
-
-      <section className="mt-6 grid gap-6 lg:grid-cols-12">
-        <div className="lg:col-span-7">
-          <div className="mb-4">
-            <h2 className="font-display text-base font-bold text-ink sm:text-lg">
-              Grafik Tren Vital (3 Hari Terakhir)
-            </h2>
-            <p className="mt-0.5 text-xs text-ink-muted sm:text-sm">
-              Memantau kestabilan tekanan darah dan detak jantung orang tua.
-            </p>
-          </div>
-          <VitalChart logs={logs} />
+      {checkingStatus ? (
+        <div className="py-16 text-center text-sm text-ink-muted">
+          Memuat kondisi orang tua...
         </div>
+      ) : !hasCaregiver ? (
+        <div className="mt-4 rounded-2xl border border-dashed border-border bg-surface px-6 py-14 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-border-subtle text-ink-muted">
+            <Lock className="h-5 w-5" />
+          </div>
+          <h1 className="mt-4 font-display text-lg font-bold text-ink sm:text-xl">
+            Pemantauan Belum Aktif
+          </h1>
+          <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-ink-muted sm:text-sm">
+            Anda belum memiliki perawat yang mendampingi orang tua di rumah.
+            Pilih perawat atau pasang lowongan terlebih dahulu untuk mulai
+            memantau kondisi harian.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="/caregivers"
+              className="btn-diagonal-secondary inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-semibold text-white sm:text-sm"
+            >
+              <Users className="h-4 w-4" />
+              <span>Cari Perawat</span>
+            </Link>
+            <Link
+              href="/loker"
+              className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-5 py-2.5 text-xs font-semibold text-ink transition-colors hover:bg-canvas-subtle sm:text-sm"
+            >
+              <Briefcase className="h-4 w-4" />
+              <span>Pasang Lowongan</span>
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {activeSos && (
+            <SosAlertBanner
+              alert={activeSos}
+              elderly={elderly}
+              onResolve={resolveSos}
+            />
+          )}
 
-        <CareLogTimeline logs={logs} />
-      </section>
+          <ElderlyStatusCard
+            elderly={elderly}
+            status={currentStatus}
+            latestLog={latestLog}
+            caregiverName={activeCaregiver?.name}
+          />
+
+          <AiDigestCard
+            digest={digest}
+            loading={digestLoading}
+            onRefresh={refreshDigest}
+          />
+
+          <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h2 className="font-display text-base font-bold text-ink sm:text-lg">
+                  Grafik Kesehatan 3 Hari Terakhir
+                </h2>
+                <p className="mt-0.5 text-xs text-ink-muted">
+                  Perkembangan tekanan darah dan detak jantung orang tua Anda.
+                </p>
+              </div>
+              <Link
+                href="/notifikasi"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+              >
+                <span>Lihat semua laporan masuk ({logs.length})</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+            <VitalChart logs={logs} />
+          </section>
+        </div>
+      )}
     </AppShell>
   );
 }
