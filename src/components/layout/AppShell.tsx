@@ -9,7 +9,6 @@ import {
   Bell,
   Briefcase,
   ClipboardPlus,
-  Compass,
   Lock,
   LogOut,
   UserCheck,
@@ -35,9 +34,9 @@ interface SidebarItem {
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Kondisi Orang Tua",
   "/notifikasi": "Laporan Masuk",
-  "/caregivers": "Cari Perawat",
-  "/loker": "Lowongan Saya",
-  "/caregiver": "Catat Harian",
+  "/caregivers": "Perawat Lansia",
+  "/loker": "Lowongan Perawatan",
+  "/caregiver": "Catatan Harian",
 };
 
 function getInitials(name?: string): string {
@@ -62,14 +61,7 @@ export function AppShell({ children }: AppShellProps) {
     year: "numeric",
   });
 
-  const currentTitle =
-    pathname === "/caregivers" && hasCaregiver
-      ? "Perawat Anda"
-      : pathname === "/loker" && isCaregiver
-      ? "Cari Lowongan"
-      : PAGE_TITLES[pathname] || "Lentera";
-
-  const workspaceLabel = isCaregiver ? "Ruang Perawat" : "Ruang Keluarga";
+  const currentTitle = PAGE_TITLES[pathname] || "Lentera";
 
   const links: SidebarItem[] = isCaregiver
     ? [
@@ -117,79 +109,45 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="min-h-screen bg-app-shell text-ink">
-      {/* Top White Navigation Bar */}
+      {/* Minimal Top Bar */}
       <header className="sticky top-0 z-30 border-b border-border/80 bg-surface/95 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-8">
+        <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between px-4 sm:px-6">
+          <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2.5">
               <LenteraMascot status="aman" size="sm" />
-              <span className="font-display text-lg font-bold tracking-[-0.02em] text-ink">
+              <span className="font-display text-base font-bold tracking-[-0.02em] text-ink sm:text-lg">
                 Lentera
               </span>
             </Link>
-
-            <nav className="hidden items-center gap-6 text-xs font-medium text-ink-muted md:flex">
-              <span className="font-semibold text-ink">{workspaceLabel}</span>
-              <Link
-                href="/#cara-kerja"
-                className="transition-colors hover:text-ink"
-              >
-                Cara Kerja
-              </Link>
-              <Link href="/#faq" className="transition-colors hover:text-ink">
-                Panduan
-              </Link>
-            </nav>
+            <span className="hidden text-border sm:inline">/</span>
+            <span className="hidden text-xs font-medium text-ink-muted sm:inline">
+              {currentTitle}
+            </span>
           </div>
 
           <div className="flex items-center gap-2.5 sm:gap-3">
+            <span className="hidden text-xs font-medium text-ink-muted md:inline">
+              {todayLabel}
+            </span>
             {user && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-card-sage-border bg-card-sage px-3 py-1 text-xs font-semibold text-secondary">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-card-sage-border bg-card-sage px-2.5 py-1 text-xs font-semibold text-secondary">
                 <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
                 <span>{isCaregiver ? "Perawat" : "Keluarga"}</span>
               </span>
-            )}
-
-            {!isCaregiver && hasCaregiver && (
-              <Link
-                href="/notifikasi"
-                aria-label="Laporan Masuk"
-                className={`flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${
-                  pathname === "/notifikasi"
-                    ? "border-primary bg-card-cream text-primary"
-                    : "border-border bg-surface text-ink-muted hover:border-primary/40 hover:text-ink"
-                }`}
-              >
-                <Bell className="h-4 w-4" />
-              </Link>
-            )}
-
-            {user && (
-              <div
-                title={user.name}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-card-blue-border bg-card-blue text-xs font-bold text-sidebar"
-              >
-                {getInitials(user.name)}
-              </div>
             )}
           </div>
         </div>
       </header>
 
-      {/* Main Frame: Floating Deep Navy Sidebar + Crisp White Content Panel */}
-      <div className="mx-auto flex max-w-[1440px] gap-4 p-3 sm:p-4">
-        <aside className="sticky top-20 hidden h-[calc(100vh-96px)] w-64 shrink-0 flex-col justify-between overflow-y-auto rounded-3xl bg-sidebar p-4 text-sidebar-ink shadow-[0_8px_28px_rgba(19,35,58,0.14)] md:flex">
+      {/* Floating Navy Sidebar + Rounded Content Stage */}
+      <div className="mx-auto flex max-w-[1400px] gap-4 p-3 sm:p-4">
+        <aside className="sticky top-[72px] hidden h-[calc(100vh-88px)] w-64 shrink-0 flex-col justify-between overflow-y-auto rounded-3xl bg-sidebar p-4 text-sidebar-ink shadow-[0_8px_24px_rgba(19,35,58,0.12)] md:flex">
           <div>
-            <div className="px-2.5 pt-1">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-sidebar-muted">
-                {workspaceLabel}
-              </p>
-              <p className="mt-1 font-display text-sm font-semibold text-sidebar-ink">
-                Merawat dengan hati.
-              </p>
-            </div>
+            <p className="px-3 pt-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-sidebar-muted">
+              {isCaregiver ? "Ruang Perawat" : "Ruang Keluarga"}
+            </p>
 
-            <nav className="mt-5 space-y-1.5">
+            <nav className="mt-3 space-y-1">
               {links.map((item) => {
                 const Icon = item.icon;
                 const active = pathname === item.href;
@@ -203,7 +161,7 @@ export function AppShell({ children }: AppShellProps) {
                           ? "Terbuka setelah lamaran diterima keluarga"
                           : "Terbuka setelah Anda memilih perawat"
                       }
-                      className="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium text-sidebar-muted/45 cursor-not-allowed select-none"
+                      className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium text-sidebar-muted/45 cursor-not-allowed select-none"
                     >
                       <div className="flex items-center gap-2.5">
                         <Icon className="h-4 w-4 shrink-0" />
@@ -218,11 +176,11 @@ export function AppShell({ children }: AppShellProps) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm transition-all ${
+                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors ${
                       item.danger
-                        ? "bg-red-500/15 font-semibold text-red-200 hover:bg-red-500/25"
+                        ? "font-medium text-red-200 hover:bg-red-500/20"
                         : active
-                        ? "bg-primary font-semibold text-white shadow-[0_4px_12px_rgba(232,145,46,0.32)]"
+                        ? "bg-primary font-semibold text-white shadow-[0_4px_12px_rgba(232,145,46,0.28)]"
                         : "font-medium text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-ink"
                     }`}
                   >
@@ -233,27 +191,24 @@ export function AppShell({ children }: AppShellProps) {
               })}
             </nav>
 
-            {((!isCaregiver && !hasCaregiver) ||
-              (isCaregiver && !caregiverHasJob)) && (
-              <div className="mt-6 rounded-2xl border border-sidebar-border bg-sidebar-surface p-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
-                  <Compass className="h-4 w-4" />
-                </div>
-                <p className="mt-3 text-xs font-semibold text-sidebar-ink">
-                  Satu langkah lebih dekat
-                </p>
-                <p className="mt-1 text-[11px] leading-relaxed text-sidebar-muted">
-                  {isCaregiver
-                    ? "Lamar lowongan keluarga untuk membuka pencatatan vital harian dan SOS."
-                    : "Pilih perawat untuk membuka pemantauan kondisi dan laporan harian."}
-                </p>
+            {!isCaregiver && !hasCaregiver && (
+              <div className="mt-6 rounded-2xl border border-sidebar-border bg-sidebar-surface p-3.5 text-xs leading-relaxed text-sidebar-muted">
+                Pilih perawat terlebih dahulu untuk membuka menu{" "}
+                <span className="font-semibold text-sidebar-ink">
+                  Kondisi Orang Tua
+                </span>{" "}
+                dan{" "}
+                <span className="font-semibold text-sidebar-ink">
+                  Laporan Masuk
+                </span>
+                .
               </div>
             )}
           </div>
 
           {user && (
             <div className="mt-6 border-t border-sidebar-border pt-4">
-              <div className="flex items-center gap-3 px-1.5">
+              <div className="flex items-center gap-3 px-2">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sidebar-surface text-xs font-bold text-primary ring-1 ring-sidebar-border">
                   {getInitials(user.name)}
                 </div>
@@ -261,8 +216,8 @@ export function AppShell({ children }: AppShellProps) {
                   <p className="truncate text-sm font-semibold text-sidebar-ink">
                     {user.name.split(",")[0]}
                   </p>
-                  <p className="text-[11px] text-sidebar-muted">
-                    {isCaregiver ? "Perawat Lansia" : "Akun Keluarga"}
+                  <p className="text-xs text-sidebar-muted">
+                    {isCaregiver ? "Perawat Lansia" : "Keluarga"}
                   </p>
                 </div>
               </div>
@@ -278,24 +233,8 @@ export function AppShell({ children }: AppShellProps) {
           )}
         </aside>
 
-        {/* Main Content White Stage */}
-        <main className="min-w-0 flex-1 rounded-3xl border border-border/70 bg-surface px-4 pt-5 pb-24 shadow-[0_2px_18px_rgba(15,23,42,0.035)] sm:px-7 sm:py-7 md:pb-10">
-          {/* Integrated Stage Breadcrumb & Date Bar */}
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-2 border-b border-border-subtle pb-4">
-            <div>
-              <p className="text-[11px] font-medium text-ink-muted">
-                {workspaceLabel} <span className="mx-1.5 text-border">/</span>{" "}
-                <span className="text-ink">{currentTitle}</span>
-              </p>
-              <h2 className="mt-0.5 font-display text-lg font-bold tracking-[-0.02em] text-ink sm:text-xl">
-                {currentTitle}
-              </h2>
-            </div>
-            <span className="rounded-full border border-card-blue-border bg-card-blue px-3 py-1 text-[11px] font-medium text-ink-muted">
-              {todayLabel}
-            </span>
-          </div>
-
+        {/* Main Content Panel */}
+        <main className="min-w-0 flex-1 rounded-3xl border border-border/70 bg-surface px-4 pt-5 pb-24 shadow-[0_2px_16px_rgba(15,23,42,0.035)] sm:px-8 sm:py-7 md:pb-10">
           {children}
         </main>
       </div>
