@@ -19,6 +19,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/hooks/useAuth";
 import { useAssignmentStatus } from "@/hooks/useAssignmentStatus";
 import { supabase } from "@/lib/supabase";
+import { apiService, getLocalRegisteredCaregivers } from "@/services/api";
 import { UserProfile } from "@/types";
 
 export default function CaregiverDirectoryPage() {
@@ -49,6 +50,10 @@ export default function CaregiverDirectoryPage() {
     let active = true;
     async function loadCaregivers() {
       try {
+        const busyIds = new Set<string>();
+        const busyNames = new Set<string>();
+        const mergedMap = new Map<string, UserProfile>();
+
         if (supabase) {
           const [profilesRes, filledJobsRes, acceptedAppsRes] =
             await Promise.all([
@@ -68,7 +73,6 @@ export default function CaregiverDirectoryPage() {
                 .eq("status", "accepted"),
             ]);
 
-          const busyIds = new Set<string>();
           for (const row of filledJobsRes.data || []) {
             if (row.assigned_caregiver_id) {
               busyIds.add(String(row.assigned_caregiver_id));
@@ -80,24 +84,48 @@ export default function CaregiverDirectoryPage() {
             }
           }
 
-          if (active && profilesRes.data) {
-            setCaregivers(
-              profilesRes.data
-                .filter((row) => !busyIds.has(String(row.id)))
-                .map((row) => ({
-                  id: row.id,
-                  name: row.full_name,
-                  email: row.email,
-                  role: "caregiver",
-                  phone: row.phone || "",
-                  city: row.location || "Indonesia",
-                  verified: Boolean(row.is_verified ?? true),
-                  skills: Array.isArray(row.skills) ? row.skills : [],
-                  experience_years: Number(row.experience_years || 0),
-                  bio: row.bio || "",
-                }))
-            );
+          for (const row of profilesRes.data || []) {
+            const key = String(row.email || row.id).toLowerCase();
+            mergedMap.set(key, {
+              id: row.id,
+              name: row.full_name,
+              email: row.email,
+              role: "caregiver",
+              phone: row.phone || "",
+              city: row.location || "Indonesia",
+              verified: Boolean(row.is_verified ?? true),
+              skills: Array.isArray(row.skills) ? row.skills : [],
+              experience_years: Number(row.experience_years || 0),
+              bio: row.bio || "",
+            });
           }
+        }
+
+        const allJobs = await apiService.getJobs();
+        for (const job of allJobs) {
+          for (const app of job.applications || []) {
+            if (app.status === "accepted") {
+              busyIds.add(String(app.caregiver_id));
+              busyNames.add(app.caregiver_name.toLowerCase());
+            }
+          }
+        }
+
+        for (const localCg of getLocalRegisteredCaregivers()) {
+          const key = String(localCg.email || localCg.id).toLowerCase();
+          if (!mergedMap.has(key)) {
+            mergedMap.set(key, localCg);
+          }
+        }
+
+        const available = Array.from(mergedMap.values()).filter(
+          (cg) =>
+            !busyIds.has(String(cg.id)) &&
+            !busyNames.has(cg.name.toLowerCase())
+        );
+
+        if (active) {
+          setCaregivers(available);
         }
       } finally {
         if (active) setLoadingList(false);

@@ -33,33 +33,30 @@ interface SharedStore {
   jobs: CareJob[];
   sosAlerts: SosAlert[];
   notifications: AppNotification[];
+  registeredCaregivers: UserProfile[];
 }
 
 function readSharedStore(): SharedStore {
-  if (typeof window === "undefined") {
-    return {
-      elderly: MOCK_ELDERLY,
-      logs: MOCK_CARE_LOGS,
-      jobs: MOCK_JOBS,
-      sosAlerts: MOCK_SOS_LIST,
-      notifications: MOCK_NOTIFICATIONS,
-    };
-  }
-  try {
-    const raw = window.localStorage.getItem(SHARED_STATE_KEY);
-    if (raw) {
-      return JSON.parse(raw) as SharedStore;
-    }
-  } catch {
-    // ignore parse error
-  }
-  return {
+  const empty: SharedStore = {
     elderly: MOCK_ELDERLY,
     logs: MOCK_CARE_LOGS,
     jobs: MOCK_JOBS,
     sosAlerts: MOCK_SOS_LIST,
     notifications: MOCK_NOTIFICATIONS,
+    registeredCaregivers: [],
   };
+  if (typeof window === "undefined") {
+    return empty;
+  }
+  try {
+    const raw = window.localStorage.getItem(SHARED_STATE_KEY);
+    if (raw) {
+      return { ...empty, ...(JSON.parse(raw) as Partial<SharedStore>) };
+    }
+  } catch {
+    // ignore parse error
+  }
+  return empty;
 }
 
 function writeSharedStore(updater: (prev: SharedStore) => SharedStore): SharedStore {
@@ -147,13 +144,36 @@ class LenteraApiService implements ILenteraApiService {
     city?: string;
     skills?: string[];
   }): Promise<{ user: UserProfile; token: string; isDemoFallback?: boolean }> {
+    const saveCaregiverLocally = (u: UserProfile) => {
+      if (u.role !== "caregiver") return;
+      writeSharedStore((prev) => {
+        const exists = prev.registeredCaregivers.some(
+          (c) => c.email.toLowerCase() === u.email.toLowerCase()
+        );
+        return {
+          ...prev,
+          registeredCaregivers: exists
+            ? prev.registeredCaregivers.map((c) =>
+                c.email.toLowerCase() === u.email.toLowerCase() ? u : c
+              )
+            : [u, ...prev.registeredCaregivers],
+        };
+      });
+    };
+
     if (supabase) {
       try {
         const { data, error } = await supabase.auth.signUp({
           email: payload.email,
           password: payload.password,
           options: {
-            data: { full_name: payload.name, role: payload.role },
+            data: {
+              full_name: payload.name,
+              role: payload.role,
+              phone: payload.phone || "",
+              location: payload.city || "",
+              skills: payload.skills || [],
+            },
           },
         });
         if (!error && data.user) {
@@ -176,6 +196,7 @@ class LenteraApiService implements ILenteraApiService {
             verified: payload.role === "caregiver",
             skills: payload.skills || [],
           };
+          saveCaregiverLocally(user);
           const token = data.session?.access_token || `session-${data.user.id}`;
           setAuthSession(token, user);
           return { user, token };
@@ -195,6 +216,7 @@ class LenteraApiService implements ILenteraApiService {
       verified: payload.role === "caregiver",
       skills: payload.skills || [],
     };
+    saveCaregiverLocally(user);
     const token = `session-${payload.role}-${Date.now()}`;
     setAuthSession(token, user);
     return { user, token, isDemoFallback: true };
@@ -685,6 +707,10 @@ class LenteraApiService implements ILenteraApiService {
   subscribeToStream(_onEvent: (event: StreamEvent) => void): () => void {
     return () => {};
   }
+}
+
+export function getLocalRegisteredCaregivers(): UserProfile[] {
+  return readSharedStore().registeredCaregivers;
 }
 
 export const apiService: ILenteraApiService = new LenteraApiService();
