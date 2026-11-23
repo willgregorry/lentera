@@ -11,7 +11,7 @@ import { SosEmergencyPanel } from "@/components/caregiver/SosEmergencyPanel";
 import { useCaregiverPortal } from "@/hooks/useCaregiverPortal";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
-import { apiService } from "@/services/api";
+import { apiService, getLocalRegisteredUsers } from "@/services/api";
 
 export default function CaregiverPortalPage() {
   const router = useRouter();
@@ -28,6 +28,8 @@ export default function CaregiverPortalPage() {
   } = useCaregiverPortal();
 
   const [hasActiveJob, setHasActiveJob] = useState(false);
+  const [familyPhone, setFamilyPhone] = useState<string>("");
+  const [familyName, setFamilyName] = useState<string>("");
   const [checkingJob, setCheckingJob] = useState(true);
 
   useEffect(() => {
@@ -48,33 +50,47 @@ export default function CaregiverPortalPage() {
       setCheckingJob(true);
       try {
         let assigned = false;
+        let matchedFamilyId = "";
+        let matchedFamilyName = "";
 
         if (supabase) {
           const [jobsRes, appsRes] = await Promise.all([
             supabase
               .from("care_jobs")
-              .select("id")
+              .select("id, family_id")
               .eq("assigned_caregiver_id", authUser!.id)
               .eq("status", "filled")
               .limit(1),
             supabase
               .from("job_applications")
-              .select("id")
+              .select("id, job_id")
               .eq("caregiver_id", authUser!.id)
               .eq("status", "accepted")
               .limit(1),
           ]);
-          if (
-            (jobsRes.data && jobsRes.data.length > 0) ||
-            (appsRes.data && appsRes.data.length > 0)
-          ) {
+          if (jobsRes.data && jobsRes.data.length > 0) {
             assigned = true;
+            matchedFamilyId = String(jobsRes.data[0].family_id || "");
+          } else if (appsRes.data && appsRes.data.length > 0) {
+            assigned = true;
+          }
+
+          if (matchedFamilyId) {
+            const { data: fam } = await supabase
+              .from("profiles")
+              .select("full_name, phone")
+              .eq("id", matchedFamilyId)
+              .maybeSingle();
+            if (fam && active) {
+              setFamilyPhone(fam.phone || "");
+              setFamilyName(fam.full_name || "");
+            }
           }
         }
 
-        if (!assigned) {
+        if (!assigned || !matchedFamilyId) {
           const jobs = await apiService.getJobs();
-          assigned = jobs.some((job) =>
+          const matchedJob = jobs.find((job) =>
             (job.applications || []).some(
               (app) =>
                 (app.caregiver_id === authUser!.id ||
@@ -82,6 +98,19 @@ export default function CaregiverPortalPage() {
                 app.status === "accepted"
             )
           );
+          if (matchedJob) {
+            assigned = true;
+            matchedFamilyId = matchedJob.family_id;
+            matchedFamilyName = matchedJob.family_name;
+            const localUsers = getLocalRegisteredUsers();
+            const famUser =
+              localUsers.find((u) => u.id === matchedJob.family_id) ||
+              localUsers.find((u) => u.role === "family");
+            if (famUser && active) {
+              if (famUser.phone) setFamilyPhone(famUser.phone);
+              setFamilyName(famUser.name || matchedFamilyName);
+            }
+          }
         }
 
         if (active) setHasActiveJob(assigned);
@@ -181,6 +210,8 @@ export default function CaregiverPortalPage() {
           <div id="sos-panel" className="lg:col-span-5">
             <SosEmergencyPanel
               elderly={elderly}
+              familyPhone={familyPhone}
+              familyName={familyName}
               triggering={triggeringSos}
               activeSos={activeSos}
               onTriggerSos={triggerSos}

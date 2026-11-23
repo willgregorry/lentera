@@ -754,4 +754,8 @@ export function getLocalRegisteredCaregivers(): UserProfile[] {
   return readSharedStore().registeredCaregivers;
 }
 
+export function getLocalRegisteredUsers(): UserProfile[] {
+  return readSharedStore().registeredUsers;
+}
+
 export const apiService: ILenteraApiService = new LenteraApiService();
