@@ -34,6 +34,7 @@ interface SharedStore {
   sosAlerts: SosAlert[];
   notifications: AppNotification[];
   registeredCaregivers: UserProfile[];
+  registeredUsers: UserProfile[];
 }
 
 function readSharedStore(): SharedStore {
@@ -44,6 +45,7 @@ function readSharedStore(): SharedStore {
     sosAlerts: MOCK_SOS_LIST,
     notifications: MOCK_NOTIFICATIONS,
     registeredCaregivers: [],
+    registeredUsers: [],
   };
   if (typeof window === "undefined") {
     return empty;
@@ -120,16 +122,22 @@ class LenteraApiService implements ILenteraApiService {
       }
     }
 
+    const storedMatch = readSharedStore().registeredUsers.find(
+      (u) => u.email.toLowerCase() === (payload.email || "").toLowerCase()
+    );
+
     const baseUser = DEMO_USERS[targetRole];
-    const user: UserProfile = {
-      ...baseUser,
-      email: payload.email || baseUser.email,
-      name:
-        payload.email && !payload.email.includes("lentera.id")
-          ? payload.email.split("@")[0]
-          : baseUser.name,
-      role: targetRole,
-    };
+    const user: UserProfile = storedMatch
+      ? { ...storedMatch, role: targetRole }
+      : {
+          ...baseUser,
+          email: payload.email || baseUser.email,
+          name:
+            payload.email && !payload.email.includes("lentera.id")
+              ? payload.email.split("@")[0]
+              : baseUser.name,
+          role: targetRole,
+        };
     const token = `session-${targetRole}-${Date.now()}`;
     setAuthSession(token, user);
     return { user, token, isDemoFallback: true };
@@ -144,19 +152,33 @@ class LenteraApiService implements ILenteraApiService {
     city?: string;
     skills?: string[];
   }): Promise<{ user: UserProfile; token: string; isDemoFallback?: boolean }> {
-    const saveCaregiverLocally = (u: UserProfile) => {
-      if (u.role !== "caregiver") return;
+    const saveUserLocally = (u: UserProfile) => {
       writeSharedStore((prev) => {
-        const exists = prev.registeredCaregivers.some(
-          (c) => c.email.toLowerCase() === u.email.toLowerCase()
+        const userExists = prev.registeredUsers.some(
+          (item) => item.email.toLowerCase() === u.email.toLowerCase()
         );
-        return {
-          ...prev,
-          registeredCaregivers: exists
+        const nextUsers = userExists
+          ? prev.registeredUsers.map((item) =>
+              item.email.toLowerCase() === u.email.toLowerCase() ? u : item
+            )
+          : [u, ...prev.registeredUsers];
+
+        let nextCaregivers = prev.registeredCaregivers;
+        if (u.role === "caregiver") {
+          const cgExists = prev.registeredCaregivers.some(
+            (c) => c.email.toLowerCase() === u.email.toLowerCase()
+          );
+          nextCaregivers = cgExists
             ? prev.registeredCaregivers.map((c) =>
                 c.email.toLowerCase() === u.email.toLowerCase() ? u : c
               )
-            : [u, ...prev.registeredCaregivers],
+            : [u, ...prev.registeredCaregivers];
+        }
+
+        return {
+          ...prev,
+          registeredUsers: nextUsers,
+          registeredCaregivers: nextCaregivers,
         };
       });
     };
@@ -196,7 +218,7 @@ class LenteraApiService implements ILenteraApiService {
             verified: payload.role === "caregiver",
             skills: payload.skills || [],
           };
-          saveCaregiverLocally(user);
+          saveUserLocally(user);
           const token = data.session?.access_token || `session-${data.user.id}`;
           setAuthSession(token, user);
           return { user, token };
@@ -216,7 +238,7 @@ class LenteraApiService implements ILenteraApiService {
       verified: payload.role === "caregiver",
       skills: payload.skills || [],
     };
-    saveCaregiverLocally(user);
+    saveUserLocally(user);
     const token = `session-${payload.role}-${Date.now()}`;
     setAuthSession(token, user);
     return { user, token, isDemoFallback: true };

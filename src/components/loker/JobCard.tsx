@@ -85,22 +85,22 @@ export function JobCard({
           </p>
         </div>
 
-        {job.status === "open" && (
+        {job.status === "open" && user?.role === "caregiver" && (
           <button
             type="button"
             onClick={() => setApplying((p) => !p)}
             className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-xs font-semibold text-ink hover:border-secondary hover:text-secondary transition-colors cursor-pointer"
           >
             <Briefcase className="h-4 w-4" />
-            <span>Lamar Sebagai Caregiver</span>
+            <span>Lamar Sebagai Perawat</span>
           </button>
         )}
       </div>
 
-      {applying && (
-        <div className="mt-4 rounded-xl border border-[#CFE0D4] bg-secondary-soft p-4">
+      {applying && user?.role === "caregiver" && (
+        <div className="mt-4 rounded-xl border border-border bg-secondary-soft p-4">
           <p className="text-xs font-semibold text-secondary">
-            Kirim Lamaran sebagai {user?.name || "Rini Wulandari, A.Md.Kep"}
+            Kirim Lamaran sebagai {user.name}
           </p>
           <textarea
             rows={2}
@@ -119,7 +119,7 @@ export function JobCard({
             <button
               type="button"
               onClick={handleApplySubmit}
-              className="rounded-xl bg-[#4A7C59] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#3B6448] cursor-pointer"
+              className="rounded-xl bg-secondary px-4 py-1.5 text-xs font-semibold text-white hover:opacity-90 cursor-pointer"
             >
               Kirim Lamaran
             </button>
@@ -127,31 +127,33 @@ export function JobCard({
         </div>
       )}
 
-      <div className="mt-5">
-        <h3 className="font-display text-sm font-bold text-ink">
-          Daftar Pelamar & Skor AI Caregiver Matcher (
-          {job.applications?.length || 0})
-        </h3>
+      {user?.role === "family" && (
+        <div className="mt-5">
+          <h3 className="font-display text-sm font-bold text-ink">
+            Daftar Pelamar & Skor Kecocokan AI (
+            {job.applications?.length || 0})
+          </h3>
 
-        {!job.applications || job.applications.length === 0 ? (
-          <p className="mt-2 text-xs text-ink-muted">
-            Belum ada pelamar untuk lowongan ini.
-          </p>
-        ) : (
-          <div className="mt-3 grid gap-4 md:grid-cols-2">
-            {job.applications.map((app) => (
-              <ApplicantCard
-                key={app.id}
-                job={job}
-                app={app}
-                matching={matchingId === app.id}
-                onRunAiMatch={onRunAiMatch}
-                onDecide={onDecide}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+          {!job.applications || job.applications.length === 0 ? (
+            <p className="mt-2 text-xs text-ink-muted">
+              Belum ada pelamar untuk lowongan ini.
+            </p>
+          ) : (
+            <div className="mt-3 grid gap-4 md:grid-cols-2">
+              {job.applications.map((app) => (
+                <ApplicantCard
+                  key={app.id}
+                  job={job}
+                  app={app}
+                  matching={matchingId === app.id}
+                  onRunAiMatch={onRunAiMatch}
+                  onDecide={onDecide}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </article>
   );
 }
