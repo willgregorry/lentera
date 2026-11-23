@@ -51,7 +51,7 @@ export function HeroSection() {
           <img
             src="/images/hero_care.jpg"
             alt="Pendampingan lansia yang hangat di rumah bersama Lentera"
-            className="animate-ken-burns h-full w-full object-cover object-center select-none"
+            className="animate-ken-burns h-full w-full object-cover object-[82%_25%] select-none sm:object-center"
           />
         </div>
 
