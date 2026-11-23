@@ -1148,96 +1148,102 @@ class LenteraSupabaseService implements ILenteraApiService {
   subscribeToStream(onEvent: (event: StreamEvent) => void): () => void {
     if (!supabase) return () => {};
 
-    const channel = supabase
-      .channel("lentera-realtime")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "care_logs" },
-        (payload) => {
-          const row = payload.new as Record<string, unknown>;
-          onEvent({
-            type: "care_log",
-            data: {
-              id: String(row.id),
-              elderly_id: String(row.elderly_id),
-              caregiver_id: String(row.caregiver_id),
-              caregiver_name: "Perawat Bertugas",
-              heart_rate: Number(row.heart_rate || 78),
-              systolic: Number(row.blood_pressure_systolic || 120),
-              diastolic: Number(row.blood_pressure_diastolic || 80),
-              meal_portion: String(row.meal_portion || "habis"),
-              medication_taken: Boolean(row.medication_taken),
-              mood: String(row.mood || "tenang"),
-              notes: String(row.notes || ""),
-              photo_url: row.photo_url ? String(row.photo_url) : undefined,
-              logged_at: String(row.logged_at || row.created_at),
-            },
-          });
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "sos_alerts" },
-        (payload) => {
-          const row = payload.new as Record<string, unknown>;
-          onEvent({
-            type: "sos_alert",
-            data: {
-              id: String(row.id),
-              elderly_id: String(row.elderly_id),
-              triggered_by: "Perawat",
-              reason: String(row.location_note || "Darurat Medis"),
-              status: "active",
-              triage_brief: row.triage_brief,
-              created_at: String(row.created_at),
-            },
-          });
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "sos_alerts" },
-        (payload) => {
-          const row = payload.new as Record<string, unknown>;
-          if (row.status === "resolved") {
+    const uniqueSuffix = Math.random().toString(36).slice(2, 8);
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      channel = supabase
+        .channel(`lentera-realtime-${uniqueSuffix}`)
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "care_logs" },
+          (payload) => {
+            const row = payload.new as Record<string, unknown>;
             onEvent({
-              type: "sos_resolved",
+              type: "care_log",
               data: {
                 id: String(row.id),
                 elderly_id: String(row.elderly_id),
-                status: "resolved",
+                caregiver_id: String(row.caregiver_id),
+                caregiver_name: "Perawat Bertugas",
+                heart_rate: Number(row.heart_rate || 78),
+                systolic: Number(row.blood_pressure_systolic || 120),
+                diastolic: Number(row.blood_pressure_diastolic || 80),
+                meal_portion: String(row.meal_portion || "habis"),
+                medication_taken: Boolean(row.medication_taken),
+                mood: String(row.mood || "tenang"),
+                notes: String(row.notes || ""),
+                photo_url: row.photo_url ? String(row.photo_url) : undefined,
+                logged_at: String(row.logged_at || row.created_at),
               },
             });
           }
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "notifications" },
-        (payload) => {
-          const row = payload.new as Record<string, unknown>;
-          onEvent({
-            type: "notification",
-            data: {
-              id: String(row.id),
-              title: String(row.title || "Notifikasi Lentera"),
-              message: String(row.body || ""),
-              type:
-                row.type === "sos"
-                  ? "emergency"
-                  : row.type === "ai_digest"
-                  ? "warning"
-                  : "info",
-              created_at: String(row.created_at || new Date().toISOString()),
-              read: Boolean(row.is_read),
-            },
-          });
-        }
-      )
-      .subscribe();
+        )
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "sos_alerts" },
+          (payload) => {
+            const row = payload.new as Record<string, unknown>;
+            onEvent({
+              type: "sos_alert",
+              data: {
+                id: String(row.id),
+                elderly_id: String(row.elderly_id),
+                triggered_by: "Perawat",
+                reason: String(row.location_note || "Darurat Medis"),
+                status: "active",
+                triage_brief: row.triage_brief,
+                created_at: String(row.created_at),
+              },
+            });
+          }
+        )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "sos_alerts" },
+          (payload) => {
+            const row = payload.new as Record<string, unknown>;
+            if (row.status === "resolved") {
+              onEvent({
+                type: "sos_resolved",
+                data: {
+                  id: String(row.id),
+                  elderly_id: String(row.elderly_id),
+                  status: "resolved",
+                },
+              });
+            }
+          }
+        )
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "notifications" },
+          (payload) => {
+            const row = payload.new as Record<string, unknown>;
+            onEvent({
+              type: "notification",
+              data: {
+                id: String(row.id),
+                title: String(row.title || "Notifikasi Lentera"),
+                message: String(row.body || ""),
+                type:
+                  row.type === "sos"
+                    ? "emergency"
+                    : row.type === "ai_digest"
+                    ? "warning"
+                    : "info",
+                created_at: String(row.created_at || new Date().toISOString()),
+                read: Boolean(row.is_read),
+              },
+            });
+          }
+        )
+        .subscribe();
+    } catch {
+      channel = null;
+    }
 
     return () => {
-      supabase?.removeChannel(channel);
+      if (channel) supabase?.removeChannel(channel);
     };
   }
 }

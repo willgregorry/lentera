@@ -31,15 +31,17 @@ export function useAssignmentStatus() {
     useState<ActiveCaregiverInfo | null>(null);
   const [caregiverHasJob, setCaregiverHasJob] = useState(false);
 
+  const userId = user?.id;
+  const userRole = user?.role;
   const isUnlocked =
-    user?.role === "caregiver" ? caregiverHasJob : Boolean(activeCaregiver);
+    userRole === "caregiver" ? caregiverHasJob : Boolean(activeCaregiver);
 
   useEffect(() => {
-    if (!hydrated || !user || !supabase) return;
+    if (!hydrated || !userId || !userRole || !supabase) return;
 
     let mounted = true;
     const db = supabase;
-    const currentUser = user;
+    const currentUser = { id: userId, role: userRole };
 
     async function checkStatus() {
       try {
@@ -124,19 +126,25 @@ export function useAssignmentStatus() {
     window.addEventListener("focus", handleRefresh);
     document.addEventListener("visibilitychange", handleVisibility);
 
-    const channel = db
-      .channel(`assignment-status-${currentUser.id}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "care_jobs" },
-        handleRefresh
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "job_applications" },
-        handleRefresh
-      )
-      .subscribe();
+    const uniqueSuffix = Math.random().toString(36).slice(2, 8);
+    let channel: ReturnType<typeof db.channel> | null = null;
+    try {
+      channel = db
+        .channel(`assignment-status-${currentUser.id}-${uniqueSuffix}`)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "care_jobs" },
+          handleRefresh
+        )
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "job_applications" },
+          handleRefresh
+        )
+        .subscribe();
+    } catch {
+      channel = null;
+    }
 
     // Lightweight fallback poll ONLY while menus are still locked
     const intervalId = !isUnlocked
@@ -149,9 +157,13 @@ export function useAssignmentStatus() {
       window.removeEventListener("focus", handleRefresh);
       document.removeEventListener("visibilitychange", handleVisibility);
       if (intervalId) window.clearInterval(intervalId);
-      db.removeChannel(channel);
+      if (channel) {
+        try {
+          db.removeChannel(channel);
+        } catch {}
+      }
     };
-  }, [hydrated, user, isUnlocked]);
+  }, [hydrated, userId, userRole, isUnlocked]);
 
   return {
     loading: Boolean(hydrated && user && loading),

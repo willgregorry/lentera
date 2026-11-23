@@ -65,11 +65,13 @@ export function AppShell({ children }: AppShellProps) {
   const { hasCaregiver, caregiverHasJob } = useAssignmentStatus();
   const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
   const [globalSos, setGlobalSos] = useState<GlobalActiveSos | null>(null);
-  const isCaregiver = user?.role === "caregiver";
+  const userId = user?.id;
+  const userRole = user?.role;
+  const isCaregiver = userRole === "caregiver";
 
   // Global SOS listener for Family across ALL pages so emergencies are never missed
   useEffect(() => {
-    if (!user || user.role !== "family" || !supabase) return;
+    if (!userId || userRole !== "family" || !supabase) return;
     const db = supabase;
     let mounted = true;
     let lastNotifiedSosId = "";
@@ -78,7 +80,7 @@ export function AppShell({ children }: AppShellProps) {
       const { data: elders } = await db
         .from("elderly_profiles")
         .select("id, name")
-        .eq("family_id", user!.id);
+        .eq("family_id", userId);
 
       if (!mounted || !elders || elders.length === 0) {
         if (mounted) setGlobalSos(null);
@@ -135,22 +137,32 @@ export function AppShell({ children }: AppShellProps) {
 
     window.addEventListener("focus", handleRefresh);
     const intervalId = window.setInterval(handleRefresh, 5000);
-    const channel = db
-      .channel(`family-global-sos-${user.id}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "sos_alerts" },
-        handleRefresh
-      )
-      .subscribe();
+    const uniqueSuffix = Math.random().toString(36).slice(2, 8);
+    let channel: ReturnType<typeof db.channel> | null = null;
+    try {
+      channel = db
+        .channel(`family-global-sos-${userId}-${uniqueSuffix}`)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "sos_alerts" },
+          handleRefresh
+        )
+        .subscribe();
+    } catch {
+      channel = null;
+    }
 
     return () => {
       mounted = false;
       window.removeEventListener("focus", handleRefresh);
       window.clearInterval(intervalId);
-      db.removeChannel(channel);
+      if (channel) {
+        try {
+          db.removeChannel(channel);
+        } catch {}
+      }
     };
-  }, [user]);
+  }, [userId, userRole]);
 
   const todayLabel = new Date().toLocaleDateString("id-ID", {
     weekday: "long",

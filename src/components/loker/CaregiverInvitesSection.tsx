@@ -87,25 +87,31 @@ export function CaregiverInvitesSection({
     void fetchInvites();
     if (!supabase) return;
 
-    const channel = supabase
-      .channel(`caregiver-invites-${user.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-          void fetchInvites();
-        }
-      )
-      .subscribe();
+    const uniqueSuffix = Math.random().toString(36).slice(2, 8);
+    let channel: ReturnType<NonNullable<typeof supabase>["channel"]> | null = null;
+    try {
+      channel = supabase
+        .channel(`caregiver-invites-${user.id}-${uniqueSuffix}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${user.id}`,
+          },
+          () => {
+            void fetchInvites();
+          }
+        )
+        .subscribe();
+    } catch {
+      channel = null;
+    }
 
     return () => {
       active = false;
-      supabase?.removeChannel(channel);
+      if (channel) supabase?.removeChannel(channel);
     };
   }, [user.id]);
 

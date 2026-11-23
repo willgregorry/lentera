@@ -60,8 +60,10 @@ export default function CaregiverDirectoryPage() {
     }
   }, [hydrated, user, router]);
 
+  const userId = user?.id;
+
   useEffect(() => {
-    if (hasCaregiver || !user) return;
+    if (hasCaregiver || !userId) return;
     let active = true;
 
     async function loadCaregiversAndInvites() {
@@ -108,7 +110,7 @@ export default function CaregiverDirectoryPage() {
             const meta = (row.metadata || {}) as Record<string, unknown>;
             if (
               meta.kind === "interview_invite" &&
-              String(meta.family_id || "") === user!.id &&
+              String(meta.family_id || "") === userId &&
               row.user_id
             ) {
               const st = String(meta.status || "pending");
@@ -150,22 +152,32 @@ export default function CaregiverDirectoryPage() {
     void loadCaregiversAndInvites();
 
     if (!supabase) return;
-    const channel = supabase
-      .channel(`family-invites-${user.id}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "notifications" },
-        () => {
-          void loadCaregiversAndInvites();
-        }
-      )
-      .subscribe();
+    const uniqueSuffix = Math.random().toString(36).slice(2, 8);
+    let channel: ReturnType<NonNullable<typeof supabase>["channel"]> | null = null;
+    try {
+      channel = supabase
+        .channel(`family-invites-${userId}-${uniqueSuffix}`)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "notifications" },
+          () => {
+            void loadCaregiversAndInvites();
+          }
+        )
+        .subscribe();
+    } catch {
+      channel = null;
+    }
 
     return () => {
       active = false;
-      supabase?.removeChannel(channel);
+      if (channel) {
+        try {
+          supabase?.removeChannel(channel);
+        } catch {}
+      }
     };
-  }, [hasCaregiver, user]);
+  }, [hasCaregiver, userId]);
 
   if (!hydrated || !user || user.role !== "family") {
     return (
