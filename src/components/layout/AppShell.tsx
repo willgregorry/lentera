@@ -10,6 +10,7 @@ import {
   ClipboardPlus,
   LogOut,
   UserCircle,
+  Users,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { LenteraMascot } from "@/components/shared/LenteraMascot";
@@ -36,14 +37,15 @@ export function AppShell({ children }: AppShellProps) {
         },
       ]
     : [
+        { href: "/caregivers", label: "Cari Caregiver", icon: Users },
         { href: "/dashboard", label: "Dashboard", icon: Activity },
         { href: "/loker", label: "Loker Caregiver", icon: Briefcase },
       ];
 
   return (
     <div className="flex min-h-screen bg-canvas-subtle text-ink">
-      {/* Desktop Sidebar */}
-      <aside className="hidden w-60 shrink-0 flex-col justify-between border-r border-border bg-surface px-4 py-6 md:flex">
+      {/* Fixed Desktop Sidebar */}
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col justify-between border-r border-border bg-surface px-4 py-6 md:flex">
         <div>
           <Link href="/" className="flex items-center gap-2.5 px-2">
             <LenteraMascot status="aman" size="sm" />
@@ -101,8 +103,8 @@ export function AppShell({ children }: AppShellProps) {
         )}
       </aside>
 
-      {/* Main Column */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      {/* Main Column offset by fixed sidebar width */}
+      <div className="flex min-w-0 flex-1 flex-col md:pl-60">
         {/* Compact Mobile Top Bar */}
         <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-surface/90 px-4 py-3 backdrop-blur-md md:hidden">
           <Link href="/" className="flex items-center gap-2">

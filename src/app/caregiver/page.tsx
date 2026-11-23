@@ -27,10 +27,14 @@ export default function CaregiverPortalPage() {
   useEffect(() => {
     if (hydrated && !authUser) {
       router.replace("/login?role=caregiver");
+      return;
+    }
+    if (hydrated && authUser && authUser.role === "family") {
+      router.replace("/dashboard");
     }
   }, [hydrated, authUser, router]);
 
-  if (!hydrated || !authUser) {
+  if (!hydrated || !authUser || authUser.role !== "caregiver") {
     return (
       <AppShell>
         <div className="flex min-h-[50vh] items-center justify-center">

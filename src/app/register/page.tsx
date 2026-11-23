@@ -30,7 +30,7 @@ export default function RegisterPage() {
         city,
         skills: [],
       });
-      router.push(res.user.role === "caregiver" ? "/loker" : "/dashboard");
+      router.push(res.user.role === "caregiver" ? "/loker" : "/caregivers");
     } finally {
       setLoading(false);
     }
@@ -44,7 +44,7 @@ export default function RegisterPage() {
         password: "google-oauth-session",
         role,
       });
-      router.push(res.user.role === "caregiver" ? "/loker" : "/dashboard");
+      router.push(res.user.role === "caregiver" ? "/loker" : "/caregivers");
     } finally {
       setLoading(false);
     }

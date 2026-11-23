@@ -31,10 +31,14 @@ export default function FamilyDashboardPage() {
   useEffect(() => {
     if (hydrated && !user) {
       router.replace("/login?role=family");
+      return;
+    }
+    if (hydrated && user && user.role === "caregiver") {
+      router.replace("/caregiver");
     }
   }, [hydrated, user, router]);
 
-  if (!hydrated || !user) {
+  if (!hydrated || !user || user.role !== "family") {
     return (
       <AppShell>
         <div className="flex min-h-[50vh] items-center justify-center">

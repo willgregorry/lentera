@@ -20,7 +20,7 @@ export default function LokerPage() {
   } = useLokerData();
   const [showPostForm, setShowPostForm] = useState(false);
 
-  const canPostJob = user?.role !== "caregiver";
+  const canPostJob = user?.role === "family";
 
   return (
     <AppShell>
