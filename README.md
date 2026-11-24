@@ -9,7 +9,7 @@
 Dikembangkan untuk **IT RUSH 2026 — Web Development (HIMATIF Universitas Bengkulu)** pada subtema **Kesehatan Masyarakat**, sekaligus mendorong akses kerja yang lebih aman dan layak bagi perawat lansia di Indonesia.
 
 - **Aplikasi Live:** [https://mylentera.vercel.app](https://mylentera.vercel.app)
-- **Video Demo (YouTube):** [https://youtu.be/tq-0hm2WYxo](https://youtu.be/tq-0hm2WYxo)
+- **Video Demo (YouTube):** [https://youtu.be/QQxP7T35WxY](https://youtu.be/QQxP7T35WxY)
 
 ---
 
@@ -65,9 +65,9 @@ Dengan satu ekosistem yang saling tersinkronisasi:
 
 Tonton demonstrasi lengkap alur aplikasi Lentera melalui tautan berikut:
 
-[![Tonton Video Demo Lentera di YouTube](https://img.youtube.com/vi/tq-0hm2WYxo/maxresdefault.jpg)](https://youtu.be/tq-0hm2WYxo)
+[![Tonton Video Demo Lentera di YouTube](https://img.youtube.com/vi/tq-0hm2WYxo/maxresdefault.jpg)](https://youtu.be/QQxP7T35WxY)
 
-Link langsung: [https://youtu.be/tq-0hm2WYxo](https://youtu.be/tq-0hm2WYxo)
+Link langsung: [https://youtu.be/QQxP7T35WxY](https://youtu.be/QQxP7T35WxY)
 
 ---
 
